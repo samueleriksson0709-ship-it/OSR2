@@ -14,3 +14,7 @@ shared/osr_stdout.txt
 shared/osr_stderr.txt
 shared/pipeline_log.txt
 shared/apdl_marker.txt
+
+# Python bytecode cache
+__pycache__/
+*.pyc
