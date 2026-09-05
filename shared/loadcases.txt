@@ -1,0 +1,18 @@
+# n_cases omega mode stress_unit
+1 6.283185307   SINUS   PA
+
+# fichier                   amp  phase  mean 
+sigma_export_nodes_testBracket.txt      1.0   0.0   0.0
+
+
+#n_cycles_max n_steps_per_cycle n_substeps_history
+100000 100 4 
+
+# history_file
+- 
+
+# integrator 
+RK4
+
+
+			

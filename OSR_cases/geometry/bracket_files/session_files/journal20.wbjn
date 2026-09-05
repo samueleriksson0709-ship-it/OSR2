@@ -1,0 +1,50 @@
+# encoding: utf-8
+# 2026 R1
+SetScriptVersion(Version="26.1.174")
+template1 = GetTemplate(
+    TemplateName="Static Structural",
+    Solver="ANSYS")
+system1 = GetSystem(Name="SYS")
+engineeringDataComponent1 = system1.GetComponent(Name="Engineering Data")
+geometryComponent1 = system1.GetComponent(Name="Geometry")
+modelComponent1 = system1.GetComponent(Name="Model")
+system2 = GetSystem(Name="SYS 4")
+system3 = template1.CreateSystem(
+    ComponentsToShare=[engineeringDataComponent1, geometryComponent1, modelComponent1],
+    Position="Below",
+    RelativeTo=system2)
+system4 = GetSystem(Name="SYS 3")
+modelComponent2 = system4.GetComponent(Name="Model")
+modelComponent2.Refresh()
+setupComponent1 = system3.GetComponent(Name="Setup")
+setupComponent1.Refresh()
+setup1 = system3.GetContainer(ComponentName="Setup")
+setup1.Edit()
+template2 = GetTemplate(TemplateName="External Data")
+system5 = template2.CreateSystem(
+    Position="Right",
+    RelativeTo=system3)
+setupComponent2 = system5.GetComponent(Name="Setup")
+setupComponent2.TransferData(TargetComponent=setupComponent1)
+setup2 = system5.GetContainer(ComponentName="Setup")
+externalLoadFileData1 = setup2.AddDataFile(FilePath="C:/Users/lukas/OSR/shared/damage.csv")
+externalLoadFileDataProperty1 = externalLoadFileData1.GetDataProperty()
+externalLoadColumnData1 = externalLoadFileDataProperty1.GetColumnData(Name="ExternalLoadColumnData")
+externalLoadFileDataProperty1.SetColumnDataType(
+    ColumnData=externalLoadColumnData1,
+    DataType="X Coordinate")
+externalLoadColumnData2 = externalLoadFileDataProperty1.GetColumnData(Name="ExternalLoadColumnData 1")
+externalLoadFileDataProperty1.SetColumnDataType(
+    ColumnData=externalLoadColumnData2,
+    DataType="Y Coordinate")
+externalLoadColumnData3 = externalLoadFileDataProperty1.GetColumnData(Name="ExternalLoadColumnData 2")
+externalLoadFileDataProperty1.SetColumnDataType(
+    ColumnData=externalLoadColumnData3,
+    DataType="Z Coordinate")
+externalLoadColumnData4 = externalLoadFileDataProperty1.GetColumnData(Name="ExternalLoadColumnData 3")
+externalLoadFileDataProperty1.SetColumnDataType(
+    ColumnData=externalLoadColumnData4,
+    DataType="Temperature")
+externalLoadColumnData4.Identifier = "damg"
+externalLoadFileDataProperty1.SetLengthUnit(Unit="mm")
+Save(Overwrite=True)

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<SimulationExternalLoads>
+
+  <SimulationExternalLoad>
+    <Source>
+      <FEModel>
+        <Name></Name>
+        <Location></Location>
+        <Units>
+          <Unit>
+            <Name></Name>
+          </Unit>
+        </Units>
+      </FEModel>
+      <FieldData>
+        <Name></Name>
+        <Location>C:\Users\samue\OSR\OSR_cases\testOnComp_files\dp0\SYS\MECH\Setup 1\external_load_data.xml</Location>
+        <Units>
+          <Unit>
+            <Name></Name>
+          </Unit>
+        </Units>
+        <Index>1</Index>
+        <Time>0</Time>
+      </FieldData>
+    </Source>
+    <Target>
+      <FEModel>
+        <Name>41</Name>
+        <Units system="SI">
+          <Unit>
+            <Name>m</Name>
+          </Unit>
+        </Units>
+      </FEModel>
+      <FieldData>
+        <Name>TODO - Field Name</Name>
+        <Location>C:\Users\samue\OSR\OSR_cases\testOnComp_files\dp0\SYS\MECH\Import_Output_40_unique_file_name_1_temp.xml</Location>
+        <Units system="SI">
+          <Unit>
+            <Name>°C</Name>
+          </Unit>
+        </Units>
+        <Time>1</Time>
+      </FieldData>
+      <Diagnostic>C:\Users\samue\OSR\OSR_cases\testOnComp_files\dp0\SYS\MECH\Import_Diagnostics_40.htm</Diagnostic>
+    </Target>
+  </SimulationExternalLoad>
+
+</SimulationExternalLoads>

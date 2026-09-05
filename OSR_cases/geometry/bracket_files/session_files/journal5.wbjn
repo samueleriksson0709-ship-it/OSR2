@@ -1,0 +1,115 @@
+# encoding: utf-8
+# 2026 R1
+SetScriptVersion(Version="26.1.174")
+system1 = GetSystem(Name="SYS 2")
+solution1 = system1.GetContainer(ComponentName="Solution")
+solution1.Edit()
+model1 = system1.GetContainer(ComponentName="Model")
+model1.Exit()
+system2 = GetSystem(Name="SYS 3")
+setup1 = system2.GetContainer(ComponentName="Setup")
+externalLoadData1 = setup1.GetExternalLoadData()
+externalLoadFileData1 = externalLoadData1.GetExternalLoadFileData(Name="ExternalLoadFileData")
+externalLoadData1.DeleteFileData(FileData=externalLoadFileData1)
+externalLoadFileData2 = setup1.AddDataFile(FilePath="C:/Users/lukas/OSR/OSR_model/damage_field.txt")
+externalLoadFileDataProperty1 = externalLoadFileData2.GetDataProperty()
+externalLoadFileData2.SetStartImportAtLine(
+    FileDataProperty=externalLoadFileDataProperty1,
+    LineNumber=2)
+externalLoadFileDataProperty1.SetLengthUnit(Unit="mm")
+externalLoadData1.DeleteFileData(FileData=externalLoadFileData2)
+externalLoadFileData3 = setup1.AddDataFile(FilePath="C:/Users/lukas/OSR/OSR_model/damage.csv")
+externalLoadFileDataProperty2 = externalLoadFileData3.GetDataProperty()
+externalLoadColumnData1 = externalLoadFileDataProperty2.GetColumnData(Name="ExternalLoadColumnData")
+externalLoadFileDataProperty2.SetColumnDataType(
+    ColumnData=externalLoadColumnData1,
+    DataType="X Coordinate")
+externalLoadColumnData2 = externalLoadFileDataProperty2.GetColumnData(Name="ExternalLoadColumnData 1")
+externalLoadFileDataProperty2.SetColumnDataType(
+    ColumnData=externalLoadColumnData2,
+    DataType="Y Coordinate")
+externalLoadColumnData3 = externalLoadFileDataProperty2.GetColumnData(Name="ExternalLoadColumnData 2")
+externalLoadFileDataProperty2.SetColumnDataType(
+    ColumnData=externalLoadColumnData3,
+    DataType="Y Coordinate")
+externalLoadFileDataProperty2.SetColumnDataType(
+    ColumnData=externalLoadColumnData3,
+    DataType="Z Coordinate")
+externalLoadFileDataProperty2.SetLengthUnit(Unit="mm")
+externalLoadFileData3.SetStartImportAtLine(
+    FileDataProperty=externalLoadFileDataProperty2,
+    LineNumber=2)
+externalLoadColumnData4 = externalLoadFileDataProperty2.GetColumnData(Name="ExternalLoadColumnData 3")
+externalLoadFileDataProperty2.SetColumnDataType(
+    ColumnData=externalLoadColumnData4,
+    DataType="Temperature")
+externalLoadColumnData4.Identifier = "Damage"
+Update()
+solution1.Edit()
+Save(Overwrite=True)
+system3 = GetSystem(Name="SYS")
+solution2 = system3.GetContainer(ComponentName="Solution")
+solution2.Edit()
+Save(Overwrite=True)
+Save(Overwrite=True)
+Update()
+externalLoadData1.DeleteFileData(FileData=externalLoadFileData3)
+externalLoadFileData4 = setup1.AddDataFile(FilePath="C:/Users/lukas/OSR/OSR_model/damage_field.txt")
+externalLoadData1.DeleteFileData(FileData=externalLoadFileData4)
+externalLoadFileData5 = setup1.AddDataFile(FilePath="C:/Users/lukas/OSR/OSR_model/damage.csv")
+externalLoadFileDataProperty3 = externalLoadFileData5.GetDataProperty()
+externalLoadFileData5.SetStartImportAtLine(
+    FileDataProperty=externalLoadFileDataProperty3,
+    LineNumber=2)
+externalLoadColumnData5 = externalLoadFileDataProperty3.GetColumnData(Name="ExternalLoadColumnData")
+externalLoadFileDataProperty3.SetColumnDataType(
+    ColumnData=externalLoadColumnData5,
+    DataType="X Coordinate")
+externalLoadColumnData6 = externalLoadFileDataProperty3.GetColumnData(Name="ExternalLoadColumnData 1")
+externalLoadFileDataProperty3.SetColumnDataType(
+    ColumnData=externalLoadColumnData6,
+    DataType="Y Coordinate")
+externalLoadColumnData7 = externalLoadFileDataProperty3.GetColumnData(Name="ExternalLoadColumnData 2")
+externalLoadFileDataProperty3.SetColumnDataType(
+    ColumnData=externalLoadColumnData7,
+    DataType="Z Coordinate")
+externalLoadColumnData8 = externalLoadFileDataProperty3.GetColumnData(Name="ExternalLoadColumnData 3")
+externalLoadFileDataProperty3.SetColumnDataType(
+    ColumnData=externalLoadColumnData8,
+    DataType="Temperature")
+externalLoadFileDataProperty3.SetLengthUnit(Unit="mm")
+externalLoadColumnData8.Identifier = "Damage"
+Update()
+solution1.Edit()
+Save(Overwrite=True)
+model1.Exit()
+solution1.Edit()
+externalLoadData1.DeleteFileData(FileData=externalLoadFileData5)
+externalLoadFileData6 = setup1.AddDataFile(FilePath="C:/Users/lukas/OSR/OSR_model/damage.csv")
+externalLoadFileDataProperty4 = externalLoadFileData6.GetDataProperty()
+externalLoadFileData6.SetStartImportAtLine(
+    FileDataProperty=externalLoadFileDataProperty4,
+    LineNumber=2)
+externalLoadFileDataProperty4.SetLengthUnit(Unit="mm")
+externalLoadColumnData9 = externalLoadFileDataProperty4.GetColumnData(Name="ExternalLoadColumnData")
+externalLoadFileDataProperty4.SetColumnDataType(
+    ColumnData=externalLoadColumnData9,
+    DataType="X Coordinate")
+externalLoadColumnData10 = externalLoadFileDataProperty4.GetColumnData(Name="ExternalLoadColumnData 1")
+externalLoadFileDataProperty4.SetColumnDataType(
+    ColumnData=externalLoadColumnData10,
+    DataType="Y Coordinate")
+externalLoadColumnData11 = externalLoadFileDataProperty4.GetColumnData(Name="ExternalLoadColumnData 2")
+externalLoadFileDataProperty4.SetColumnDataType(
+    ColumnData=externalLoadColumnData11,
+    DataType="Z Coordinate")
+externalLoadColumnData12 = externalLoadFileDataProperty4.GetColumnData(Name="ExternalLoadColumnData 3")
+externalLoadFileDataProperty4.SetColumnDataType(
+    ColumnData=externalLoadColumnData12,
+    DataType="Temperature")
+externalLoadColumnData12.Identifier = "damage"
+Update()
+solution1.Edit()
+Save(Overwrite=True)
+model1.Exit()
+Save(Overwrite=True)

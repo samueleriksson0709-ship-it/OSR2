@@ -1,0 +1,52 @@
+# encoding: utf-8
+# 2026 R1
+SetScriptVersion(Version="26.1.174")
+system1 = GetSystem(Name="SYS 4")
+model1 = system1.GetContainer(ComponentName="Model")
+model1.Edit()
+system2 = GetSystem(Name="SYS 3")
+system2.Copy(KeepConnections=True)
+system2.Copy(KeepConnections=True)
+system3 = GetSystem(Name="SYS 6")
+system3.Delete()
+system4 = GetSystem(Name="SYS 5")
+setupComponent1 = system4.GetComponent(Name="Setup")
+setupComponent2 = system1.GetComponent(Name="Setup")
+setupComponent1.TransferData(TargetComponent=setupComponent2)
+setup1 = system4.GetContainer(ComponentName="Setup")
+externalLoadData1 = setup1.GetExternalLoadData()
+externalLoadFileData1 = externalLoadData1.GetExternalLoadFileData(Name="ExternalLoadFileData")
+externalLoadData1.DeleteFileData(FileData=externalLoadFileData1)
+externalLoadFileData2 = setup1.AddDataFile(FilePath="C:/Users/lukas/OSR/OSR_model/damage.csv")
+externalLoadFileDataProperty1 = externalLoadFileData2.GetDataProperty()
+externalLoadFileData2.SetStartImportAtLine(
+    FileDataProperty=externalLoadFileDataProperty1,
+    LineNumber=2)
+externalLoadFileDataProperty1.SetLengthUnit(Unit="mm")
+externalLoadColumnData1 = externalLoadFileDataProperty1.GetColumnData(Name="ExternalLoadColumnData")
+externalLoadFileDataProperty1.SetColumnDataType(
+    ColumnData=externalLoadColumnData1,
+    DataType="X Coordinate")
+externalLoadColumnData2 = externalLoadFileDataProperty1.GetColumnData(Name="ExternalLoadColumnData 1")
+externalLoadFileDataProperty1.SetColumnDataType(
+    ColumnData=externalLoadColumnData2,
+    DataType="Y Coordinate")
+externalLoadColumnData3 = externalLoadFileDataProperty1.GetColumnData(Name="ExternalLoadColumnData 2")
+externalLoadFileDataProperty1.SetColumnDataType(
+    ColumnData=externalLoadColumnData3,
+    DataType="Z Coordinate")
+externalLoadColumnData4 = externalLoadFileDataProperty1.GetColumnData(Name="ExternalLoadColumnData 3")
+externalLoadFileDataProperty1.SetColumnDataType(
+    ColumnData=externalLoadColumnData4,
+    DataType="Temperature")
+externalLoadColumnData4.Identifier = "Damage"
+Update()
+setup2 = system1.GetContainer(ComponentName="Setup")
+setup2.Edit()
+model1.Exit()
+setup2.Edit()
+model1.Exit()
+setup2.Edit()
+system1.DisplayText = "dogbone"
+model1.Exit()
+Save(Overwrite=True)

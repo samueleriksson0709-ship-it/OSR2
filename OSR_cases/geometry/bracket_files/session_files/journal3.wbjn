@@ -1,0 +1,63 @@
+# encoding: utf-8
+# 2026 R1
+SetScriptVersion(Version="26.1.174")
+system1 = GetSystem(Name="SYS")
+solution1 = system1.GetContainer(ComponentName="Solution")
+solution1.Edit()
+Update()
+solution1.Edit()
+solutionComponent1 = system1.GetComponent(Name="Solution")
+solutionComponent1.Update(AllDependencies=True)
+model1 = system1.GetContainer(ComponentName="Model")
+model1.Exit()
+solution1.Edit()
+Update()
+system2 = GetSystem(Name="SYS 1")
+system2.Delete()
+Update()
+template1 = GetTemplate(TemplateName="External Data")
+system3 = template1.CreateSystem(
+    Position="Right",
+    RelativeTo=system1)
+setup1 = system3.GetContainer(ComponentName="Setup")
+externalLoadFileData1 = setup1.AddDataFile(FilePath="C:/Users/lukas/OSR/OSR_model/damage.csv")
+externalLoadFileDataProperty1 = externalLoadFileData1.GetDataProperty()
+externalLoadFileData1.SetStartImportAtLine(
+    FileDataProperty=externalLoadFileDataProperty1,
+    LineNumber=2)
+externalLoadFileDataProperty1.SetLengthUnit(Unit="mm")
+externalLoadColumnData1 = externalLoadFileDataProperty1.GetColumnData(Name="ExternalLoadColumnData")
+externalLoadFileDataProperty1.SetColumnDataType(
+    ColumnData=externalLoadColumnData1,
+    DataType="X Coordinate")
+externalLoadColumnData2 = externalLoadFileDataProperty1.GetColumnData(Name="ExternalLoadColumnData 1")
+externalLoadFileDataProperty1.SetColumnDataType(
+    ColumnData=externalLoadColumnData2,
+    DataType="Y Coordinate")
+externalLoadColumnData3 = externalLoadFileDataProperty1.GetColumnData(Name="ExternalLoadColumnData 2")
+externalLoadFileDataProperty1.SetColumnDataType(
+    ColumnData=externalLoadColumnData3,
+    DataType="Z Coordinate")
+externalLoadColumnData4 = externalLoadFileDataProperty1.GetColumnData(Name="ExternalLoadColumnData 3")
+externalLoadFileDataProperty1.SetColumnDataType(
+    ColumnData=externalLoadColumnData4,
+    DataType="Temperature")
+externalLoadColumnData4.Identifier = "Damage"
+setupComponent1 = system3.GetComponent(Name="Setup")
+setupComponent2 = system1.GetComponent(Name="Setup")
+setupComponent1.TransferData(TargetComponent=setupComponent2)
+Update()
+setup2 = system1.GetContainer(ComponentName="Setup")
+setup2.Edit()
+Save(Overwrite=True)
+externalLoadFileDataProperty1.OriginX = 0
+externalLoadFileDataProperty1.OriginXUnit = "mm"
+externalLoadFileDataProperty1.OriginY = 0
+externalLoadFileDataProperty1.OriginYUnit = "mm"
+externalLoadFileDataProperty1.OriginZ = 0
+externalLoadFileDataProperty1.OriginZUnit = "mm"
+Update()
+solution1.Edit()
+Save(Overwrite=True)
+model1.Exit()
+Save(Overwrite=True)

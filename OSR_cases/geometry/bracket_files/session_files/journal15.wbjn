@@ -1,0 +1,16 @@
+# encoding: utf-8
+# 2026 R1
+SetScriptVersion(Version="26.1.174")
+system1 = GetSystem(Name="SYS 7")
+system1.Copy(KeepConnections=True)
+system2 = GetSystem(Name="SYS")
+system2.DisplayText = "brq"
+system2.DisplayText = "bracket horizontal"
+system1.DisplayText = "bracket vertical"
+system2.Copy(KeepConnections=True)
+system3 = GetSystem(Name="SYS 1")
+system3.DisplayText = "bracket 42deg"
+system3.Copy(KeepConnections=True)
+system4 = GetSystem(Name="SYS 2")
+system4.DisplayText = "bracket torsion"
+Save(Overwrite=True)

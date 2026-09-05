@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--  ************************************************************ -->
+<!--  ************************************************************ -->
+<!--  File Name: parm.xml -->
+<!--  ************************************************************ -->
+<!--  ************************************************************ -->
+<ANSYSDOC xmlns="http://www.ansys.com/caedoc_ns">
+<HEADER>
+   <NAME>ANSYS</NAME>
+   <VERSION>26.1</VERSION>
+   <OS>WINDOWS x64</OS>
+   <DESCRIPTION>firstBracketTest--Static Structural (B5)</DESCRIPTION>
+</HEADER>
+<PARM ID="ANSINTER_">0</PARM>
+<PARM ID="CID">2</PARM>
+<PARM ID="CX">.006016940711</PARM>
+<PARM ID="CY">-.006640012681</PARM>
+<PARM ID="CZ">.03693429303</PARM>
+<PARM ID="EID_CUR">3081</PARM>
+<PARM ID="IE">3081</PARM>
+<PARM ID="K">4</PARM>
+<PARM ID="NB_ELEM">3081</PARM>
+<PARM ID="NID">109</PARM>
+<PARM ID="SX">-1220121.37500</PARM>
+<PARM ID="SXY">-691464.8125</PARM>
+<PARM ID="SXZ">-2762085.75000</PARM>
+<PARM ID="SY">7002803.00000</PARM>
+<PARM ID="SYZ">1213606.37500</PARM>
+<PARM ID="SZ">-4275147.50000</PARM>
+<PARM ID="TEMPERATURE">TEMP    </PARM>
+<PARM ID="TID">3</PARM>
+<PARM ID="_ASMDIAG">.229560066391</PARM>
+<PARM ID="_DS_PROGRESS">999</PARM>
+<PARM ID="_MAXELEMNUM">4761</PARM>
+<PARM ID="_MAXELEMTYPE">3</PARM>
+<PARM ID="_MAXNODENUM">5829</PARM>
+<PARM ID="_MAXREALCONST">2</PARM>
+<PARM ID="_NPILOT">5828</PARM>
+<PARM ID="_NPILOT50">5828</PARM>
+<PARM ID="_NSOLPROCESSES">4</PARM>
+<PARM ID="_NSOLTHREADS">1</PARM>
+<PARM ID="_NUMELEM">3174</PARM>
+<PARM ID="_NUMNODE">5828</PARM>
+<PARM ID="_PCGITER">137</PARM>
+<PARM ID="_RETURN">0</PARM>
+<PARM ID="_STATUS">0</PARM>
+<PARM ID="_THICKRATIO">1</PARM>
+<PARM ID="_WALLASOL">.002125528806</PARM>
+<PARM ID="_WALLBSOL">.001378946389</PARM>
+<PARM ID="_WALLSTRT">.001372567722</PARM>
+<PARM ID="_WB_PROJECTSCRATCH_DIR" STRING="248 1 1">
+ C:\Users\samue\OSR\OSR_cases\_ProjectScratch\Scr6C12\                                                                                                                                                                                                   
+</PARM>
+<PARM ID="_WB_SOLVERFILES_DIR" STRING="248 1 1">
+ C:\Users\samue\OSR\OSR_cases\firstBracketTest_files\dp0\SYS\MECH\                                                                                                                                                                                       
+</PARM>
+<PARM ID="_WB_USERFILES_DIR" STRING="248 1 1">
+ C:\Users\samue\OSR\OSR_cases\firstBracketTest_files\user_files\                                                                                                                                                                                         
+</PARM>
+<PARM ID="_XMAX">.01524</PARM>
+<PARM ID="_XMIN">-.1632966</PARM>
+<PARM ID="_YMAX">.04770888003</PARM>
+<PARM ID="_YMIN">-.04443960546</PARM>
+<PARM ID="_ZMAX">.08876107074</PARM>
+<PARM ID="_ZMIN">-.02228469984</PARM>
+<FEAMODEL>
+<TABLES>
+</TABLES>
+<LOADCASE ID="1">
+   <LOADSTEP  STEP="1" SUB="1" TIME="1">
+      <BOUNDARY_CONDITIONS>
+      </BOUNDARY_CONDITIONS>
+   </LOADSTEP>
+</LOADCASE>
+</FEAMODEL>
+</ANSYSDOC>

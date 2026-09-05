@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension version="1" name="SuperSolve">
+  <script src="super_solve_action.py" />
+  <interface context="Project">
+    <toolbar name="CustomAutomation" caption="Automatisation OSR">
+      <entry name="BtnSuperSolve" icon="update" caption="Super Solve">
+        <callbacks>
+          <onclick>ExecuteSuperSolve</onclick>
+        </callbacks>
+      </entry>
+      <entry name="BtnRunOSROnly" icon="update" caption="Test OSR only">
+        <callbacks>
+          <onclick>RunOSROnly</onclick>
+        </callbacks>
+      </entry>
+      <entry name="BtnRefreshDamage" icon="update" caption="Refresh Damage">
+        <callbacks>
+          <onclick>RefreshDamageOnly</onclick>
+        </callbacks>
+      </entry>
+    </toolbar>
+  </interface>
+</extension>
