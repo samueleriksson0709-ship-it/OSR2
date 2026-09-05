@@ -1,0 +1,65 @@
+! ---------------------------------------------------------------------------
+! OSR stress export block - paste this into a Commands (APDL) object placed
+! under Solution in Mechanical.
+!
+! The export folder below MUST be the 'shared' folder of THIS machine's OSR
+! checkout. APDL has no way of discovering it, so it is written out in full.
+! Running  python configure_osr.py  from the OSR root rewrites both *CFOPEN
+! lines with the correct local path.
+!
+! The stresses are written in the unit system the model was SOLVED in (Pa for
+! /units,MKS). Declare that unit on the first data line of loadcases.txt, e.g.
+!   1 6.283185307 SINUS PA
+! otherwise the solver reads Pa as MPa and every point fails at zero cycle.
+! ---------------------------------------------------------------------------
+/POST1
+SET,LAST
+RSYS,0
+AVRES,,NO
+
+! marker to signal to the pipeline that the APDl has run 
+*CFOPEN,apdl_marker,txt,C:\Users\samue\OSR\shared
+*VWRITE
+('APDL Commands block executed')
+*CFCLOS
+
+ALLSEL,ALL
+ESEL,S,ENAME,,187
+*GET,nb_elem,ELEM,0,COUNT
+
+*CFOPEN,sigma_export_nodes_testBracket,txt,C:\Users\samue\OSR\shared
+*VWRITE
+('# eid nid X Y Z SXX SYY SZZ SXY SYZ SXZ')
+(A)
+
+eid_cur = 0
+*DO,ie,1,nb_elem
+    ! advance to the next element in the 187 selection 
+    *GET,eid_cur,ELEM,eid_cur,NXTH
+    *IF,eid_cur,LE,0,EXIT
+
+    ! isolate this element to read its own Gauss-to-node values
+    ESEL,S,ELEM,,eid_cur
+
+    *DO,k,1,4
+        *GET,nid,ELEM,eid_cur,NODE,k
+        *IF,nid,GT,0,THEN
+            *GET,cx,NODE,nid,LOC,X
+            *GET,cy,NODE,nid,LOC,Y
+            *GET,cz,NODE,nid,LOC,Z
+            *GET,sx, NODE,nid,S,X
+            *GET,sy, NODE,nid,S,Y
+            *GET,sz, NODE,nid,S,Z
+            *GET,sxy,NODE,nid,S,XY
+            *GET,syz,NODE,nid,S,YZ
+            *GET,sxz,NODE,nid,S,XZ
+            *VWRITE,eid_cur,nid,cx,cy,cz,sx,sy,sz,sxy,syz,sxz
+            (F8.0,F8.0,3E14.6,6E14.6)
+        *ENDIF
+    *ENDDO
+
+    ! restore the 187 selection so the next NXTH works properly 
+    ESEL,S,ENAME,,187
+*ENDDO
+*CFCLOS
+ALLSEL,ALL

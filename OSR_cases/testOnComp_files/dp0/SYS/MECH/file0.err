@@ -1,0 +1,273 @@
+/COM,ANSYS RELEASE 2026 R1.03        BUILD 26.1      UP20260202       12:16:27
+
+ *** WARNING ***                         ELAPSED TIME =       4.990   TIME= 12:16:27
+ Element shape checking is currently inactive.  Issue SHPP,ON or         
+ SHPP,WARN to reactivate, if desired.                                    
+
+ *** WARNING ***                         ELAPSED TIME =       4.991   TIME= 12:16:27
+ Material number 2 (used by element 65) should normally have at least    
+ one MP or one TB type command associated with it.  Output of energy by  
+ material may not be available.                                          
+
+ *** WARNING ***                         ELAPSED TIME =       5.201   TIME= 12:16:28
+ The AVRES command is only valid with PowerGraphics.  Command ignored.   
+
+ *** WARNING ***                         ELAPSED TIME =       5.202   TIME= 12:16:28
+ (A) is not a recognized POST1 command, abbreviation, or macro.          
+  This command will be ignored.                                          
+
+ *** WARNING ***                         ELAPSED TIME =       5.203   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 1 )  
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.204   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 2 )  
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.205   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 3 )  
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.205   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 4 )  
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.206   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 5 )  
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.207   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 6 )  
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.208   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 7 )  
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.209   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 8 )  
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.210   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 9 )  
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.211   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 10 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.212   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 11 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.213   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 12 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.213   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 13 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.214   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 14 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.215   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 15 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.216   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 16 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.216   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 17 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.217   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 18 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.218   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 19 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.219   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 20 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.219   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 21 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.220   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 22 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.221   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 23 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.222   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 24 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.222   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 25 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.223   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 26 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.224   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 27 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.225   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 28 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.225   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 29 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.226   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 30 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.227   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 31 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.228   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 32 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.228   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 33 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.229   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 34 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.230   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 35 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.230   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 36 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.231   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 37 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.232   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 38 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.233   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 39 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.233   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 40 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.234   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 41 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.235   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 42 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.235   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 43 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.236   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 44 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.237   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 45 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.238   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 46 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.238   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 47 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.239   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 48 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.240   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 49 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.241   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 50 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.241   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 51 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.242   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 52 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.243   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 53 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.243   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 54 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.244   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 55 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.245   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 56 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.246   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 57 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.247   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 58 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.247   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 59 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.248   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 60 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.249   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 61 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.249   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 62 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.250   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 63 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.251   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 64 ) 
+ defaults to zero regardless of the actual error.                        

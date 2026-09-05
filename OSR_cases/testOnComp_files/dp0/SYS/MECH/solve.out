@@ -1,0 +1,1174 @@
+
+ Ansys Mechanical Enterprise Academic Research     
+
+
+ *------------------------------------------------------------------*
+ |                                                                  |
+ |   W E L C O M E   T O   T H E   A N S Y S (R)  P R O G R A M     |
+ |                                                                  |
+ *------------------------------------------------------------------*
+
+
+
+
+ ***************************************************************
+ *         ANSYS MAPDL 2026 R1.03       LEGAL NOTICES          *
+ ***************************************************************
+ *                                                             *
+ * Copyright (c) 2026 Synopsys, Inc. and ANSYS, Inc.           *
+ * All rights reserved.                                        *
+ * Unauthorized use, distribution or duplication is            *
+ * prohibited.                                                 *
+ *                                                             *
+ * Ansys is a registered trademark of Ansys, Inc. or its       *
+ * subsidiaries in the United States or other countries.       *
+ * See the Ansys, Inc. online documentation or the Ansys, Inc. *
+ * documentation CD or online help for the complete Legal      *
+ * Notice.                                                     *
+ *                                                             *
+ ***************************************************************
+ *                                                             *
+ * THIS ANSYS SOFTWARE PRODUCT AND PROGRAM DOCUMENTATION       *
+ * INCLUDE TRADE SECRETS AND CONFIDENTIAL AND PROPRIETARY      *
+ * PRODUCTS OF ANSYS, INC., ITS SUBSIDIARIES, OR LICENSORS.    *
+ * The software products and documentation are furnished by    *
+ * Ansys, Inc. or its subsidiaries under a software license    *
+ * agreement that contains provisions concerning               *
+ * non-disclosure, copying, length and nature of use,          *
+ * compliance with exporting laws, warranties, disclaimers,    *
+ * limitations of liability, and remedies, and other           *
+ * provisions.  The software products and documentation may be *
+ * used, disclosed, transferred, or copied only in accordance  *
+ * with the terms and conditions of that software license      *
+ * agreement.                                                  *
+ *                                                             *
+ * Ansys, Inc. is a UL registered                              *
+ * ISO 9001:2015 company.                                      *
+ *                                                             *
+ ***************************************************************
+ *                                                             *
+ * This product is subject to U.S. laws governing export and   *
+ * re-export.                                                  *
+ *                                                             *
+ * For U.S. Government users, except as specifically granted   *
+ * by the Ansys, Inc. software license agreement, the use,     *
+ * duplication, or disclosure by the United States Government  *
+ * is subject to restrictions stated in the Ansys, Inc.        *
+ * software license agreement and FAR 12.212 (for non-DOD      *
+ * licenses).                                                  *
+ *                                                             *
+ ***************************************************************
+
+ 2026 R1.03  
+     
+ Point Releases and Patches installed:   
+     
+ Ansys Service Pack 2026 R1.01   
+ Ansys Service Pack 2026 R1.02   
+ Ansys Service Pack 2026 R1.03   
+ Ansys, Inc. License Manager 2026 R1 
+ Ansys, Inc. License Manager 2026 R1.01  
+ Ansys, Inc. License Manager 2026 R1.02  
+ Ansys, Inc. License Manager 2026 R1.03  
+ Discovery (reduced install) 2026 R1 
+ Discovery (reduced install) 2026 R1.01  
+ Discovery (reduced install) 2026 R1.02  
+ Discovery (reduced install) 2026 R1.03  
+ Core WB Files 2026 R1   
+ Core WB Files 2026 R1.01
+ Core WB Files 2026 R1.02
+ Core WB Files 2026 R1.03
+ Additive 2026 R1
+ Additive 2026 R1.01 
+ Additive 2026 R1.02 
+ Additive 2026 R1.03 
+ optiSLang Core 2026 R1  
+ optiSLang Core 2026 R1.01   
+ optiSLang Core 2026 R1.02   
+ optiSLang Core 2026 R1.03   
+ optiSLang Core UI 2026 R1   
+ optiSLang Core UI 2026 R1.01
+ optiSLang Core UI 2026 R1.02
+ optiSLang Core UI 2026 R1.03
+ optiSLang AI 2026 R1
+ optiSLang AI 2026 R1.01 
+ optiSLang AI 2026 R1.02 
+ optiSLang AI 2026 R1.03 
+ optiSLang App Generation 2026 R1
+ optiSLang App Generation 2026 R1.01 
+ optiSLang App Generation 2026 R1.02 
+ optiSLang App Generation 2026 R1.03 
+ Behavior Execution Engine 2026 R1   
+ Behavior Execution Engine 2026 R1.01
+ Behavior Execution Engine 2026 R1.02
+ Behavior Execution Engine 2026 R1.03
+ ModelCenter 2026 R1 
+ ModelCenter 2026 R1.01  
+ ModelCenter 2026 R1.02  
+ ModelCenter 2026 R1.03  
+ ModelCenter Remote Execution 2026 R1
+ ModelCenter Remote Execution 2026 R1.01 
+ ModelCenter Remote Execution 2026 R1.02 
+ ModelCenter Remote Execution 2026 R1.03 
+ ModelCenter MBSE 2026 R1
+ ModelCenter MBSE 2026 R1.01 
+ ModelCenter MBSE 2026 R1.02 
+ ModelCenter MBSE 2026 R1.03 
+ Scade One 2026 R1   
+ Scade One 2026 R1.01
+ Scade One 2026 R1.02
+ Scade One 2026 R1.03
+ medini analyze 2026 R1  
+ medini analyze 2026 R1.01   
+ medini analyze 2026 R1.02   
+ medini analyze 2026 R1.03   
+ scaderapidprototyper archive 2026 R1
+ scaderapidprototyper archive 2026 R1.01 
+ scaderapidprototyper archive 2026 R1.02 
+ scaderapidprototyper archive 2026 R1.03 
+ Granta Selector 2026 R1 
+ Granta Selector 2026 R1.01  
+ Granta Selector 2026 R1.02  
+ Granta Selector 2026 R1.03  
+ Dynamic Reporting 2026 R1   
+ Dynamic Reporting 2026 R1.01
+ Dynamic Reporting 2026 R1.02
+ Dynamic Reporting 2026 R1.03
+ Remote Solve Manager Standalone Services 2026 R1
+ Remote Solve Manager Standalone Services 2026 R1.01 
+ Remote Solve Manager Standalone Services 2026 R1.02 
+ Remote Solve Manager Standalone Services 2026 R1.03 
+ medini analyze QKit 2026 R1 
+ medini analyze QKit 2026 R1.01  
+ medini analyze QKit 2026 R1.02  
+ medini analyze QKit 2026 R1.03  
+ Aqwa 2026 R1
+ Aqwa 2026 R1.01 
+ Aqwa 2026 R1.02 
+ Aqwa 2026 R1.03 
+ Autodyn 2026 R1 
+ Autodyn 2026 R1.01  
+ Autodyn 2026 R1.02  
+ Autodyn 2026 R1.03  
+ Customization Files for User Programmable Features 2026 R1  
+ Customization Files for User Programmable Features 2026 R1.01   
+ Customization Files for User Programmable Features 2026 R1.02   
+ Customization Files for User Programmable Features 2026 R1.03   
+ ICEM CFD 2026 R1
+ ICEM CFD 2026 R1.01 
+ ICEM CFD 2026 R1.02 
+ ICEM CFD 2026 R1.03 
+ LS-DYNA 2026 R1 
+ LS-DYNA 2026 R1.01  
+ LS-DYNA 2026 R1.02  
+ LS-DYNA 2026 R1.03  
+ Material Calibration App 2026 R1
+ Material Calibration App 2026 R1.01 
+ Material Calibration App 2026 R1.02 
+ Material Calibration App 2026 R1.03 
+ Mechanical Products 2026 R1 
+ Mechanical Products 2026 R1.01  
+ Mechanical Products 2026 R1.02  
+ Mechanical Products 2026 R1.03  
+ Motion 2026 R1  
+ Motion 2026 R1.01   
+ Motion 2026 R1.02   
+ Motion 2026 R1.03   
+ RBF Morph 2026 R1   
+ RBF Morph 2026 R1.01
+ RBF Morph 2026 R1.02
+ RBF Morph 2026 R1.03
+ Sherlock 2026 R1
+ Sherlock 2026 R1.01 
+ Sherlock 2026 R1.02 
+ Sherlock 2026 R1.03 
+ Sound - SAS 2026 R1 
+ Sound - SAS 2026 R1.01  
+ Sound - SAS 2026 R1.02  
+ Sound - SAS 2026 R1.03  
+ ACIS Geometry Interface 2026 R1 
+ ACIS Geometry Interface 2026 R1.01  
+ ACIS Geometry Interface 2026 R1.02  
+ ACIS Geometry Interface 2026 R1.03  
+ AutoCAD Geometry Interface 2026 R1  
+ AutoCAD Geometry Interface 2026 R1.01   
+ AutoCAD Geometry Interface 2026 R1.02   
+ AutoCAD Geometry Interface 2026 R1.03   
+ Catia, Version 4 Geometry Interface 2026 R1 
+ Catia, Version 4 Geometry Interface 2026 R1.01  
+ Catia, Version 4 Geometry Interface 2026 R1.02  
+ Catia, Version 4 Geometry Interface 2026 R1.03  
+ Catia, Version 5 Geometry Interface 2026 R1 
+ Catia, Version 5 Geometry Interface 2026 R1.01  
+ Catia, Version 5 Geometry Interface 2026 R1.02  
+ Catia, Version 5 Geometry Interface 2026 R1.03  
+ Catia, Version 6 Geometry Interface 2026 R1 
+ Catia, Version 6 Geometry Interface 2026 R1.01  
+ Catia, Version 6 Geometry Interface 2026 R1.02  
+ Catia, Version 6 Geometry Interface 2026 R1.03  
+ Creo Elements/Direct Modeling Geometry Interface 2026 R1
+ Creo Elements/Direct Modeling Geometry Interface 2026 R1.01 
+ Creo Elements/Direct Modeling Geometry Interface 2026 R1.02 
+ Creo Elements/Direct Modeling Geometry Interface 2026 R1.03 
+ Creo Parametric Geometry Interface 2026 R1  
+ Creo Parametric Geometry Interface 2026 R1.01   
+ Creo Parametric Geometry Interface 2026 R1.02   
+ Creo Parametric Geometry Interface 2026 R1.03   
+ Inventor Geometry Interface 2026 R1 
+ Inventor Geometry Interface 2026 R1.01  
+ Inventor Geometry Interface 2026 R1.02  
+ Inventor Geometry Interface 2026 R1.03  
+ JTOpen Geometry Interface 2026 R1   
+ JTOpen Geometry Interface 2026 R1.01
+ JTOpen Geometry Interface 2026 R1.02
+ JTOpen Geometry Interface 2026 R1.03
+ NX Geometry Interface 2026 R1   
+ NX Geometry Interface 2026 R1.01
+ NX Geometry Interface 2026 R1.02
+ NX Geometry Interface 2026 R1.03
+ Parasolid Geometry Interface  2026 R1   
+ Parasolid Geometry Interface  2026 R1.01
+ Parasolid Geometry Interface  2026 R1.02
+ Parasolid Geometry Interface  2026 R1.03
+ Solid Edge Geometry Interface 2026 R1   
+ Solid Edge Geometry Interface 2026 R1.01
+ Solid Edge Geometry Interface 2026 R1.02
+ Solid Edge Geometry Interface 2026 R1.03
+ SOLIDWORKS Geometry Interface 2026 R1   
+ SOLIDWORKS Geometry Interface 2026 R1.01
+ SOLIDWORKS Geometry Interface 2026 R1.02
+ SOLIDWORKS Geometry Interface 2026 R1.03
+
+
+          *****  MAPDL COMMAND LINE ARGUMENTS  *****
+  BATCH MODE REQUESTED (-b)    = NOLIST
+  INPUT FILE COPY MODE (-c)    = COPY
+  DISTRIBUTED MEMORY PARALLEL REQUESTED
+       4 PARALLEL PROCESSES REQUESTED WITH SINGLE THREAD PER PROCESS
+    TOTAL OF     4 CORES REQUESTED
+  INPUT FILE NAME              = C:\Users\samue\OSR\OSR_cases\_ProjectScratch\Scr0DE8\dummy.dat
+  OUTPUT FILE NAME             = C:\Users\samue\OSR\OSR_cases\_ProjectScratch\Scr0DE8\solve.out
+  START-UP FILE MODE           = NOREAD
+  STOP FILE MODE               = NOREAD
+
+ RELEASE= 2026 R1.03           BUILD= 26.1      UP20260202   VERSION=WINDOWS x64 
+ CURRENT JOBNAME=file0  12:16:27  AUG 25, 2026  Elapsed Time=       0.078
+
+
+ PARAMETER _DS_PROGRESS =     999.0000000    
+
+ /INPUT FILE= ds.dat  LINE=       0
+
+
+
+ *** NOTE ***                            ELAPSED TIME =       4.881   TIME= 12:16:27
+ The /CONFIG,NOELDB command is not valid in a distributed memory         
+ parallel solution.  Command is ignored.                                 
+
+ *GET  _WALLSTRT  FROM  ACTI  ITEM=TIME WALL  VALUE= 0.136393894E-02
+
+ TITLE= 
+ testOnComp--Static Structural (B5)                                            
+
+  ACT Extensions:
+      LSDYNA, 2026.1
+      5f463412-bd3e-484b-87e7-cbc0a665e474, wbex
+      ANSYSMotion, 2026.1
+      20180725-3f81-49eb-9f31-41364844c769, wbex
+
+ SET PARAMETER DIMENSIONS ON  _WB_PROJECTSCRATCH_DIR
+  TYPE=STRI  DIMENSIONS=      248        1        1
+
+ PARAMETER _WB_PROJECTSCRATCH_DIR(1) = C:\Users\samue\OSR\OSR_cases\_ProjectScratch\Scr0DE8\
+
+ SET PARAMETER DIMENSIONS ON  _WB_SOLVERFILES_DIR
+  TYPE=STRI  DIMENSIONS=      248        1        1
+
+ PARAMETER _WB_SOLVERFILES_DIR(1) = C:\Users\samue\OSR\OSR_cases\testOnComp_files\dp0\SYS\MECH\
+
+ SET PARAMETER DIMENSIONS ON  _WB_USERFILES_DIR
+  TYPE=STRI  DIMENSIONS=      248        1        1
+
+ PARAMETER _WB_USERFILES_DIR(1) = C:\Users\samue\OSR\OSR_cases\testOnComp_files\user_files\
+ --- Data in consistent MKS units. See Solving Units in the help system for more
+
+ MKS UNITS SPECIFIED FOR INTERNAL    
+  LENGTH        (l)  = METER (M)
+  MASS          (M)  = KILOGRAM (KG)
+  TIME          (t)  = SECOND (SEC)
+  TEMPERATURE   (T)  = CELSIUS (C)
+  TOFFSET            = 273.0
+  CHARGE        (Q)  = COULOMB
+  FORCE         (f)  = NEWTON (N) (KG-M/SEC2)
+  HEAT               = JOULE (N-M)
+
+  PRESSURE           = PASCAL (NEWTON/M**2)
+  ENERGY        (W)  = JOULE (N-M)
+  POWER         (P)  = WATT (N-M/SEC)
+  CURRENT       (i)  = AMPERE (COULOMBS/SEC)
+  CAPACITANCE   (C)  = FARAD
+  INDUCTANCE    (L)  = HENRY
+  MAGNETIC FLUX      = WEBER
+  RESISTANCE    (R)  = OHM
+  ELECTRIC POTENTIAL = VOLT
+
+ INPUT  UNITS ARE ALSO SET TO MKS 
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.03       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 00489238  VERSION=WINDOWS x64   12:16:27  AUG 25, 2026 Elapsed Time=      4.911
+
+ testOnComp--Static Structural (B5)                                            
+
+
+
+          ***** MAPDL ANALYSIS DEFINITION (PREP7) *****
+ *********** Send User Defined Coordinate System(s) ***********
+ *********** Nodes for the whole assembly ***********
+ *********** Elements for Body 1 'SYS\Surface' ***********
+ *********** Set Reference Temperature ***********
+ *********** Send Materials ***********
+ *********** Send Sheet Properties ***********
+ *********** Fixed Supports ***********
+ *********** Define Pressure Using Surface Effect Elements "Pressure" **********
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =         4.914
+
+
+ --- Number of total nodes = 225
+ --- Number of contact elements = 8
+ --- Number of spring elements = 0
+ --- Number of bearing elements = 0
+ --- Number of solid elements = 64
+ --- Number of condensed parts = 0
+ --- Number of total elements = 72
+
+ *GET  _WALLBSOL  FROM  ACTI  ITEM=TIME WALL  VALUE= 0.136504461E-02
+ ****************************************************************************
+ *************************    SOLUTION       ********************************
+ ****************************************************************************
+
+ *****  MAPDL SOLUTION ROUTINE  *****
+
+
+ PERFORM A STATIC ANALYSIS
+  THIS WILL BE A NEW ANALYSIS
+
+ PARAMETER _THICKRATIO =     0.000000000    
+
+ USE SPARSE MATRIX DIRECT SOLVER
+
+ CONTACT INFORMATION PRINTOUT LEVEL       1
+
+ CHECK INITIAL OPEN/CLOSED STATUS OF SELECTED CONTACT ELEMENTS
+      AND LIST DETAILED CONTACT PAIR INFORMATION
+
+ SPLIT CONTACT SURFACES AT SOLVE PHASE
+
+    NUMBER OF SPLITTING TBD BY PROGRAM
+
+ DO NOT COMBINE ELEMENT MATRIX FILES (.emat) AFTER DISTRIBUTED PARALLEL SOLUTION
+
+ DO NOT COMBINE ELEMENT SAVE DATA FILES (.esav) AFTER DISTRIBUTED PARALLEL SOLUTION
+
+ NLDIAG: Nonlinear diagnostics CONT option is set to ON. 
+         Writing frequency : each ITERATION.
+
+ DO NOT SAVE ANY RESTART FILES AT ALL
+ ****************************************************
+ ******************* SOLVE FOR LS 1 OF 1 ****************
+
+ SELECT       FOR ITEM=TYPE COMPONENT=    
+  IN RANGE         2 TO          2 STEP          1
+
+          8  ELEMENTS (OF         72  DEFINED) SELECTED BY  ESEL  COMMAND.
+
+ SELECT      ALL NODES HAVING ANY ELEMENT IN ELEMENT SET.
+
+         17 NODES (OF        225  DEFINED) SELECTED FROM
+        8 SELECTED ELEMENTS BY NSLE COMMAND.
+
+ GENERATE SURFACE LOAD PRES ON SURFACE DEFINED BY ALL SELECTED NODES
+ VALUES= 1.000000000E+11  0.00000000    
+
+ NUMBER OF PRES ELEMENT FACE LOADS STORED =          8
+
+ ALL SELECT   FOR ITEM=NODE COMPONENT=    
+  IN RANGE         1 TO        225 STEP          1
+
+        225  NODES (OF        225  DEFINED) SELECTED BY NSEL  COMMAND.
+
+ ALL SELECT   FOR ITEM=ELEM COMPONENT=    
+  IN RANGE         1 TO         72 STEP          1
+
+         72  ELEMENTS (OF         72  DEFINED) SELECTED BY  ESEL  COMMAND.
+
+ ALL SELECT   FOR ITEM=ELEM COMPONENT=    
+  IN RANGE         1 TO         72 STEP          1
+
+         72  ELEMENTS (OF         72  DEFINED) SELECTED BY  ESEL  COMMAND.
+ *********** Create Imported Load "Imported Body Temperature" ***********
+
+ PRINTOUT RESUMED BY /GOP
+
+ PRINTOUT RESUMED BY /GOP
+
+ USE       1 SUBSTEPS INITIALLY THIS LOAD STEP FOR ALL  DEGREES OF FREEDOM
+ FOR AUTOMATIC TIME STEPPING:
+   USE      1 SUBSTEPS AS A MAXIMUM
+   USE      1 SUBSTEPS AS A MINIMUM
+
+ TIME=  1.0000    
+
+ ERASE THE CURRENT DATABASE OUTPUT CONTROL TABLE.
+
+
+ WRITE ALL  ITEMS TO THE DATABASE WITH A FREQUENCY OF NONE
+   FOR ALL APPLICABLE ENTITIES
+
+ WRITE NSOL ITEMS TO THE DATABASE WITH A FREQUENCY OF ALL 
+   FOR ALL APPLICABLE ENTITIES
+
+ WRITE RSOL ITEMS TO THE DATABASE WITH A FREQUENCY OF ALL 
+   FOR ALL APPLICABLE ENTITIES
+
+ WRITE EANG ITEMS TO THE DATABASE WITH A FREQUENCY OF ALL 
+   FOR ALL APPLICABLE ENTITIES
+
+ WRITE ETMP ITEMS TO THE DATABASE WITH A FREQUENCY OF ALL 
+   FOR ALL APPLICABLE ENTITIES
+
+ WRITE VENG ITEMS TO THE DATABASE WITH A FREQUENCY OF ALL 
+   FOR ALL APPLICABLE ENTITIES
+
+ WRITE STRS ITEMS TO THE DATABASE WITH A FREQUENCY OF ALL 
+   FOR ALL APPLICABLE ENTITIES
+
+ WRITE EPEL ITEMS TO THE DATABASE WITH A FREQUENCY OF ALL 
+   FOR ALL APPLICABLE ENTITIES
+
+ WRITE EPPL ITEMS TO THE DATABASE WITH A FREQUENCY OF ALL 
+   FOR ALL APPLICABLE ENTITIES
+
+ WRITE EPTH ITEMS TO THE DATABASE WITH A FREQUENCY OF ALL 
+   FOR ALL APPLICABLE ENTITIES
+
+ WRITE CONT ITEMS TO THE DATABASE WITH A FREQUENCY OF ALL 
+   FOR ALL APPLICABLE ENTITIES
+
+
+ ALL INTEGRATION POINT VALUES WILL BE COPIED TO THE NODES
+
+ *GET  ANSINTER_  FROM  ACTI  ITEM=INT        VALUE=  0.00000000    
+
+ *IF  ANSINTER_  ( =   0.00000     )  NE  
+      0  ( =   0.00000     )  THEN    
+
+ *ENDIF
+
+ *** NOTE ***                            ELAPSED TIME =       4.988   TIME= 12:16:27
+ The automatic domain decomposition logic has selected the MESH domain   
+ decomposition method with 4 processes per solution.                     
+
+ *****  MAPDL SOLVE    COMMAND  *****
+
+ *** WARNING ***                         ELAPSED TIME =       4.990   TIME= 12:16:27
+ Element shape checking is currently inactive.  Issue SHPP,ON or         
+ SHPP,WARN to reactivate, if desired.                                    
+
+ *** NOTE ***                            ELAPSED TIME =       4.990   TIME= 12:16:27
+ The model data was checked and warning messages were found.             
+  Please review output or errors file (                                  
+ C:\Users\samue\OSR\OSR_cases\_ProjectScratch\Scr0DE8\file0.err ) for    
+ these warning messages.                                                 
+
+ *** SELECTION OF ELEMENT TECHNOLOGIES FOR APPLICABLE ELEMENTS ***
+      --- GIVE SUGGESTIONS AND RESET THE KEY OPTIONS ---
+
+ ELEMENT TYPE         1 IS PLANE183 WITH PLANE STRESS OPTION. NO SUGGESTION IS
+ AVAILABLE AND NO RESETTING IS NEEDED.
+
+
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.03       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 00489238  VERSION=WINDOWS x64   12:16:27  AUG 25, 2026 Elapsed Time=      4.991
+
+ testOnComp--Static Structural (B5)                                            
+
+
+
+                       S O L U T I O N   O P T I O N S
+
+   PROBLEM DIMENSIONALITY. . . . . . . . . . . . .2-D                  
+   DEGREES OF FREEDOM. . . . . . UX   UY  
+   ANALYSIS TYPE . . . . . . . . . . . . . . . . .STATIC (STEADY-STATE)
+   OFFSET TEMPERATURE FROM ABSOLUTE ZERO . . . . .  273.15    
+   EQUATION SOLVER OPTION. . . . . . . . . . . . .SPARSE             
+   GLOBALLY ASSEMBLED MATRIX . . . . . . . . . . .SYMMETRIC  
+
+ *** WARNING ***                         ELAPSED TIME =       4.991   TIME= 12:16:27
+ Material number 2 (used by element 65) should normally have at least    
+ one MP or one TB type command associated with it.  Output of energy by  
+ material may not be available.                                          
+
+ *** NOTE ***                            ELAPSED TIME =       4.991   TIME= 12:16:27
+ The step data was checked and warning messages were found.              
+  Please review output or errors file (                                  
+ C:\Users\samue\OSR\OSR_cases\_ProjectScratch\Scr0DE8\file0.err ) for    
+ these warning messages.                                                 
+
+ *** NOTE ***                            ELAPSED TIME =       4.992   TIME= 12:16:27
+ The conditions for direct assembly have been met.  No .emat or .erot    
+ files will be produced.                                                 
+
+  
+  
+     D I S T R I B U T E D   D O M A I N   D E C O M P O S E R
+  
+  ...Number of elements: 72
+  ...Number of nodes:    225
+  ...Decompose to 4 CPU domains
+  ...Element load balance ratio =     1.111
+
+
+                      L O A D   S T E P   O P T I O N S
+
+   LOAD STEP NUMBER. . . . . . . . . . . . . . . .     1
+   TIME AT END OF THE LOAD STEP. . . . . . . . . .  1.0000    
+   NUMBER OF SUBSTEPS. . . . . . . . . . . . . . .     1
+   STEP CHANGE BOUNDARY CONDITIONS . . . . . . . .    NO
+   COPY INTEGRATION POINT VALUES TO NODE . . . . .   YES
+   PRINT OUTPUT CONTROLS . . . . . . . . . . . . .NO PRINTOUT
+   DATABASE OUTPUT CONTROLS
+      ITEM     FREQUENCY   COMPONENT
+       ALL       NONE               
+      NSOL        ALL               
+      RSOL        ALL               
+      EANG        ALL               
+      ETMP        ALL               
+      VENG        ALL               
+      STRS        ALL               
+      EPEL        ALL               
+      EPPL        ALL               
+      EPTH        ALL               
+      CONT        ALL               
+
+
+ SOLUTION MONITORING INFO IS WRITTEN TO FILE= file.mntr                                                                                                                                                                                                                                                           
+
+
+
+
+            **** CENTER OF MASS, MASS, AND MASS MOMENTS OF INERTIA ****
+
+  CALCULATIONS ASSUME ELEMENT MASS AT ELEMENT CENTROID
+
+  TOTAL MASS =  0.78500    
+
+                           MOM. OF INERTIA         MOM. OF INERTIA
+  CENTER OF MASS            ABOUT ORIGIN        ABOUT CENTER OF MASS
+
+  XC =  0.50000E-02      IXX =   0.2606E-04      IXX =   0.6439E-05
+  YC =  0.50000E-02      IYY =   0.2606E-04      IYY =   0.6439E-05
+  ZC =   0.0000          IZZ =   0.5213E-04      IZZ =   0.1288E-04
+                         IXY =  -0.1962E-04      IXY =   0.1002E-15
+                         IYZ =    0.000          IYZ =    0.000    
+                         IZX =    0.000          IZX =    0.000    
+
+
+  *** MASS SUMMARY BY ELEMENT TYPE ***
+
+  TYPE      MASS
+     1  0.785000    
+
+ Range of element maximum matrix coefficients in global coordinates
+ Maximum = 4.249084256E+11 at element 21.                                
+ Minimum = 4.249084249E+11 at element 27.                                
+
+   *** ELEMENT MATRIX FORMULATION TIMES
+     TYPE    NUMBER     ENAME   TOTAL ELAPSED   AVG ELAPSED
+
+        1        64  PLANE183          0.0070   0.000108863
+        2         8   SURF153          0.0003   0.000034825
+ Elapsed Time at end of element matrix formulation = 5.0682628.          
+
+ DISTRIBUTED SPARSE MATRIX DIRECT SOLVER.
+  Number of equations =         416,    Maximum wavefront =     38
+
+
+  Memory allocated on only this MPI rank (rank     0)
+  -------------------------------------------------------------------
+  Equation solver memory allocated                     =     0.365 MB
+  Equation solver memory required for in-core mode     =     0.350 MB
+  Equation solver memory required for out-of-core mode =     0.350 MB
+  Total (solver and non-solver) memory allocated       =   369.427 MB
+
+
+  Total memory summed across all MPI ranks on this machines
+  -------------------------------------------------------------------
+  Equation solver memory allocated                     =     1.425 MB
+  Equation solver memory required for in-core mode     =     1.365 MB
+  Equation solver memory required for out-of-core mode =     1.365 MB
+  Total (solver and non-solver) memory allocated       =   669.347 MB
+
+ *** NOTE ***                            ELAPSED TIME =       5.080   TIME= 12:16:28
+ The Distributed Sparse Matrix Solver is currently running in the        
+ in-core memory mode.  This memory mode uses the most amount of memory   
+ in order to avoid using the hard drive as much as possible, which most  
+ often results in the fastest solution time.  This mode is recommended   
+ if enough physical memory is present to accommodate all of the solver   
+ data.                                                                   
+ Distributed sparse solver maximum pivot= 8.498168504E+11 at node 203    
+ UX.                                                                     
+ Distributed sparse solver minimum pivot= 7.542672116E+10 at node 61 UY. 
+ Distributed sparse solver minimum pivot in absolute value=              
+ 7.542672116E+10 at node 61 UY.                                          
+
+   *** ELEMENT RESULT CALCULATION TIMES
+     TYPE    NUMBER     ENAME   TOTAL ELAPSED   AVG ELAPSED
+
+        1        64  PLANE183          0.0049   0.000077144
+        2         8   SURF153          0.0002   0.000030488
+
+   *** NODAL LOAD CALCULATION TIMES
+     TYPE    NUMBER     ENAME   TOTAL ELAPSED   AVG ELAPSED
+
+        1        64  PLANE183          0.0014   0.000022117
+        2         8   SURF153          0.0000   0.000002125
+ *** LOAD STEP     1   SUBSTEP     1  COMPLETED.    CUM ITER =      1
+ *** TIME =   1.00000         TIME INC =   1.00000      NEW TRIANG MATRIX
+
+
+ *** MAPDL BINARY FILE STATISTICS
+  BUFFER SIZE USED= 16384
+        0.062 MB WRITTEN ON ASSEMBLED MATRIX FILE: file0.full
+        0.312 MB WRITTEN ON RESULTS FILE: file0.rst
+ *************** Write FE CONNECTORS *********
+
+ WRITE OUT CONSTRAINT EQUATIONS TO FILE= file.ce                                                                                                                                                                                                                                                             
+ ****************************************************
+ *************** FINISHED SOLVE FOR LS 1 *************
+
+ FINISH SOLUTION PROCESSING
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =         5.194
+
+
+
+ *GET  _WALLASOL  FROM  ACTI  ITEM=TIME WALL  VALUE= 0.144281800E-02
+
+ PRINTOUT RESUMED BY /GOP
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.03       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 00489238  VERSION=WINDOWS x64   12:16:28  AUG 25, 2026 Elapsed Time=      5.199
+
+ testOnComp--Static Structural (B5)                                            
+
+
+
+          ***** MAPDL RESULTS INTERPRETATION (POST1) *****
+
+ *** NOTE ***                            ELAPSED TIME =       5.199   TIME= 12:16:28
+ Reading results into the database (SET command) will update the current 
+ displacement and force boundary conditions in the database with the     
+ values from the results file for that load set.  Note that any          
+ subsequent solutions will use these values unless action is taken to    
+ either SAVE the current values or not overwrite them (/EXIT,NOSAVE).    
+ You have already entered the general postprocessor (POST1).             
+
+
+ USE LAST SUBSTEP ON RESULT FILE  FOR LOAD CASE 0 
+
+ SET COMMAND GOT LOAD STEP=     1  SUBSTEP=     1  CUMULATIVE ITERATION=     1
+   TIME/FREQUENCY=  1.0000    
+ TITLE= testOnComp--Static Structural (B5)                                      
+
+ RSYS KEY SET TO   0
+
+ USE THE GLOBAL COORDINATE SYSTEM FOR SOLUTION RESULTS
+
+ *** WARNING ***                         ELAPSED TIME =       5.201   TIME= 12:16:28
+ The AVRES command is only valid with PowerGraphics.  Command ignored.   
+
+ OPENED FILE= C:\Users\samue\OSR\shared\apdl_marker.txt FOR COMMAND FILE DATA 
+
+
+  COMMAND FILE CLOSED 
+
+
+ SELECT ALL ENTITIES OF TYPE= ALL  AND BELOW
+
+ SELECT       FOR ITEM=ENAM COMPONENT=    
+  IN RANGE       183 TO        183 STEP          1
+
+         64  ELEMENTS (OF         72  DEFINED) SELECTED BY  ESEL  COMMAND.
+
+ *GET  NB_ELEM   FROM  ELEM  ITEM=COUN           VALUE=  64.0000000    
+
+ OPENED FILE= C:\Users\samue\OSR\shared\sigma_export_nodes_tutorial.txt FOR COMMAND FILE DATA 
+
+
+ *** WARNING ***                         ELAPSED TIME =       5.202   TIME= 12:16:28
+ (A) is not a recognized POST1 command, abbreviation, or macro.          
+  This command will be ignored.                                          
+
+ PARAMETER EID_CUR =     0.000000000    
+
+ *DO LOOP ON PARAMETER= IE FROM  1.0000     TO  64.000     BY  1.0000    
+
+ *GET  EID_CUR   FROM  ELEM  ITEM=NXTH           VALUE=  1.00000000    
+
+ *IF  eid_cur  ( =   1.00000     )  LE  
+      0  ( =   0.00000     )  EXIT    
+
+ SELECT       FOR ITEM=ELEM COMPONENT=    
+  IN RANGE         1 TO          1 STEP          1
+
+          1  ELEMENTS (OF         72  DEFINED) SELECTED BY  ESEL  COMMAND.
+
+ *DO LOOP ON PARAMETER= K FROM  1.0000     TO  4.0000     BY  1.0000    
+
+ *GET  NID       FROM  ELEM         1  ITEM=NODE K         VALUE=  2.00000000    
+
+ *IF  nid  ( =   2.00000     )  GT  
+      0  ( =   0.00000     )  THEN    
+
+ *GET  CX        FROM  NODE         2  ITEM=LOC  X     VALUE=  0.00000000     
+
+ *GET  CY        FROM  NODE         2  ITEM=LOC  Y     VALUE=  0.00000000     
+
+ *GET  CZ        FROM  NODE         2  ITEM=LOC  Z     VALUE=  0.00000000     
+
+ *** WARNING ***                         ELAPSED TIME =       5.203   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 1 )  
+ defaults to zero regardless of the actual error.                        
+
+ *GET  SX        FROM  NODE      2  ITEM=S    X     VALUE=  358956704.    
+
+ *GET  SY        FROM  NODE      2  ITEM=S    Y     VALUE=  361970976.    
+
+ *GET  SZ        FROM  NODE      2  ITEM=S    Z     VALUE=  0.00000000    
+
+ *GET  SXY       FROM  NODE      2  ITEM=S    XY    VALUE= -341237216.    
+
+ *GET  SYZ       FROM  NODE      2  ITEM=S    YZ    VALUE=  0.00000000    
+
+ *GET  SXZ       FROM  NODE      2  ITEM=S    XZ    VALUE=  0.00000000    
+
+ *ENDIF
+
+ *ENDDO  INDEX= K                               
+
+ SELECT       FOR ITEM=ENAM COMPONENT=    
+  IN RANGE       183 TO        183 STEP          1
+
+         64  ELEMENTS (OF         72  DEFINED) SELECTED BY  ESEL  COMMAND.
+
+ *ENDDO  INDEX= IE                              
+
+ *** WARNING ***                         ELAPSED TIME =       5.204   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 2 )  
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.205   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 3 )  
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.205   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 4 )  
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.206   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 5 )  
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.207   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 6 )  
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.208   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 7 )  
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.209   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 8 )  
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.210   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 9 )  
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.211   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 10 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.212   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 11 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.213   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 12 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.213   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 13 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.214   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 14 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.215   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 15 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.216   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 16 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.216   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 17 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.217   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 18 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.218   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 19 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.219   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 20 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.219   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 21 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.220   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 22 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.221   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 23 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.222   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 24 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.222   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 25 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.223   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 26 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.224   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 27 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.225   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 28 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.225   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 29 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.226   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 30 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.227   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 31 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.228   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 32 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.228   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 33 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.229   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 34 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.230   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 35 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.230   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 36 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.231   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 37 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.232   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 38 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.233   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 39 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.233   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 40 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.234   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 41 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.235   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 42 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.235   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 43 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.236   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 44 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.237   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 45 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.238   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 46 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.238   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 47 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.239   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 48 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.240   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 49 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.241   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 50 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.241   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 51 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.242   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 52 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.243   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 53 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.243   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 54 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.244   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 55 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.245   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 56 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.246   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 57 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.247   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 58 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.247   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 59 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.248   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 60 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.249   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 61 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.249   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 62 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.250   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 63 ) 
+ defaults to zero regardless of the actual error.                        
+
+ *** WARNING ***                         ELAPSED TIME =       5.251   TIME= 12:16:28
+ The estimated error in isolated selected elements (such as element 64 ) 
+ defaults to zero regardless of the actual error.                        
+
+  COMMAND FILE CLOSED 
+
+
+ SELECT ALL ENTITIES OF TYPE= ALL  AND BELOW
+
+ Set Encoding of XML File to:ISO-8859-1
+
+ Set Output of XML File to:
+     PARM,     ,     ,     ,     ,     ,     ,     ,     ,     ,     ,     ,
+         ,     ,     ,     ,     ,     ,     ,
+
+ DATABASE WRITTEN ON FILE  parm.xml                                                                                                                                                                                                                                                            
+
+ EXIT THE MAPDL POST1 DATABASE PROCESSOR
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =         5.253
+
+
+
+ PRINTOUT RESUMED BY /GOP
+
+ *GET  _WALLDONE  FROM  ACTI  ITEM=TIME WALL  VALUE= 0.145923592E-02
+
+ PARAMETER _PREPTIME =    0.3980400000E-02
+
+ PARAMETER _SOLVTIME =    0.2799842000    
+
+ PARAMETER _POSTTIME =    0.5910450000E-01
+
+ PARAMETER _TOTALTIM =    0.3430691000    
+
+ *GET  _DLBRATIO  FROM  ACTI  ITEM=SOLU DLBR  VALUE=  1.11111111    
+
+ *GET  _COMBTIME  FROM  ACTI  ITEM=SOLU COMB  VALUE= 0.945090000E-02
+
+ *GET  _SSMODE   FROM  ACTI  ITEM=SOLU SSMM  VALUE=  2.00000000    
+
+ *GET  _NDOFS    FROM  ACTI  ITEM=SOLU NDOF  VALUE=  416.000000    
+
+ *GET  _SOL_END_TIME  FROM  ACTI  ITEM=SET  TIME  VALUE=  1.00000000    
+
+ *IF  _sol_end_time  ( =   1.00000     )  EQ  
+      1.000000  ( =   1.00000     )  THEN    
+
+ /FCLEAN COMMAND REMOVING ALL LOCAL FILES
+
+ *ENDIF
+ --- Total number of nodes = 225
+ --- Total number of elements = 72
+ --- Element load balance ratio = 1.11111111
+ --- Time to combine distributed files = 9.4509E-03
+ --- Sparse memory mode = 2
+ --- Number of DOF = 416
+
+ EXIT MAPDL WITHOUT SAVING DATABASE
+
+
+ NUMBER OF WARNING MESSAGES ENCOUNTERED=         68
+ NUMBER OF ERROR   MESSAGES ENCOUNTERED=          0
+
++--------------------- M A P D L   S T A T I S T I C S ------------------------+
+
+Release: 2026 R1.03         Build: 26.1       Update: UP20260202   Platform: WINDOWS x64 
+Date Run: 08/25/2026   Time: 12:16     Process ID: 5860
+Operating System: Windows 11  (Build: 26200)
+
+Processor Model: Intel(R) Core(TM) i7-8700K CPU @ 3.70GHz
+
+Compiler: Intel(R) Fortran Compiler Classic Version 2021.9  (Build: 20230302)
+          Intel(R) C/C++ Compiler Classic Version 2021.9  (Build: 20230302)
+          Intel(R) oneAPI Math Kernel Library Version 2024.2.3-Product Build 20250403
+
+Number of machines requested            :    1
+Total number of cores available         :   12
+Number of physical cores available      :    6
+Number of processes requested           :    4
+Number of threads per process requested :    1
+Total number of cores requested         :    4 (Distributed Memory Parallel)               
+MPI Type: INTELMPI
+MPI Version: Intel(R) MPI Library 2021.16 for Windows* OS
+
+
+GPU Acceleration: Not Requested
+
+Job Name: file0
+Input File: dummy.dat
+
+  Core                Machine Name   Working Directory
+ -----------------------------------------------------
+     0                     hlfWin2   C:\Users\samue\OSR\OSR_cases\_ProjectScratch\Scr0DE8
+     1                     hlfWin2   C:\Users\samue\OSR\OSR_cases\_ProjectScratch\Scr0DE8
+     2                     hlfWin2   C:\Users\samue\OSR\OSR_cases\_ProjectScratch\Scr0DE8
+     3                     hlfWin2   C:\Users\samue\OSR\OSR_cases\_ProjectScratch\Scr0DE8
+ 
+Latency time from master to core     1 =    5.169 microseconds
+Latency time from master to core     2 =    5.554 microseconds
+Latency time from master to core     3 =    5.208 microseconds
+ 
+Communication speed from master to core     1 =  8652.11 MB/sec
+Communication speed from master to core     2 =  9438.86 MB/sec
+Communication speed from master to core     3 =  8849.07 MB/sec
+
+Total CPU time for main thread                    :        0.8 seconds
+Total CPU time summed for all threads             :        2.0 seconds
+
+Elapsed time spent obtaining a license            :        0.4 seconds
+Elapsed time spent pre-processing model (/PREP7)  :        0.0 seconds
+Elapsed time spent solution - preprocessing       :        0.0 seconds
+Elapsed time spent computing solution             :        0.1 seconds
+   Elapsed time in element formation & assembly   :        0.0 seconds
+   Elapsed time in equation solver                :        0.0 seconds
+   Elapsed time in element result calculations    :        0.0 seconds
+Elapsed time spent solution - postprocessing      :        0.0 seconds
+Elapsed time spent post-processing model (/POST1) :        0.1 seconds
+ 
+Equation solver used                              :            Sparse (symmetric)
+
+Sum of disk space used on all processes           :        1.3 MB
+
+Sum of memory used on all processes               :      196.0 MB
+Sum of memory allocated on all processes          :     2880.0 MB
+Physical memory available                         :         32 GB
+Total amount of I/O written to disk               :        0.0 GB
+Total amount of I/O read from disk                :        0.0 GB
+
++------------------ E N D   M A P D L   S T A T I S T I C S -------------------+
+
+
+ *-----------------------------------------------------------------------------*
+ |                                                                             |
+ |                               RUN COMPLETED                                 |
+ |                                                                             |
+ |-----------------------------------------------------------------------------|
+ |                                                                             |
+ |  Ansys MAPDL 2026 R1.03      Build 26.1         UP20260202    WINDOWS x64   |
+ |                                                                             |
+ |-----------------------------------------------------------------------------|
+ |                                                                             |
+ |  Database Requested(-db)     1024 MB     Scratch Memory Requested   1024 MB |
+ |  Max Database Used(Master)      1 MB     Max Scratch Used(Master)     48 MB |
+ |  Max Database Used(Workers)     1 MB     Max Scratch Used(Workers)    48 MB |
+ |  Sum Database Used(All)         4 MB     Sum Scratch Used(All)       192 MB |
+ |                                                                             |
+ |-----------------------------------------------------------------------------|
+ |                                                                             |
+ |        CP Time      (sec) =          2.047       Time  =  12:16:39          |
+ |        Elapsed Time (sec) =         16.474       Date  =  08/25/2026        |
+ |                                                                             |
+ *-----------------------------------------------------------------------------*

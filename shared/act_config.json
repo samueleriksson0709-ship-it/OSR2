@@ -1,0 +1,6 @@
+{
+    "omp_threads": 12,
+    "pipeline_script": "C:\\Users\\samue\\OSR\\OSR_model\\Run_pipeline.py",
+    "python_exe": "C:\\Users\\samue\\AppData\\Local\\Python\\pythoncore-3.14-64\\python.exe",
+    "shared_dir": "C:\\Users\\samue\\OSR\\shared"
+}

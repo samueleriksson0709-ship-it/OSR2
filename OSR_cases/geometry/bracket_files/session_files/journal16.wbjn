@@ -1,0 +1,100 @@
+# encoding: utf-8
+# 2026 R1
+SetScriptVersion(Version="26.1.174")
+system1 = GetSystem(Name="SYS 7")
+setup1 = system1.GetContainer(ComponentName="Setup")
+setup1.Edit()
+model1 = system1.GetContainer(ComponentName="Model")
+model1.Exit()
+system2 = GetSystem(Name="SYS")
+setup2 = system2.GetContainer(ComponentName="Setup")
+setup2.Edit()
+geometry1 = system2.GetContainer(ComponentName="Geometry")
+geometry1.Edit(IsDiscoveryGeometry=True)
+geometry1.Exit()
+geometry1.Edit(IsDiscoveryGeometry=True)
+geometry1.Exit()
+modelComponent1 = system2.GetComponent(Name="Model")
+modelComponent1.Refresh()
+model2 = system2.GetContainer(ComponentName="Model")
+model2.Edit()
+system3 = GetSystem(Name="SYS 1")
+modelComponent2 = system3.GetComponent(Name="Model")
+system4 = GetSystem(Name="SYS 2")
+geometryComponent1 = system4.GetComponent(Name="Geometry")
+modelComponent2.TransferData(TargetComponent=geometryComponent1)
+model3 = system4.GetContainer(ComponentName="Model")
+model3.Edit()
+model3.Exit()
+modelComponent2.DeleteTransfer(TargetComponent=geometryComponent1)
+geometryComponent2 = system3.GetComponent(Name="Geometry")
+modelComponent1.TransferData(TargetComponent=geometryComponent2)
+modelComponent1.TransferData(TargetComponent=geometryComponent1)
+geometryComponent3 = system1.GetComponent(Name="Geometry")
+modelComponent1.TransferData(TargetComponent=geometryComponent3)
+system1.Update(AllDependencies=True)
+model1.Edit()
+modelComponent1.DeleteTransfer(TargetComponent=geometryComponent3)
+modelComponent1.TransferData(TargetComponent=geometryComponent3)
+modelComponent1.DeleteTransfer(TargetComponent=geometryComponent3)
+modelComponent1.DeleteTransfer(TargetComponent=geometryComponent3)
+modelComponent1.DeleteTransfer(TargetComponent=geometryComponent3)
+modelComponent1.DeleteTransfer(TargetComponent=geometryComponent1)
+modelComponent1.DeleteTransfer(TargetComponent=geometryComponent2)
+template1 = GetTemplate(
+    TemplateName="Static Structural",
+    Solver="ANSYS")
+engineeringDataComponent1 = system2.GetComponent(Name="Engineering Data")
+geometryComponent4 = system2.GetComponent(Name="Geometry")
+system5 = template1.CreateSystem(
+    ComponentsToShare=[engineeringDataComponent1, geometryComponent4, modelComponent1],
+    Position="Below",
+    RelativeTo=system1)
+system1.Delete()
+setup3 = system5.GetContainer(ComponentName="Setup")
+setup3.Edit()
+setup4 = system3.GetContainer(ComponentName="Setup")
+setup4.Edit()
+setup3.Edit()
+Save(Overwrite=True)
+system5.DisplayText = "bracket vertical"
+setup3.Edit()
+model2.Exit()
+system6 = template1.CreateSystem(
+    ComponentsToShare=[engineeringDataComponent1, geometryComponent4, modelComponent1],
+    Position="Below",
+    RelativeTo=system5)
+system7 = template1.CreateSystem(
+    ComponentsToShare=[engineeringDataComponent1, geometryComponent4, modelComponent1],
+    Position="Below",
+    RelativeTo=system6)
+system6.DisplayText = "bracket 42deg"
+system7.DisplayText = "bracket torsion"
+setup4.Edit()
+modelComponent3 = system6.GetComponent(Name="Model")
+modelComponent3.Refresh()
+setupComponent1 = system6.GetComponent(Name="Setup")
+setupComponent1.Refresh()
+setup5 = system6.GetContainer(ComponentName="Setup")
+setup5.Edit()
+setup6 = system7.GetContainer(ComponentName="Setup")
+setup6.Edit()
+system8 = template1.CreateSystem(
+    ComponentsToShare=[engineeringDataComponent1, geometryComponent4, modelComponent1],
+    Position="Below",
+    RelativeTo=system7)
+system7.DisplayText = "bracket horizontal2"
+system2.DisplayText = "bracket vertical"
+system7.DisplayText = "bracket horizontal"
+system8.DisplayText = "bracket 42deg"
+system9 = template1.CreateSystem(
+    ComponentsToShare=[engineeringDataComponent1, geometryComponent4, modelComponent1],
+    Position="Below",
+    RelativeTo=system8)
+setup7 = system9.GetContainer(ComponentName="Setup")
+setup7.Edit()
+system4.Delete()
+system3.Delete()
+setup2.Edit()
+Save(Overwrite=True)
+Open(FilePath="C:/Users/lukas/OSR/OSR_cases_ansys/square.wbpj")

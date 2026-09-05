@@ -1,0 +1,10 @@
+<?xml version="1.0" ?>
+<INFOTOWB>
+<HEADER>
+   <JOBNAME>file0</JOBNAME>
+   <DESCRIPTION> This file includes maxdef node num,maxdef elem num and num of elem types for workbench use. </DESCRIPTION>
+</HEADER>
+<MAXNODEID>5829</MAXNODEID>
+<MAXELEMID>4761</MAXELEMID>
+<MAXELEMTYPE>3</MAXELEMTYPE>
+</INFOTOWB>

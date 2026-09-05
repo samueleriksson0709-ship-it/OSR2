@@ -1,0 +1,8 @@
+# encoding: utf-8
+# 2026 R1
+SetScriptVersion(Version="26.1.174")
+system1 = GetSystem(Name="SYS")
+setup1 = system1.GetContainer(ComponentName="Setup")
+setup1.Edit()
+Save(Overwrite=True)
+Open(FilePath="C:/Users/lukas/OSR/OSR_cases_ansys/square.wbpj")

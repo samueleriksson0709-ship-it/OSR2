@@ -1,0 +1,16 @@
+# encoding: utf-8
+# 2026 R1
+SetScriptVersion(Version="26.1.175")
+system1 = GetSystem(Name="SYS")
+setup1 = system1.GetContainer(ComponentName="Setup")
+setup1.Edit()
+Save(Overwrite=True)
+solutionComponent1 = system1.GetComponent(Name="Solution")
+solutionComponent1.Update()
+setup1.Edit()
+model1 = system1.GetContainer(ComponentName="Model")
+model1.Exit()
+solutionComponent1.Update()
+solutionComponent1.Update()
+solutionComponent1.Update()
+Save(Overwrite=True)

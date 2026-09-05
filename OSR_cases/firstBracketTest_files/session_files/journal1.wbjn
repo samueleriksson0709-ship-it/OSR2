@@ -1,0 +1,102 @@
+# encoding: utf-8
+# 2026 R1
+SetScriptVersion(Version="26.1.175")
+template1 = GetTemplate(
+    TemplateName="Static Structural",
+    Solver="ANSYS")
+system1 = template1.CreateSystem()
+geometry1 = system1.GetContainer(ComponentName="Geometry")
+geometry1.SetFile(FilePath="C:/Users/samue/OSR/OSR_cases/geometry/bracket.stp")
+geometry1.Edit(IsDiscoveryGeometry=True)
+geometry1.Exit()
+modelComponent1 = system1.GetComponent(Name="Model")
+modelComponent1.Refresh()
+model1 = system1.GetContainer(ComponentName="Model")
+model1.Edit()
+model1.Exit()
+model1.Edit()
+template2 = GetTemplate(TemplateName="External Data")
+system2 = template2.CreateSystem(
+    Position="Left",
+    RelativeTo=system1)
+setupComponent1 = system2.GetComponent(Name="Setup")
+setupComponent2 = system1.GetComponent(Name="Setup")
+setupComponent1.TransferData(TargetComponent=setupComponent2)
+setup1 = system2.GetContainer(ComponentName="Setup")
+externalLoadFileData1 = setup1.AddDataFile(FilePath="C:/Users/samue/OSR/shared/damage.csv")
+externalLoadFileDataProperty1 = externalLoadFileData1.GetDataProperty()
+externalLoadColumnData1 = externalLoadFileDataProperty1.GetColumnData(Name="ExternalLoadColumnData")
+externalLoadFileDataProperty1.SetColumnDataType(
+    ColumnData=externalLoadColumnData1,
+    DataType="X Coordinate")
+externalLoadColumnData2 = externalLoadFileDataProperty1.GetColumnData(Name="ExternalLoadColumnData 1")
+externalLoadFileDataProperty1.SetColumnDataType(
+    ColumnData=externalLoadColumnData2,
+    DataType="X Coordinate")
+externalLoadColumnData3 = externalLoadFileDataProperty1.GetColumnData(Name="ExternalLoadColumnData 2")
+externalLoadFileDataProperty1.SetColumnDataType(
+    ColumnData=externalLoadColumnData3,
+    DataType="Z Coordinate")
+externalLoadFileDataProperty1.SetColumnDataType(
+    ColumnData=externalLoadColumnData2,
+    DataType="Y Coordinate")
+externalLoadColumnData4 = externalLoadFileDataProperty1.GetColumnData(Name="ExternalLoadColumnData 3")
+externalLoadFileDataProperty1.SetColumnDataType(
+    ColumnData=externalLoadColumnData4,
+    DataType="Temperature")
+externalLoadColumnData4.Identifier = "Damage"
+externalLoadFileData1.SetStartImportAtLine(
+    FileDataProperty=externalLoadFileDataProperty1,
+    LineNumber=2)
+externalLoadFileDataProperty1.SetLengthUnit(Unit="mm")
+Extensions.LoadExtension(
+    Id="SuperSolve",
+    Version="1.0",
+    Format="Scripted")
+solutionComponent1 = system1.GetComponent(Name="Solution")
+solutionComponent1.Update()
+setupComponent1.Clean()
+setupComponent1.Update()
+solutionComponent1.Update()
+setupComponent1.Clean()
+setupComponent1.Update()
+solutionComponent1.Update()
+setupComponent1.Clean()
+setupComponent1.Update()
+solutionComponent1.Update()
+setupComponent1.Clean()
+setupComponent1.Update()
+solutionComponent1.Update()
+setupComponent1.Clean()
+setupComponent1.Update()
+solutionComponent1.Update()
+setupComponent1.Clean()
+setupComponent1.Update()
+solutionComponent1.Update()
+setupComponent1.Clean()
+setupComponent1.Update()
+solutionComponent1.Update()
+setupComponent1.Clean()
+setupComponent1.Update()
+solutionComponent1.Update()
+setupComponent1.Clean()
+setupComponent1.Update()
+setupComponent1.Clean()
+setupComponent1.Update()
+modelComponent1.Refresh()
+setupComponent2.Refresh()
+setup2 = system1.GetContainer(ComponentName="Setup")
+setup2.Edit()
+setupComponent1.Clean()
+setupComponent1.Update()
+setupComponent1.Clean()
+setupComponent1.Update()
+setupComponent1.Clean()
+setupComponent1.Update()
+modelComponent1.Refresh()
+setupComponent2.Refresh()
+solutionComponent1.Refresh()
+solution1 = system1.GetContainer(ComponentName="Solution")
+solution1.Edit()
+Save(Overwrite=True)
+Open(FilePath="C:/Users/samue/OSR/OSR_cases/geometry/bracket.wbpj")

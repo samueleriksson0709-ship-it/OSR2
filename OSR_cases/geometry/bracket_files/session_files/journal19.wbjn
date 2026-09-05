@@ -1,0 +1,29 @@
+# encoding: utf-8
+# 2026 R1
+SetScriptVersion(Version="26.1.174")
+Update()
+system1 = GetSystem(Name="SYS")
+setup1 = system1.GetContainer(ComponentName="Setup")
+setup1.Edit()
+Update()
+system2 = GetSystem(Name="SYS 3")
+model1 = system2.GetContainer(ComponentName="Model")
+model1.Exit()
+Update()
+Extensions.UnloadExtension(
+    Id="SuperSolve",
+    Version="1.0",
+    Format="Scripted")
+Extensions.LoadExtension(
+    Id="SuperSolve",
+    Version="1.0",
+    Format="Scripted")
+Extensions.UnloadExtension(
+    Id="SuperSolve",
+    Version="1.0",
+    Format="Scripted")
+Extensions.LoadExtension(
+    Id="SuperSolve",
+    Version="1.0",
+    Format="Scripted")
+Save(Overwrite=True)

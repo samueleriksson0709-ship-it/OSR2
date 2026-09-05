@@ -1,0 +1,16 @@
+*.mp4
+# Fortran build artifacts (rebuild with 'make' in OSR_model)
+*.o
+*.mod
+*.exe
+*.bin
+*.bin.meta.json
+*.wbpj
+
+# Runtime logs written into the shared folder
+shared/act_debug.txt
+shared/act_error.txt
+shared/osr_stdout.txt
+shared/osr_stderr.txt
+shared/pipeline_log.txt
+shared/apdl_marker.txt
