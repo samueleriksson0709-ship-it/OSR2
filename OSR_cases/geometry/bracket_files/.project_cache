@@ -7,7 +7,6 @@ dp0/SYS-14/ELD/external_load_trace_data.xml
 dp0/SYS-8/DM/SYS-8.dsco
 dp0/SYS-8/ENGD/EngineeringData.xml
 dp0/SYS-8/ENGD/material.engd
-dp0/SYS-8/MECH/Setup 1/external_load_data.xml
 dp0/SYS-8/MECH/CAERep.xml
 dp0/SYS-8/MECH/cleanup-ansys-hlf-xx-12924.bat
 dp0/SYS-8/MECH/ds.dat
@@ -91,7 +90,6 @@ dp0/SYS-14/ELD/
 dp0/SYS-8/DM/
 dp0/SYS-8/ENGD/
 dp0/SYS-8/MECH/
-dp0/SYS-8/MECH/Setup 1/
 dpall/global/
 dpall/global/ACT/
 dpall/global/ACT/extensions/

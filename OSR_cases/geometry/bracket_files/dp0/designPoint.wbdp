@@ -415,7 +415,7 @@
       <storage-scheme-id valType="String">version-1-format</storage-scheme-id>
       <deleted-sources valType="String">[]</deleted-sources>
       <last-updated valType="Int64">18481</last-updated>
-      <last-modified-by-usage valType="String">{"Extrinsic": 27315, "Input": 18478, "Output": 18478}</last-modified-by-usage>
+      <last-modified-by-usage valType="String">{"Extrinsic": 27514, "Input": 18478, "Output": 18478}</last-modified-by-usage>
       <outputs-generated-by-type valType="String">{}</outputs-generated-by-type>
       <last-update-regen-times valType="String">{"Preferences": 0, "ToolbarExp": 0, "FileTypesContainer": 0, "FileContainer": 0, "Messages": 0, "Parameters": 0, "Schematic": 0, "ReportDataContainer": 0, "Graphics": 0, "Units": 0, "HpsContainer": 0, "PyAddinManager": 0, "Scopes": 0, "Engineering Data": 17132, "Geometry": 0}</last-update-regen-times>
       <unique-system-dir valType="String">SYS-8</unique-system-dir>
@@ -462,7 +462,7 @@
       <storage-scheme-id valType="String">version-1-format</storage-scheme-id>
       <deleted-sources valType="String">[]</deleted-sources>
       <last-updated valType="Int64">26208</last-updated>
-      <last-modified-by-usage valType="String">{"Extrinsic": 27266, "Input": 26206, "Output": 26206}</last-modified-by-usage>
+      <last-modified-by-usage valType="String">{"Extrinsic": 27318, "Input": 26206, "Output": 26206}</last-modified-by-usage>
       <outputs-generated-by-type valType="String">{}</outputs-generated-by-type>
       <last-update-regen-times valType="String">{"Preferences": 0, "ToolbarExp": 0, "FileTypesContainer": 0, "FileContainer": 0, "Messages": 0, "Parameters": 0, "Schematic": 0, "ReportDataContainer": 0, "Graphics": 0, "Units": 0, "HpsContainer": 0, "PyAddinManager": 0, "Scopes": 0, "Engineering Data": 17132, "Geometry": 18481, "Model": 25768, "Setup": 20692, "Solution": 21764, "Results": 25730, "Setup 1": 0}</last-update-regen-times>
       <unique-system-dir valType="String">SYS-8</unique-system-dir>
@@ -475,7 +475,7 @@
       <Object Name="/Model/SimulationConnection:SimulationConnection" Version="1.0">
         <class-type valType="String">SimulationConnection</class-type>
         <object-name valType="String">SimulationConnection</object-name>
-        <member-data valType="String">{"DisplayText": "SimulationConnection", "Caption": "SimulationConnection", "EventIdToDataReferenceMap": {"25": $$a909bc87-78f9-483f-99ed-a3e99b7099fb}, "DSIdToDataReferenceMap": {"11": {"CellModel": $$32f2fa88-c552-452f-965a-833fc221af8d}, "14": {"CellModel": $$32f2fa88-c552-452f-965a-833fc221af8d}, "15": {"CellModel": $$32f2fa88-c552-452f-965a-833fc221af8d}, "24": {"CellSetup": $$54af8a0b-feb1-444d-b06d-4340d231fd39}, "25": {"CellSolution": $$c3b401f4-fdfa-43d6-b8a7-b7cf08427904, "CellResults": $$a909bc87-78f9-483f-99ed-a3e99b7099fb}, "248": {"CellSetup": None}, "770": {"CellSetup": $$ff570be3-c2c4-4c01-8fac-23e96c969541}}, "Attributes": {}}</member-data>
+        <member-data valType="String">{"DisplayText": "SimulationConnection", "Caption": "SimulationConnection", "EventIdToDataReferenceMap": {"25": $$a909bc87-78f9-483f-99ed-a3e99b7099fb}, "DSIdToDataReferenceMap": {"11": {"CellModel": $$32f2fa88-c552-452f-965a-833fc221af8d}, "14": {"CellModel": $$32f2fa88-c552-452f-965a-833fc221af8d}, "15": {"CellModel": $$32f2fa88-c552-452f-965a-833fc221af8d}, "24": {"CellSetup": $$54af8a0b-feb1-444d-b06d-4340d231fd39}, "25": {"CellSolution": $$c3b401f4-fdfa-43d6-b8a7-b7cf08427904, "CellResults": $$a909bc87-78f9-483f-99ed-a3e99b7099fb}, "248": {"CellSetup": None}}, "Attributes": {}}</member-data>
       </Object>
       <Object Name="/Model/MechanicalMesh:SimulationMeshDataObject" Version="1.0">
         <class-type valType="String">MechanicalMesh</class-type>
@@ -564,10 +564,10 @@
       <container-type valType="String">Ansys.Simulation.Core.Addin:SimulationSetup</container-type>
       <storage-scheme-id valType="String">version-1-format</storage-scheme-id>
       <deleted-sources valType="String">[]</deleted-sources>
-      <last-updated valType="Int64">27051</last-updated>
-      <last-modified-by-usage valType="String">{"Extrinsic": 27267, "Input": 27224, "Output": 27224}</last-modified-by-usage>
+      <last-updated valType="Int64">27492</last-updated>
+      <last-modified-by-usage valType="String">{"Extrinsic": 27505, "Input": 27505, "Output": 27505}</last-modified-by-usage>
       <outputs-generated-by-type valType="String">{}</outputs-generated-by-type>
-      <last-update-regen-times valType="String">{"Preferences": 0, "ToolbarExp": 0, "FileTypesContainer": 0, "FileContainer": 0, "Messages": 0, "Parameters": 0, "Schematic": 0, "ReportDataContainer": 0, "Graphics": 0, "Units": 0, "HpsContainer": 0, "PyAddinManager": 0, "Scopes": 0, "Engineering Data": 17132, "Geometry": 18481, "Model": 26208, "Setup": 27051, "Solution": 27052, "Results": 26502, "Setup 1": 27210}</last-update-regen-times>
+      <last-update-regen-times valType="String">{"Preferences": 0, "ToolbarExp": 0, "FileTypesContainer": 0, "FileContainer": 0, "Messages": 0, "Parameters": 0, "Schematic": 0, "ReportDataContainer": 0, "Graphics": 0, "Units": 0, "HpsContainer": 0, "PyAddinManager": 0, "Scopes": 0, "Engineering Data": 17132, "Geometry": 18481, "Model": 26208, "Setup": 27492, "Solution": 27493, "Results": 26502, "Setup 1": 27397, "EngineeringDataGeneratedChartData": 0, "EngineeringDataCurveFit": 0, "EngineeringDataFavoriteItems": 0}</last-update-regen-times>
       <unique-system-dir valType="String">SYS-8</unique-system-dir>
       <contains-significant-data valType="Boolean">true</contains-significant-data>
       <Object Name="/Setup/MechanicalSystemType:SystemClass for Structural|Static|ANSYS" Version="1.0">
@@ -599,10 +599,10 @@
         <class-type valType="String">Ansys.Simulation.Core.DataModel.DynamicSetupObject, Ans.Simulation.Core</class-type>
         <type-spec valType="String">{"SpecType": "Ansys.Core.DataModel.DataEntitySpec, Ans.Core", "Access": "UserWritable", "CanUndoPropertyChanges": True, "Exposure": "System", "IsOptional": False, "IsPersistent": True, "IsReadOnly": False, "Usage": "Input", "IsDesignPointInvariant": False, "IsParameterizable": False, "ReuseJournalVariables": False, "JournalVariableName": "simulationSetup", "Methods": {"AcquireDataConnection": "Mechanical.AcquireSetupDataConnection", "RetrieveData": "Mechanical.RetrieveSimulationData", "ReleaseDataConnection": "Mechanical.ReleaseSimulationDataConnection"}, "Version": 1, "Members": {"DisplayText": {"SpecType": "Ansys.Core.DataSpecs.StringSpec, Ans.Core", "Access": "UserWritable", "CanUndoPropertyChanges": True, "Exposure": "AnyUser", "IsOptional": False, "IsPersistent": True, "IsReadOnly": False, "Label": "Display Text", "Usage": "Extrinsic", "IsDesignPointInvariant": False, "IsParameterizable": False, "ReuseJournalVariables": True}, "EnvironmentId": {"SpecType": "Ansys.Core.DataSpecs.IntegerSpec`1[[System.Int32, mscorlib]], Ans.Core", "Access": "UserWritable", "CanUndoPropertyChanges": True, "Default": -1, "Exposure": "AnyUser", "IsOptional": False, "IsPersistent": True, "IsReadOnly": False, "Usage": "Input", "IsDesignPointInvariant": False, "IsParameterizable": False, "ReuseJournalVariables": False, "UndefinedValue": 2147483647}, "SolveHandlerName": {"SpecType": "Ansys.Core.DataSpecs.StringSpec, Ans.Core", "Access": "UserWritable", "CanUndoPropertyChanges": True, "Exposure": "AnyUser", "IsOptional": False, "IsPersistent": True, "IsReadOnly": False, "Usage": "Extrinsic", "IsDesignPointInvariant": False, "IsParameterizable": False, "ReuseJournalVariables": False}, "IsCreating": {"SpecType": "Ansys.Core.DataSpecs.BooleanSpec, Ans.Core", "Access": "UserWritable", "CanUndoPropertyChanges": True, "Default": False, "Exposure": "AnyUser", "IsOptional": False, "IsPersistent": True, "IsReadOnly": False, "Usage": "Input", "IsDesignPointInvariant": False, "IsParameterizable": False, "ReuseJournalVariables": False}, "SetupOnly": {"SpecType": "Ansys.Core.DataSpecs.BooleanSpec, Ans.Core", "Access": "UserWritable", "CanUndoPropertyChanges": True, "Default": False, "Exposure": "AnyUser", "IsOptional": False, "IsPersistent": True, "IsReadOnly": False, "Usage": "Extrinsic", "IsDesignPointInvariant": False, "IsParameterizable": False, "ReuseJournalVariables": False}, "ConnectionGUID": {"SpecType": "Ansys.Core.DataSpecs.StringSpec, Ans.Core", "Access": "UserWritable", "CanUndoPropertyChanges": True, "Exposure": "AnyUser", "IsOptional": False, "IsPersistent": True, "IsReadOnly": False, "Usage": "Extrinsic", "IsDesignPointInvariant": False, "IsParameterizable": False, "ReuseJournalVariables": False}, "IsModifiedDueToDataTransferOnlyChange": {"SpecType": "Ansys.Core.DataSpecs.BooleanSpec, Ans.Core", "Access": "UserWritable", "CanUndoPropertyChanges": True, "Default": False, "Exposure": "AnyUser", "IsOptional": False, "IsPersistent": True, "IsReadOnly": False, "Usage": "Extrinsic", "IsDesignPointInvariant": False, "IsParameterizable": False, "ReuseJournalVariables": False}, "Attributes": {"SpecType": "Ansys.Core.DataSpecs.DictionarySpec`2[[System.String, mscorlib],[System.Collections.Generic.List`1[[System.String, mscorlib]], mscorlib]], Ans.Core", "Access": "UserWritable", "CanUndoPropertyChanges": True, "Default": {}, "Exposure": "AnyUser", "IsOptional": False, "IsPersistent": True, "IsReadOnly": False, "Usage": "Input", "IsDesignPointInvariant": False, "IsParameterizable": False, "ReuseJournalVariables": False, "KeySpec": {"SpecType": "Ansys.Core.DataSpecs.StringSpec, Ans.Core", "Access": "UserWritable", "CanUndoPropertyChanges": True, "Exposure": "AnyUser", "IsOptional": False, "IsPersistent": True, "IsReadOnly": False, "Usage": "Input", "IsDesignPointInvariant": False, "IsParameterizable": False, "ReuseJournalVariables": False}, "ElementSpec": {"SpecType": "Ansys.Core.DataSpecs.ListSpec`1[[System.String, mscorlib]], Ans.Core", "Access": "UserWritable", "CanUndoPropertyChanges": True, "Default": [], "Exposure": "AnyUser", "IsOptional": False, "IsPersistent": True, "IsReadOnly": False, "Usage": "Input", "IsDesignPointInvariant": False, "IsParameterizable": False, "ReuseJournalVariables": False, "ElementSpec": {"SpecType": "Ansys.Core.DataSpecs.StringSpec, Ans.Core", "Access": "UserWritable", "CanUndoPropertyChanges": True, "Exposure": "AnyUser", "IsOptional": False, "IsPersistent": True, "IsReadOnly": False, "Usage": "Input", "IsDesignPointInvariant": False, "IsParameterizable": False, "ReuseJournalVariables": False}, "MaxLength": 2147483647, "MinLength": 0}}}, "DataTypeHierarchy": "SimulationSetup,DataEntity"}</type-spec>
         <object-name valType="String">SetupObject for Structural|Static|ANSYS</object-name>
-        <member-data valType="String">{"DisplayText": "SetupObject for Structural|Static|ANSYS", "EnvironmentId": 24, "SolveHandlerName": None, "IsCreating": False, "SetupOnly": False, "ConnectionGUID": None, "IsModifiedDueToDataTransferOnlyChange": False, "Attributes": {"DeleteImportedLoad": []}}</member-data>
+        <member-data valType="String">{"DisplayText": "SetupObject for Structural|Static|ANSYS", "EnvironmentId": 24, "SolveHandlerName": None, "IsCreating": False, "SetupOnly": False, "ConnectionGUID": None, "IsModifiedDueToDataTransferOnlyChange": False, "Attributes": {}}</member-data>
         <custom-data>
           <EnvironmentState valType="String">5</EnvironmentState>
-          <AttentionRequired valType="String">True</AttentionRequired>
+          <AttentionRequired valType="String">False</AttentionRequired>
           <ParameterValueModified valType="String">False</ParameterValueModified>
           <FutureIntent valType="String">False</FutureIntent>
           <IsUsingDP0BasedWorkingDirectory valType="String">False</IsUsingDP0BasedWorkingDirectory>
@@ -616,17 +616,17 @@
       <Object Name="/Setup/ContainerConnections:ModelContainerConnections" Version="1.0">
         <class-type valType="String">ContainerConnections</class-type>
         <object-name valType="String">ModelContainerConnections</object-name>
-        <member-data valType="String">{"DisplayText": "ModelContainerConnections", "Connections": {"Setup 1": {"$$ff570be3-c2c4-4c01-8fac-23e96c969541": {"ExternalDataSetup": ["d5ad9b01-1cbf-44d8-b671-72e0e57f335f"]}}}}</member-data>
+        <member-data valType="String">{"DisplayText": "ModelContainerConnections", "Connections": {}}</member-data>
       </Object>
     </Container>
     <Container Name="Solution" Version="1.0">
       <container-type valType="String">Ansys.Simulation.Core.Addin:SimulationSolution</container-type>
       <storage-scheme-id valType="String">version-1-format</storage-scheme-id>
       <deleted-sources valType="String">[]</deleted-sources>
-      <last-updated valType="Int64">27052</last-updated>
-      <last-modified-by-usage valType="String">{"Extrinsic": 27226, "Input": 27226, "Output": 27226}</last-modified-by-usage>
+      <last-updated valType="Int64">27493</last-updated>
+      <last-modified-by-usage valType="String">{"Extrinsic": 27507, "Input": 27507, "Output": 27507}</last-modified-by-usage>
       <outputs-generated-by-type valType="String">{}</outputs-generated-by-type>
-      <last-update-regen-times valType="String">{"Preferences": 0, "ToolbarExp": 0, "FileTypesContainer": 0, "FileContainer": 0, "Messages": 0, "Parameters": 0, "Schematic": 0, "ReportDataContainer": 0, "Graphics": 0, "Units": 0, "HpsContainer": 0, "PyAddinManager": 0, "Scopes": 0, "Engineering Data": 17132, "Geometry": 18481, "Model": 26208, "Setup": 27051, "Solution": 27052, "Results": 26502, "Setup 1": 27210, "EngineeringDataGeneratedChartData": 0, "EngineeringDataCurveFit": 0, "EngineeringDataFavoriteItems": 0}</last-update-regen-times>
+      <last-update-regen-times valType="String">{"Preferences": 0, "ToolbarExp": 0, "FileTypesContainer": 0, "FileContainer": 0, "Messages": 0, "Parameters": 0, "Schematic": 0, "ReportDataContainer": 0, "Graphics": 0, "Units": 0, "HpsContainer": 0, "PyAddinManager": 0, "Scopes": 0, "Engineering Data": 17132, "Geometry": 18481, "Model": 26208, "Setup": 27492, "Solution": 27493, "Results": 26502, "Setup 1": 27397, "EngineeringDataGeneratedChartData": 0, "EngineeringDataCurveFit": 0, "EngineeringDataFavoriteItems": 0}</last-update-regen-times>
       <unique-system-dir valType="String">SYS-8</unique-system-dir>
       <contains-significant-data valType="Boolean">true</contains-significant-data>
       <Object Name="/Solution/MechanicalSystemType:SystemClass for Structural|Static|ANSYS" Version="1.0">
@@ -712,9 +712,9 @@
       <storage-scheme-id valType="String">version-1-format</storage-scheme-id>
       <deleted-sources valType="String">[]</deleted-sources>
       <last-updated valType="Int64">26502</last-updated>
-      <last-modified-by-usage valType="String">{"Extrinsic": 27230, "Input": 27230, "Output": 27230}</last-modified-by-usage>
+      <last-modified-by-usage valType="String">{"Extrinsic": 27511, "Input": 27511, "Output": 27511}</last-modified-by-usage>
       <outputs-generated-by-type valType="String">{}</outputs-generated-by-type>
-      <last-update-regen-times valType="String">{"Preferences": 0, "ToolbarExp": 0, "FileTypesContainer": 0, "FileContainer": 0, "Messages": 0, "Parameters": 0, "Schematic": 0, "ReportDataContainer": 0, "Graphics": 0, "Units": 0, "HpsContainer": 0, "PyAddinManager": 0, "Scopes": 0, "Engineering Data": 17132, "Geometry": 18481, "Model": 26208, "Setup": 27051, "Solution": 27052, "Results": 26502, "Setup 1": 27210}</last-update-regen-times>
+      <last-update-regen-times valType="String">{"Preferences": 0, "ToolbarExp": 0, "FileTypesContainer": 0, "FileContainer": 0, "Messages": 0, "Parameters": 0, "Schematic": 0, "ReportDataContainer": 0, "Graphics": 0, "Units": 0, "HpsContainer": 0, "PyAddinManager": 0, "Scopes": 0, "Engineering Data": 17132, "Geometry": 18481, "Model": 26208, "Setup": 27492, "Solution": 27493, "Results": 26502, "Setup 1": 27397, "EngineeringDataGeneratedChartData": 0, "EngineeringDataCurveFit": 0, "EngineeringDataFavoriteItems": 0}</last-update-regen-times>
       <unique-system-dir valType="String">SYS-8</unique-system-dir>
       <contains-significant-data valType="Boolean">true</contains-significant-data>
       <Object Name="/Results/MechanicalSystemType:SystemClass for Structural|Static|ANSYS" Version="1.0">
@@ -783,8 +783,8 @@
       <container-type valType="String">Ansys.ExternalLoad.Core.Addin:ExternalLoadSetup</container-type>
       <storage-scheme-id valType="String">version-1-format</storage-scheme-id>
       <deleted-sources valType="String">[]</deleted-sources>
-      <last-updated valType="Int64">27308</last-updated>
-      <last-modified-by-usage valType="String">{"Extrinsic": 27307, "Input": 27306, "Output": 26054}</last-modified-by-usage>
+      <last-updated valType="Int64">27397</last-updated>
+      <last-modified-by-usage valType="String">{"Extrinsic": 27396, "Input": 27395, "Output": 26054}</last-modified-by-usage>
       <outputs-generated-by-type valType="String">{}</outputs-generated-by-type>
       <unique-system-dir valType="String">SYS-14</unique-system-dir>
       <contains-significant-data valType="Boolean">true</contains-significant-data>
@@ -801,7 +801,7 @@
       <Object Name="/Setup 1/ExternalDataSetup:ExternalDataSetup" Version="1.0">
         <class-type valType="String">ExternalDataSetup</class-type>
         <object-name valType="String">ExternalDataSetup</object-name>
-        <member-data valType="String">{"DisplayText": "ExternalDataSetup", "DataConnections": ["d5ad9b01-1cbf-44d8-b671-72e0e57f335f"], "TransferDataObject": $$a3cd20f9-b7de-485e-a9d0-9346b9246e40, "ImportType": "By Reference"}</member-data>
+        <member-data valType="String">{"DisplayText": "ExternalDataSetup", "DataConnections": [], "TransferDataObject": $$a3cd20f9-b7de-485e-a9d0-9346b9246e40, "ImportType": "By Reference"}</member-data>
       </Object>
       <Object Name="/Setup 1/ExternalTraceDataSetup:ExternalTraceDataSetup" Version="1.0">
         <class-type valType="String">ExternalTraceDataSetup</class-type>
@@ -862,7 +862,7 @@
       <Object Name="/Setup 1/ExternalDataOutput:ExternalDataOutput" Version="1.0">
         <class-type valType="String">ExternalDataOutput</class-type>
         <object-name valType="String">ExternalDataOutput</object-name>
-        <member-data valType="String">{"DisplayText": "ExternalDataOutput", "TransferFile": $$b09f1d2f-0eb8-4b23-904e-1eaff1f48fec, "InputFiles": [$$90ec0c2b-94cf-473d-94c7-fc843fa766de]}</member-data>
+        <member-data valType="String">{"DisplayText": "ExternalDataOutput", "TransferFile": $$85778e0f-86bb-425c-92f8-6fa6a5c3ea9f, "InputFiles": [$$90ec0c2b-94cf-473d-94c7-fc843fa766de]}</member-data>
         <custom-data>
           <CurrentVersion valType="String">1</CurrentVersion>
           <value-keys valType="String">{"CurrentVersion": System.Int32}</value-keys>
@@ -871,7 +871,7 @@
       <Object Name="/Setup 1/ExternalDataTraceOutput:ExternalDataTraceOutput" Version="1.0">
         <class-type valType="String">ExternalDataTraceOutput</class-type>
         <object-name valType="String">ExternalDataTraceOutput</object-name>
-        <member-data valType="String">{"DisplayText": "ExternalDataTraceOutput", "TransferFile": $$5e6f381a-35d1-4a2c-a922-dccdc10bd223, "InputFiles": []}</member-data>
+        <member-data valType="String">{"DisplayText": "ExternalDataTraceOutput", "TransferFile": $$f3a12850-71e8-4a6d-b377-0978edacab31, "InputFiles": []}</member-data>
         <custom-data>
           <CurrentVersion valType="String">1</CurrentVersion>
           <value-keys valType="String">{"CurrentVersion": System.Int32}</value-keys>
@@ -880,7 +880,7 @@
       <Object Name="/Setup 1/ExternalDataMaterialFieldDataOutput:ExternalDataMaterialFieldDataOutput" Version="1.0">
         <class-type valType="String">ExternalDataMaterialFieldDataOutput</class-type>
         <object-name valType="String">ExternalDataMaterialFieldDataOutput</object-name>
-        <member-data valType="String">{"DisplayText": "ExternalDataMaterialFieldDataOutput", "TransferFile": $$9770ebc4-462a-4277-8bce-2395f219be29, "InputFiles": []}</member-data>
+        <member-data valType="String">{"DisplayText": "ExternalDataMaterialFieldDataOutput", "TransferFile": $$313ab5e6-05a1-4913-b513-63905b6594d9, "InputFiles": []}</member-data>
         <custom-data>
           <CurrentVersion valType="String">1</CurrentVersion>
           <value-keys valType="String">{"CurrentVersion": System.Int32}</value-keys>
@@ -889,7 +889,7 @@
       <Object Name="/Setup 1/ExternalDataCdbOutput:ExternalDataCdbOutput" Version="1.0">
         <class-type valType="String">ExternalDataCdbOutput</class-type>
         <object-name valType="String">ExternalDataCdbOutput</object-name>
-        <member-data valType="String">{"DisplayText": "ExternalDataCdbOutput", "TransferFile": $$b09f1d2f-0eb8-4b23-904e-1eaff1f48fec, "InputFiles": [$$90ec0c2b-94cf-473d-94c7-fc843fa766de]}</member-data>
+        <member-data valType="String">{"DisplayText": "ExternalDataCdbOutput", "TransferFile": $$85778e0f-86bb-425c-92f8-6fa6a5c3ea9f, "InputFiles": [$$90ec0c2b-94cf-473d-94c7-fc843fa766de]}</member-data>
         <custom-data>
           <CurrentVersion valType="String">1</CurrentVersion>
           <value-keys valType="String">{"CurrentVersion": System.Int32}</value-keys>
