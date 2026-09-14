@@ -1,0 +1,733 @@
+
+ Ansys Mechanical Enterprise Academic Research     
+
+
+ *------------------------------------------------------------------*
+ |                                                                  |
+ |   W E L C O M E   T O   T H E   A N S Y S (R)  P R O G R A M     |
+ |                                                                  |
+ *------------------------------------------------------------------*
+
+
+
+
+ ***************************************************************
+ *         ANSYS MAPDL 2026 R1.03       LEGAL NOTICES          *
+ ***************************************************************
+ *                                                             *
+ * Copyright (c) 2026 Synopsys, Inc. and ANSYS, Inc.           *
+ * All rights reserved.                                        *
+ * Unauthorized use, distribution or duplication is            *
+ * prohibited.                                                 *
+ *                                                             *
+ * Ansys is a registered trademark of Ansys, Inc. or its       *
+ * subsidiaries in the United States or other countries.       *
+ * See the Ansys, Inc. online documentation or the Ansys, Inc. *
+ * documentation CD or online help for the complete Legal      *
+ * Notice.                                                     *
+ *                                                             *
+ ***************************************************************
+ *                                                             *
+ * THIS ANSYS SOFTWARE PRODUCT AND PROGRAM DOCUMENTATION       *
+ * INCLUDE TRADE SECRETS AND CONFIDENTIAL AND PROPRIETARY      *
+ * PRODUCTS OF ANSYS, INC., ITS SUBSIDIARIES, OR LICENSORS.    *
+ * The software products and documentation are furnished by    *
+ * Ansys, Inc. or its subsidiaries under a software license    *
+ * agreement that contains provisions concerning               *
+ * non-disclosure, copying, length and nature of use,          *
+ * compliance with exporting laws, warranties, disclaimers,    *
+ * limitations of liability, and remedies, and other           *
+ * provisions.  The software products and documentation may be *
+ * used, disclosed, transferred, or copied only in accordance  *
+ * with the terms and conditions of that software license      *
+ * agreement.                                                  *
+ *                                                             *
+ * Ansys, Inc. is a UL registered                              *
+ * ISO 9001:2015 company.                                      *
+ *                                                             *
+ ***************************************************************
+ *                                                             *
+ * This product is subject to U.S. laws governing export and   *
+ * re-export.                                                  *
+ *                                                             *
+ * For U.S. Government users, except as specifically granted   *
+ * by the Ansys, Inc. software license agreement, the use,     *
+ * duplication, or disclosure by the United States Government  *
+ * is subject to restrictions stated in the Ansys, Inc.        *
+ * software license agreement and FAR 12.212 (for non-DOD      *
+ * licenses).                                                  *
+ *                                                             *
+ ***************************************************************
+
+ 2026 R1.03  
+     
+ Point Releases and Patches installed:   
+     
+ Ansys Service Pack 2026 R1.01   
+ Ansys Service Pack 2026 R1.02   
+ Ansys Service Pack 2026 R1.03   
+ Ansys, Inc. License Manager 2026 R1 
+ Ansys, Inc. License Manager 2026 R1.01  
+ Ansys, Inc. License Manager 2026 R1.02  
+ Ansys, Inc. License Manager 2026 R1.03  
+ Discovery (reduced install) 2026 R1 
+ Discovery (reduced install) 2026 R1.01  
+ Discovery (reduced install) 2026 R1.02  
+ Discovery (reduced install) 2026 R1.03  
+ Core WB Files 2026 R1   
+ Core WB Files 2026 R1.01
+ Core WB Files 2026 R1.02
+ Core WB Files 2026 R1.03
+ Additive 2026 R1
+ Additive 2026 R1.01 
+ Additive 2026 R1.02 
+ Additive 2026 R1.03 
+ optiSLang Core 2026 R1  
+ optiSLang Core 2026 R1.01   
+ optiSLang Core 2026 R1.02   
+ optiSLang Core 2026 R1.03   
+ optiSLang Core UI 2026 R1   
+ optiSLang Core UI 2026 R1.01
+ optiSLang Core UI 2026 R1.02
+ optiSLang Core UI 2026 R1.03
+ optiSLang AI 2026 R1
+ optiSLang AI 2026 R1.01 
+ optiSLang AI 2026 R1.02 
+ optiSLang AI 2026 R1.03 
+ optiSLang App Generation 2026 R1
+ optiSLang App Generation 2026 R1.01 
+ optiSLang App Generation 2026 R1.02 
+ optiSLang App Generation 2026 R1.03 
+ Behavior Execution Engine 2026 R1   
+ Behavior Execution Engine 2026 R1.01
+ Behavior Execution Engine 2026 R1.02
+ Behavior Execution Engine 2026 R1.03
+ ModelCenter 2026 R1 
+ ModelCenter 2026 R1.01  
+ ModelCenter 2026 R1.02  
+ ModelCenter 2026 R1.03  
+ ModelCenter Remote Execution 2026 R1
+ ModelCenter Remote Execution 2026 R1.01 
+ ModelCenter Remote Execution 2026 R1.02 
+ ModelCenter Remote Execution 2026 R1.03 
+ ModelCenter MBSE 2026 R1
+ ModelCenter MBSE 2026 R1.01 
+ ModelCenter MBSE 2026 R1.02 
+ ModelCenter MBSE 2026 R1.03 
+ Scade One 2026 R1   
+ Scade One 2026 R1.01
+ Scade One 2026 R1.02
+ Scade One 2026 R1.03
+ medini analyze 2026 R1  
+ medini analyze 2026 R1.01   
+ medini analyze 2026 R1.02   
+ medini analyze 2026 R1.03   
+ scaderapidprototyper archive 2026 R1
+ scaderapidprototyper archive 2026 R1.01 
+ scaderapidprototyper archive 2026 R1.02 
+ scaderapidprototyper archive 2026 R1.03 
+ Granta Selector 2026 R1 
+ Granta Selector 2026 R1.01  
+ Granta Selector 2026 R1.02  
+ Granta Selector 2026 R1.03  
+ Dynamic Reporting 2026 R1   
+ Dynamic Reporting 2026 R1.01
+ Dynamic Reporting 2026 R1.02
+ Dynamic Reporting 2026 R1.03
+ Remote Solve Manager Standalone Services 2026 R1
+ Remote Solve Manager Standalone Services 2026 R1.01 
+ Remote Solve Manager Standalone Services 2026 R1.02 
+ Remote Solve Manager Standalone Services 2026 R1.03 
+ medini analyze QKit 2026 R1 
+ medini analyze QKit 2026 R1.01  
+ medini analyze QKit 2026 R1.02  
+ medini analyze QKit 2026 R1.03  
+ Aqwa 2026 R1
+ Aqwa 2026 R1.01 
+ Aqwa 2026 R1.02 
+ Aqwa 2026 R1.03 
+ Autodyn 2026 R1 
+ Autodyn 2026 R1.01  
+ Autodyn 2026 R1.02  
+ Autodyn 2026 R1.03  
+ Customization Files for User Programmable Features 2026 R1  
+ Customization Files for User Programmable Features 2026 R1.01   
+ Customization Files for User Programmable Features 2026 R1.02   
+ Customization Files for User Programmable Features 2026 R1.03   
+ ICEM CFD 2026 R1
+ ICEM CFD 2026 R1.01 
+ ICEM CFD 2026 R1.02 
+ ICEM CFD 2026 R1.03 
+ LS-DYNA 2026 R1 
+ LS-DYNA 2026 R1.01  
+ LS-DYNA 2026 R1.02  
+ LS-DYNA 2026 R1.03  
+ Material Calibration App 2026 R1
+ Material Calibration App 2026 R1.01 
+ Material Calibration App 2026 R1.02 
+ Material Calibration App 2026 R1.03 
+ Mechanical Products 2026 R1 
+ Mechanical Products 2026 R1.01  
+ Mechanical Products 2026 R1.02  
+ Mechanical Products 2026 R1.03  
+ Motion 2026 R1  
+ Motion 2026 R1.01   
+ Motion 2026 R1.02   
+ Motion 2026 R1.03   
+ RBF Morph 2026 R1   
+ RBF Morph 2026 R1.01
+ RBF Morph 2026 R1.02
+ RBF Morph 2026 R1.03
+ Sherlock 2026 R1
+ Sherlock 2026 R1.01 
+ Sherlock 2026 R1.02 
+ Sherlock 2026 R1.03 
+ Sound - SAS 2026 R1 
+ Sound - SAS 2026 R1.01  
+ Sound - SAS 2026 R1.02  
+ Sound - SAS 2026 R1.03  
+ ACIS Geometry Interface 2026 R1 
+ ACIS Geometry Interface 2026 R1.01  
+ ACIS Geometry Interface 2026 R1.02  
+ ACIS Geometry Interface 2026 R1.03  
+ AutoCAD Geometry Interface 2026 R1  
+ AutoCAD Geometry Interface 2026 R1.01   
+ AutoCAD Geometry Interface 2026 R1.02   
+ AutoCAD Geometry Interface 2026 R1.03   
+ Catia, Version 4 Geometry Interface 2026 R1 
+ Catia, Version 4 Geometry Interface 2026 R1.01  
+ Catia, Version 4 Geometry Interface 2026 R1.02  
+ Catia, Version 4 Geometry Interface 2026 R1.03  
+ Catia, Version 5 Geometry Interface 2026 R1 
+ Catia, Version 5 Geometry Interface 2026 R1.01  
+ Catia, Version 5 Geometry Interface 2026 R1.02  
+ Catia, Version 5 Geometry Interface 2026 R1.03  
+ Catia, Version 6 Geometry Interface 2026 R1 
+ Catia, Version 6 Geometry Interface 2026 R1.01  
+ Catia, Version 6 Geometry Interface 2026 R1.02  
+ Catia, Version 6 Geometry Interface 2026 R1.03  
+ Creo Elements/Direct Modeling Geometry Interface 2026 R1
+ Creo Elements/Direct Modeling Geometry Interface 2026 R1.01 
+ Creo Elements/Direct Modeling Geometry Interface 2026 R1.02 
+ Creo Elements/Direct Modeling Geometry Interface 2026 R1.03 
+ Creo Parametric Geometry Interface 2026 R1  
+ Creo Parametric Geometry Interface 2026 R1.01   
+ Creo Parametric Geometry Interface 2026 R1.02   
+ Creo Parametric Geometry Interface 2026 R1.03   
+ Inventor Geometry Interface 2026 R1 
+ Inventor Geometry Interface 2026 R1.01  
+ Inventor Geometry Interface 2026 R1.02  
+ Inventor Geometry Interface 2026 R1.03  
+ JTOpen Geometry Interface 2026 R1   
+ JTOpen Geometry Interface 2026 R1.01
+ JTOpen Geometry Interface 2026 R1.02
+ JTOpen Geometry Interface 2026 R1.03
+ NX Geometry Interface 2026 R1   
+ NX Geometry Interface 2026 R1.01
+ NX Geometry Interface 2026 R1.02
+ NX Geometry Interface 2026 R1.03
+ Parasolid Geometry Interface  2026 R1   
+ Parasolid Geometry Interface  2026 R1.01
+ Parasolid Geometry Interface  2026 R1.02
+ Parasolid Geometry Interface  2026 R1.03
+ Solid Edge Geometry Interface 2026 R1   
+ Solid Edge Geometry Interface 2026 R1.01
+ Solid Edge Geometry Interface 2026 R1.02
+ Solid Edge Geometry Interface 2026 R1.03
+ SOLIDWORKS Geometry Interface 2026 R1   
+ SOLIDWORKS Geometry Interface 2026 R1.01
+ SOLIDWORKS Geometry Interface 2026 R1.02
+ SOLIDWORKS Geometry Interface 2026 R1.03
+
+
+          *****  MAPDL COMMAND LINE ARGUMENTS  *****
+  BATCH MODE REQUESTED (-b)    = NOLIST
+  INPUT FILE COPY MODE (-c)    = COPY
+  DISTRIBUTED MEMORY PARALLEL REQUESTED
+       4 PARALLEL PROCESSES REQUESTED WITH SINGLE THREAD PER PROCESS
+    TOTAL OF     4 CORES REQUESTED
+  INPUT FILE NAME              = C:\Users\samue\OSR\OSR_cases\_ProjectScratch\ScrB943\dummy.dat
+  OUTPUT FILE NAME             = C:\Users\samue\OSR\OSR_cases\_ProjectScratch\ScrB943\solve.out
+  START-UP FILE MODE           = NOREAD
+  STOP FILE MODE               = NOREAD
+
+ RELEASE= 2026 R1.03           BUILD= 26.1      UP20260202   VERSION=WINDOWS x64 
+ CURRENT JOBNAME=file0  18:35:57  SEP 11, 2026  Elapsed Time=       0.047
+
+
+ PARAMETER _DS_PROGRESS =     999.0000000    
+
+ /INPUT FILE= ds.dat  LINE=       0
+
+
+
+ *** NOTE ***                            ELAPSED TIME =       4.915   TIME= 18:35:58
+ The /CONFIG,NOELDB command is not valid in a distributed memory         
+ parallel solution.  Command is ignored.                                 
+
+ *GET  _WALLSTRT  FROM  ACTI  ITEM=TIME WALL  VALUE= 0.137361161E-02
+
+ TITLE= 
+ bracketLucas--Static Structural 3 (F5)                                        
+
+  ACT Extensions:
+      LSDYNA, 2026.1
+      5f463412-bd3e-484b-87e7-cbc0a665e474, wbex
+      ANSYSMotion, 2026.1
+      20180725-3f81-49eb-9f31-41364844c769, wbex
+
+ SET PARAMETER DIMENSIONS ON  _WB_PROJECTSCRATCH_DIR
+  TYPE=STRI  DIMENSIONS=      248        1        1
+
+ PARAMETER _WB_PROJECTSCRATCH_DIR(1) = C:\Users\samue\OSR\OSR_cases\_ProjectScratch\ScrB943\
+
+ SET PARAMETER DIMENSIONS ON  _WB_SOLVERFILES_DIR
+  TYPE=STRI  DIMENSIONS=      248        1        1
+
+ PARAMETER _WB_SOLVERFILES_DIR(1) = C:\Users\samue\OSR\OSR_cases\bracketLucas_files\dp0\SYS-16\MECH\
+
+ SET PARAMETER DIMENSIONS ON  _WB_USERFILES_DIR
+  TYPE=STRI  DIMENSIONS=      248        1        1
+
+ PARAMETER _WB_USERFILES_DIR(1) = C:\Users\samue\OSR\OSR_cases\bracketLucas_files\user_files\
+ --- Data in consistent MKS units. See Solving Units in the help system for more
+
+ MKS UNITS SPECIFIED FOR INTERNAL    
+  LENGTH        (l)  = METER (M)
+  MASS          (M)  = KILOGRAM (KG)
+  TIME          (t)  = SECOND (SEC)
+  TEMPERATURE   (T)  = CELSIUS (C)
+  TOFFSET            = 273.0
+  CHARGE        (Q)  = COULOMB
+  FORCE         (f)  = NEWTON (N) (KG-M/SEC2)
+  HEAT               = JOULE (N-M)
+
+  PRESSURE           = PASCAL (NEWTON/M**2)
+  ENERGY        (W)  = JOULE (N-M)
+  POWER         (P)  = WATT (N-M/SEC)
+  CURRENT       (i)  = AMPERE (COULOMBS/SEC)
+  CAPACITANCE   (C)  = FARAD
+  INDUCTANCE    (L)  = HENRY
+  MAGNETIC FLUX      = WEBER
+  RESISTANCE    (R)  = OHM
+  ELECTRIC POTENTIAL = VOLT
+
+ INPUT  UNITS ARE ALSO SET TO MKS 
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.03       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 00489238  VERSION=WINDOWS x64   18:35:58  SEP 11, 2026 Elapsed Time=      4.946
+
+ bracketLucas--Static Structural 3 (F5)                                        
+
+
+
+          ***** MAPDL ANALYSIS DEFINITION (PREP7) *****
+ *********** Send User Defined Coordinate System(s) ***********
+ *********** Nodes for the whole assembly ***********
+ *********** Nodes for all Remote Points ***********
+ *********** Elements for Body 1 'SYS-8\a279837B8p1l' ***********
+ *********** Set Reference Temperature ***********
+ *********** Send Materials ***********
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =         5.287
+
+
+ --- Number of total nodes = 101097
+ --- Number of contact elements = 0
+ --- Number of spring elements = 0
+ --- Number of bearing elements = 0
+ --- Number of solid elements = 69468
+ --- Number of condensed parts = 0
+ --- Number of total elements = 69468
+
+ *GET  _WALLBSOL  FROM  ACTI  ITEM=TIME WALL  VALUE= 0.147111022E-02
+ ****************************************************************************
+ *************************    SOLUTION       ********************************
+ ****************************************************************************
+
+ *****  MAPDL SOLUTION ROUTINE  *****
+
+
+ PERFORM A STATIC ANALYSIS
+  THIS WILL BE A NEW ANALYSIS
+
+ PARAMETER _THICKRATIO =     1.000000000    
+
+ USE PRECONDITIONED CONJUGATE GRADIENT SOLVER
+  CONVERGENCE TOLERANCE = 1.00000E-08
+  MAXIMUM ITERATION     = NumNode*DofPerNode*  1.0000    
+
+ CONTACT INFORMATION PRINTOUT LEVEL       1
+
+ CHECK INITIAL OPEN/CLOSED STATUS OF SELECTED CONTACT ELEMENTS
+      AND LIST DETAILED CONTACT PAIR INFORMATION
+
+ SPLIT CONTACT SURFACES AT SOLVE PHASE
+
+    NUMBER OF SPLITTING TBD BY PROGRAM
+
+ DO NOT COMBINE ELEMENT MATRIX FILES (.emat) AFTER DISTRIBUTED PARALLEL SOLUTION
+
+ DO NOT COMBINE ELEMENT SAVE DATA FILES (.esav) AFTER DISTRIBUTED PARALLEL SOLUTION
+
+ NLDIAG: Nonlinear diagnostics CONT option is set to ON. 
+         Writing frequency : each ITERATION.
+
+ DO NOT SAVE ANY RESTART FILES AT ALL
+ ****************************************************
+ ******************* SOLVE FOR LS 1 OF 1 ****************
+ *********** Create Imported Load "Imported Body Temperature" ***********
+
+ PRINTOUT RESUMED BY /GOP
+
+ PRINTOUT RESUMED BY /GOP
+
+ USE       1 SUBSTEPS INITIALLY THIS LOAD STEP FOR ALL  DEGREES OF FREEDOM
+ FOR AUTOMATIC TIME STEPPING:
+   USE      1 SUBSTEPS AS A MAXIMUM
+   USE      1 SUBSTEPS AS A MINIMUM
+
+ TIME=  1.0000    
+
+ ERASE THE CURRENT DATABASE OUTPUT CONTROL TABLE.
+
+
+ WRITE ALL  ITEMS TO THE DATABASE WITH A FREQUENCY OF NONE
+   FOR ALL APPLICABLE ENTITIES
+
+ WRITE NSOL ITEMS TO THE DATABASE WITH A FREQUENCY OF ALL 
+   FOR ALL APPLICABLE ENTITIES
+
+ WRITE RSOL ITEMS TO THE DATABASE WITH A FREQUENCY OF ALL 
+   FOR ALL APPLICABLE ENTITIES
+
+ WRITE EANG ITEMS TO THE DATABASE WITH A FREQUENCY OF ALL 
+   FOR ALL APPLICABLE ENTITIES
+
+ WRITE ETMP ITEMS TO THE DATABASE WITH A FREQUENCY OF ALL 
+   FOR ALL APPLICABLE ENTITIES
+
+ WRITE VENG ITEMS TO THE DATABASE WITH A FREQUENCY OF ALL 
+   FOR ALL APPLICABLE ENTITIES
+
+ WRITE STRS ITEMS TO THE DATABASE WITH A FREQUENCY OF ALL 
+   FOR ALL APPLICABLE ENTITIES
+
+ WRITE EPEL ITEMS TO THE DATABASE WITH A FREQUENCY OF ALL 
+   FOR ALL APPLICABLE ENTITIES
+
+ WRITE EPPL ITEMS TO THE DATABASE WITH A FREQUENCY OF ALL 
+   FOR ALL APPLICABLE ENTITIES
+
+ WRITE EPTH ITEMS TO THE DATABASE WITH A FREQUENCY OF ALL 
+   FOR ALL APPLICABLE ENTITIES
+
+ WRITE CONT ITEMS TO THE DATABASE WITH A FREQUENCY OF ALL 
+   FOR ALL APPLICABLE ENTITIES
+
+ *GET  ANSINTER_  FROM  ACTI  ITEM=INT        VALUE=  0.00000000    
+
+ *IF  ANSINTER_  ( =   0.00000     )  NE  
+      0  ( =   0.00000     )  THEN    
+
+ *ENDIF
+
+ *** NOTE ***                            ELAPSED TIME =       5.591   TIME= 18:35:58
+ The automatic domain decomposition logic has selected the MESH domain   
+ decomposition method with 4 processes per solution.                     
+
+ *****  MAPDL SOLVE    COMMAND  *****
+
+ *** WARNING ***                         ELAPSED TIME =       5.675   TIME= 18:35:58
+ Element shape checking is currently inactive.  Issue SHPP,ON or         
+ SHPP,WARN to reactivate, if desired.                                    
+
+ *** WARNING ***                         ELAPSED TIME =       5.700   TIME= 18:35:58
+ The preconditioned conjugate gradient solver used by (EQSLV,PCG         
+ command) only works for fully constrained models.  There are less than  
+ 3 constraints in the current model.  The solver has been reset to       
+ sparse (EQSLV,SPARSE).                                                  
+
+ *** NOTE ***                            ELAPSED TIME =       5.723   TIME= 18:35:58
+ The model data was checked and warning messages were found.             
+  Please review output or errors file (                                  
+ C:\Users\samue\OSR\OSR_cases\_ProjectScratch\ScrB943\file0.err ) for    
+ these warning messages.                                                 
+
+ *** SELECTION OF ELEMENT TECHNOLOGIES FOR APPLICABLE ELEMENTS ***
+      --- GIVE SUGGESTIONS AND RESET THE KEY OPTIONS ---
+
+ ELEMENT TYPE         1 IS SOLID187. IT IS NOT ASSOCIATED WITH FULLY INCOMPRESSIBLE
+ HYPERELASTIC MATERIALS. NO SUGGESTION IS AVAILABLE AND NO RESETTING IS NEEDED.
+
+ ELEMENT TYPE         2 IS SOLID186. KEYOPT(2)=0 IS SUGGESTED AND HAS BEEN RESET.
+  KEYOPT(1-12)=    0    0    0    0    0    0    0    0    0    0    0    0
+
+
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.03       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 00489238  VERSION=WINDOWS x64   18:35:58  SEP 11, 2026 Elapsed Time=      5.732
+
+ bracketLucas--Static Structural 3 (F5)                                        
+
+
+
+                       S O L U T I O N   O P T I O N S
+
+   PROBLEM DIMENSIONALITY. . . . . . . . . . . . .3-D                  
+   DEGREES OF FREEDOM. . . . . . UX   UY   UZ  
+   ANALYSIS TYPE . . . . . . . . . . . . . . . . .STATIC (STEADY-STATE)
+   OFFSET TEMPERATURE FROM ABSOLUTE ZERO . . . . .  273.15    
+   EQUATION SOLVER OPTION. . . . . . . . . . . . .SPARSE             
+   GLOBALLY ASSEMBLED MATRIX . . . . . . . . . . .SYMMETRIC  
+
+ *** WARNING ***                         ELAPSED TIME =       5.759   TIME= 18:35:58
+ No constraints have been defined using the D command.                   
+
+ *** NOTE ***                            ELAPSED TIME =       5.759   TIME= 18:35:58
+ The step data was checked and warning messages were found.              
+  Please review output or errors file (                                  
+ C:\Users\samue\OSR\OSR_cases\_ProjectScratch\ScrB943\file0.err ) for    
+ these warning messages.                                                 
+
+ *** NOTE ***                            ELAPSED TIME =       5.759   TIME= 18:35:58
+ The conditions for direct assembly have been met.  No .emat or .erot    
+ files will be produced.                                                 
+
+  
+  
+     D I S T R I B U T E D   D O M A I N   D E C O M P O S E R
+  
+  ...Number of elements: 69468
+  ...Number of nodes:    101097
+  ...Decompose to 4 CPU domains
+  ...Element load balance ratio =     1.000
+
+
+                      L O A D   S T E P   O P T I O N S
+
+   LOAD STEP NUMBER. . . . . . . . . . . . . . . .     1
+   TIME AT END OF THE LOAD STEP. . . . . . . . . .  1.0000    
+   NUMBER OF SUBSTEPS. . . . . . . . . . . . . . .     1
+   STEP CHANGE BOUNDARY CONDITIONS . . . . . . . .    NO
+   PRINT OUTPUT CONTROLS . . . . . . . . . . . . .NO PRINTOUT
+   DATABASE OUTPUT CONTROLS
+      ITEM     FREQUENCY   COMPONENT
+       ALL       NONE               
+      NSOL        ALL               
+      RSOL        ALL               
+      EANG        ALL               
+      ETMP        ALL               
+      VENG        ALL               
+      STRS        ALL               
+      EPEL        ALL               
+      EPPL        ALL               
+      EPTH        ALL               
+      CONT        ALL               
+
+
+ SOLUTION MONITORING INFO IS WRITTEN TO FILE= file.mntr                                                                                                                                                                                                                                                           
+
+
+
+                         ***********  PRECISE MASS SUMMARY  ***********
+
+   TOTAL RIGID BODY MASS MATRIX ABOUT ORIGIN
+               Translational mass               |   Coupled translational/rotational mass
+         3.6367        0.0000        0.0000     |     0.0000       0.88137E-01  -0.19335E-02
+         0.0000        3.6367        0.0000     |   -0.88137E-01    0.0000      -0.27929    
+         0.0000        0.0000        3.6367     |    0.19335E-02   0.27929        0.0000    
+     ------------------------------------------ | ------------------------------------------
+                                                |         Rotational mass (inertia)
+                                                |    0.47687E-02   0.46750E-03   0.64337E-02
+                                                |    0.46750E-03   0.31338E-01   0.70857E-03
+                                                |    0.64337E-02   0.70857E-03   0.29407E-01
+
+   TOTAL MASS =  3.6367    
+     The mass principal axes coincide with the global Cartesian axes
+
+   CENTER OF MASS (X,Y,Z)=  -0.76798E-01   0.53165E-03   0.24235E-01
+
+   TOTAL INERTIA ABOUT CENTER OF MASS
+        0.26316E-02   0.31902E-03  -0.33508E-03
+        0.31902E-03   0.77526E-02   0.75543E-03
+       -0.33508E-03   0.75543E-03   0.79572E-02
+
+   PRINCIPAL INERTIAS =   0.25842E-02   0.71396E-02   0.86175E-02
+   ORIENTATION VECTORS OF THE INERTIA PRINCIPAL AXES IN GLOBAL CARTESIAN
+     ( 0.995,-0.072, 0.072) ( 0.102, 0.751,-0.652) (-0.007, 0.656, 0.754) 
+
+
+  *** MASS SUMMARY BY ELEMENT TYPE ***
+
+  TYPE      MASS
+     1   3.63527    
+     2  0.144971E-02
+
+ Range of element maximum matrix coefficients in global coordinates
+ Maximum = 3.711911524E+09 at element 13653.                             
+ Minimum = 87230589.8 at element 2555.                                   
+
+   *** ELEMENT MATRIX FORMULATION TIMES
+     TYPE    NUMBER     ENAME   TOTAL ELAPSED   AVG ELAPSED
+
+        1     68804  SOLID187          3.4287   0.000049833
+        2       664  SOLID186          0.0781   0.000117640
+ Elapsed Time at end of element matrix formulation = 7.2430085.          
+
+ DISTRIBUTED SPARSE MATRIX DIRECT SOLVER.
+  Number of equations =      303279,    Maximum wavefront =    279
+
+ *** NOTE ***                            ELAPSED TIME =       8.041   TIME= 18:36:01
+ The initial memory allocation (-m) has been exceeded.                   
+  Supplemental memory allocations are being used.                        
+
+
+  Memory allocated on only this MPI rank (rank     0)
+  -------------------------------------------------------------------
+  Equation solver memory allocated                     =   904.287 MB
+  Equation solver memory required for in-core mode     =   864.111 MB
+  Equation solver memory required for out-of-core mode =   222.298 MB
+  Total (solver and non-solver) memory allocated       =  1752.607 MB
+
+
+  Total memory summed across all MPI ranks on this machines
+  -------------------------------------------------------------------
+  Equation solver memory allocated                     =  3550.893 MB
+  Equation solver memory required for in-core mode     =  3392.680 MB
+  Equation solver memory required for out-of-core mode =   921.142 MB
+  Total (solver and non-solver) memory allocated       =  5567.201 MB
+
+ *** NOTE ***                            ELAPSED TIME =       8.041   TIME= 18:36:01
+ The Distributed Sparse Matrix Solver is currently running in the        
+ in-core memory mode.  This memory mode uses the most amount of memory   
+ in order to avoid using the hard drive as much as possible, which most  
+ often results in the fastest solution time.  This mode is recommended   
+ if enough physical memory is present to accommodate all of the solver   
+ data.                                                                   
+ Distributed sparse solver maximum pivot= 6.480839169E+09 at node 33836  
+ UY.                                                                     
+ Distributed sparse solver minimum pivot= -0.137337208 at node 13216 UZ. 
+ Distributed sparse solver minimum pivot in absolute value=              
+ 1.434816301E-04 at node 2479 UZ.                                        
+
+ *** ERROR ***                           ELAPSED TIME =      15.611   TIME= 18:36:08
+ The solver has detected at least one small pivot term in the equation   
+ system (for example, at the UZ degree of freedom of node 2479).  This   
+ may indicate that the model is insufficiently constrained.  Review the  
+ model setup to ensure proper constraints.  The list of small equation   
+ solver pivot values and their corresponding nodes and degrees of        
+ freedom is provided below.                                              
+ Pivot value of -1.081705093E-03 at node 4922 UY, element 2441           
+ (SOLID187).                                                             
+ Pivot value of 6.497402531E-03 at node 4922 UZ, element 2441            
+ (SOLID187).                                                             
+ Pivot value of -2.729115554E-04 at node 2479 UX, element 710            
+ (SOLID187).                                                             
+ Pivot value of 2.654194525E-04 at node 2479 UY, element 710             
+ (SOLID187).                                                             
+ Pivot value of -1.434816301E-04 at node 2479 UZ, element 710            
+ (SOLID187).                                                             
+
+
+ NUMBER OF WARNING MESSAGES ENCOUNTERED=          3
+ NUMBER OF ERROR   MESSAGES ENCOUNTERED=          1
+
+
+
+ ***** PROBLEM TERMINATED BY INDICATED ERROR(S) OR BY END OF INPUT DATA *****
+
++--------------------- M A P D L   S T A T I S T I C S ------------------------+
+
+Release: 2026 R1.03         Build: 26.1       Update: UP20260202   Platform: WINDOWS x64 
+Date Run: 09/11/2026   Time: 18:36     Process ID: 8252
+Operating System: Windows 11  (Build: 26200)
+
+Processor Model: Intel(R) Core(TM) i7-8700K CPU @ 3.70GHz
+
+Compiler: Intel(R) Fortran Compiler Classic Version 2021.9  (Build: 20230302)
+          Intel(R) C/C++ Compiler Classic Version 2021.9  (Build: 20230302)
+          Intel(R) oneAPI Math Kernel Library Version 2024.2.3-Product Build 20250403
+
+Number of machines requested            :    1
+Total number of cores available         :   12
+Number of physical cores available      :    6
+Number of processes requested           :    4
+Number of threads per process requested :    1
+Total number of cores requested         :    4 (Distributed Memory Parallel)               
+MPI Type: INTELMPI
+MPI Version: Intel(R) MPI Library 2021.16 for Windows* OS
+
+
+GPU Acceleration: Not Requested
+
+Job Name: file0
+Input File: dummy.dat
+
+  Core                Machine Name   Working Directory
+ -----------------------------------------------------
+     0                     hlfWin2   C:\Users\samue\OSR\OSR_cases\_ProjectScratch\ScrB943
+     1                     hlfWin2   C:\Users\samue\OSR\OSR_cases\_ProjectScratch\ScrB943
+     2                     hlfWin2   C:\Users\samue\OSR\OSR_cases\_ProjectScratch\ScrB943
+     3                     hlfWin2   C:\Users\samue\OSR\OSR_cases\_ProjectScratch\ScrB943
+ 
+Latency time from master to core     1 =    5.190 microseconds
+Latency time from master to core     2 =    5.797 microseconds
+Latency time from master to core     3 =    5.967 microseconds
+ 
+Communication speed from master to core     1 =  8464.09 MB/sec
+Communication speed from master to core     2 =  8381.88 MB/sec
+Communication speed from master to core     3 =  9020.08 MB/sec
+
+Total CPU time for main thread                    :       11.5 seconds
+Total CPU time summed for all threads             :       15.5 seconds
+
+Elapsed time spent obtaining a license            :        0.4 seconds
+Elapsed time spent pre-processing model (/PREP7)  :        0.3 seconds
+Elapsed time spent solution - preprocessing       :        0.4 seconds
+Elapsed time spent computing solution             :        9.6 seconds
+   Elapsed time in element formation & assembly   :        1.0 seconds
+   Elapsed time in equation solver                :        8.6 seconds
+   Elapsed time in element result calculations    :        0.0 seconds
+Elapsed time spent solution - postprocessing      :        0.0 seconds
+Elapsed time spent post-processing model (/POST1) :        0.0 seconds
+ 
+Equation solver used                              :            Sparse (symmetric)
+Sparse direct equation solver computational rate  :      126.4 Gflops
+Sparse direct equation solver effective I/O rate  :       24.9 GB/sec
+
+Sum of disk space used on all processes           :      208.9 MB
+
+Sum of memory used on all processes               :     4050.0 MB
+Sum of memory allocated on all processes          :     6682.0 MB
+Physical memory available                         :         32 GB
+Total amount of I/O written to disk               :        0.0 GB
+Total amount of I/O read from disk                :        0.0 GB
+
++------------------ E N D   M A P D L   S T A T I S T I C S -------------------+
+
+
+ *-----------------------------------------------------------------------------*
+ |                                                                             |
+ |                               RUN COMPLETED                                 |
+ |                                                                             |
+ |-----------------------------------------------------------------------------|
+ |                                                                             |
+ |  Ansys MAPDL 2026 R1.03      Build 26.1         UP20260202    WINDOWS x64   |
+ |                                                                             |
+ |-----------------------------------------------------------------------------|
+ |                                                                             |
+ |  Database Requested(-db)     1024 MB     Scratch Memory Requested   1024 MB |
+ |  Max Database Used(Master)     95 MB     Max Scratch Used(Master)   1029 MB |
+ |  Max Database Used(Workers)     1 MB     Max Scratch Used(Workers)  1118 MB |
+ |  Sum Database Used(All)        98 MB     Sum Scratch Used(All)      3952 MB |
+ |                                                                             |
+ |-----------------------------------------------------------------------------|
+ |                                                                             |
+ |        CP Time      (sec) =         15.469       Time  =  18:36:19          |
+ |        Elapsed Time (sec) =         26.600       Date  =  09/11/2026        |
+ |                                                                             |
+ *-----------------------------------------------------------------------------*

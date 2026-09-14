@@ -1,0 +1,12 @@
+# encoding: utf-8
+# 2026 R1
+SetScriptVersion(Version="26.1.174")
+system1 = GetSystem(Name="SYS 2")
+setupComponent1 = system1.GetComponent(Name="Setup")
+setupComponent1.Clean()
+setupComponent1.Update()
+setupComponent1.Clean()
+setupComponent1.Update()
+setupComponent1.Clean()
+setupComponent1.Update()
+Save(Overwrite=True)

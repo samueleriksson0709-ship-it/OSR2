@@ -1,0 +1,17 @@
+# encoding: utf-8
+# 2026 R1
+SetScriptVersion(Version="26.1.175")
+system1 = GetSystem(Name="SYS")
+modelComponent1 = system1.GetComponent(Name="Model")
+modelComponent1.Refresh()
+setupComponent1 = system1.GetComponent(Name="Setup")
+setupComponent1.Refresh()
+setup1 = system1.GetContainer(ComponentName="Setup")
+setup1.Edit()
+setup1.Edit()
+setup1.Edit()
+solutionComponent1 = system1.GetComponent(Name="Solution")
+solutionComponent1.Update()
+system1.Update()
+model1 = system1.GetContainer(ComponentName="Model")
+model1.Exit()

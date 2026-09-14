@@ -23,6 +23,8 @@ from collections import defaultdict
 from datetime import datetime
 from pathlib import Path
 import numpy as np 
+from scipy import sparse
+from scipy.sparse.linalg import spsolve
 
 # PATH CONFIGURATION
 # Nothing here is tied to a particular machine or user account. The folders are
@@ -85,6 +87,8 @@ DEFAULT_STRESS_UNIT = "MPA"
 # enable this only for geometries where fixed-support singularities must be excluded from fatigue post-processing
 USE_CLAMP_FILTER  = False 
 USE_DEDUPLICATION = True
+USE_PDE_FILTER = False
+
 
 # Change this string if the binary-cache format or the deduplication criterion
 # changes. This prevents silently reusing old .bin files after code changes.
@@ -334,7 +338,7 @@ def cache_metadata_path(bin_path):
     """Sidecar JSON file used to validate the binary cache."""
     return bin_path.with_suffix(bin_path.suffix + ".meta.json")
 
-def current_cache_metadata(mode, history_filename, stress_unit=DEFAULT_STRESS_UNIT):
+def current_cache_metadata(mode, history_filename, stress_unit=DEFAULT_STRESS_UNIT, pde_radius = None):
     """Metadata that affects clamp filtering and beta-based deduplication."""
     return {
         "cache_version": CACHE_VERSION,
@@ -343,6 +347,8 @@ def current_cache_metadata(mode, history_filename, stress_unit=DEFAULT_STRESS_UN
         "NSAMP_BETA": NSAMP_BETA,
         "USE_DEDUPLICATION": USE_DEDUPLICATION,
         "USE_CLAMP_FILTER": USE_CLAMP_FILTER,
+        "USE_PDE_FILTER": USE_PDE_FILTER,
+        "PDE_RADIUS": pde_radius if USE_PDE_FILTER else None,
         "CLAMP_RADIUS": CLAMP_RADIUS,
         "CLAMP_CENTERS": [list(c) for c in CLAMP_CENTERS],
         "mode": mode,
@@ -436,6 +442,16 @@ def parse_loadcases(loadcases_path): # read the different values needed for the 
     stress_unit = header[3] if len(header) >= 4 else DEFAULT_STRESS_UNIT
     stress_scale = stress_scale_to_mpa(stress_unit)
 
+    # PDE filter radius, in the length unit of the exported coordinates (m for MKS, mm for NMM)
+    pde_radius = None
+    if len(header) >= 5:
+        try:
+            pde_radius = float(header[4])
+        except ValueError:
+            fail(f"invalid PDE filter radius '{header[4]}' in loadcases.txt")
+        if pde_radius <= 0.0:
+            fail(f"PDE filter radius must be positive, got {pde_radius}")
+
     if mode not in ("SINUS", "HISTORY"):
         fail(f"invalid loading mode '{mode}' in loadcases.txt"
              "Expected SINUS or HISTORY")
@@ -468,7 +484,7 @@ def parse_loadcases(loadcases_path): # read the different values needed for the 
         history = read_history_file(history_path,n_cases)
 
     return (loadcases, omega, mode, history, n_cycles_max, n_steps_per_cycle,
-            n_substeps_history, history_filename, stress_unit, stress_scale)
+            n_substeps_history, history_filename, stress_unit, stress_scale, pde_radius)
 
 def select_reference_eids_by_max_beta(all_rows_by_case, loadcases, mode = "SINUS", history = None,
                                       stress_scale = 1.0):
@@ -596,6 +612,93 @@ def read_history_file(history_path,n_cases):
     
     return history 
 
+def cont3D4kmt(ex,ey,ez):
+    C = np.array([
+        [1 , ex[0], ey[0], ez[0]],
+        [1 , ex[1], ey[1], ez[1]],
+        [1 , ex[2], ey[2], ez[2]],
+        [1 , ex[3], ey[3], ez[3]]
+    ])
+    Cinv = np.linalg.inv(C)
+    V = np.abs(np.linalg.det(C)/6)
+
+    B = Cinv[1:4,:]
+
+    Ke = B.T @ B * V
+    Me = V / 20 * (np.ones((4, 4)) + np.eye(4))
+
+    return Ke,Me, V
+
+def constructPDEMatrix(stress_file,r,nnod,nelm,npe):
+
+    rows, cols, dataK, dataM = [], [], [], []
+
+    #Construct matrices
+    vols = []
+
+    for element in range(nelm):
+        index = element*npe
+
+        nodes = [int(row[1])-1 for row in stress_file[index:index+npe]]
+
+        ex = [row[2] for row in stress_file[index:index+npe]]
+        ey = [row[3] for row in stress_file[index:index+npe]]
+        ez = [row[4] for row in stress_file[index:index+npe]]
+        
+        Ke,Me,Ve = cont3D4kmt(ex,ey,ez)
+
+        vols.append(Ve)
+
+        for a in range(npe):
+            for b in range(npe):
+                rows.append(nodes[a]); cols.append(nodes[b])
+                dataK.append(Ke[a, b]); dataM.append(Me[a, b])
+
+    K = sparse.coo_matrix((dataK, (rows, cols)), shape=(nnod, nnod)).tocsr()
+    M = sparse.coo_matrix((dataM, (rows, cols)), shape=(nnod, nnod)).tocsr()
+
+    #Determine l_0
+    l_0 = r / (2*np.sqrt(2))
+
+    h = np.cbrt(6*np.sqrt(2) * np.array(vols))
+    h10, h50, h90 = np.percentile(h, [10, 50, 90])
+    kept = lambda he: 1 / (1 + (np.pi * l_0 / he)**2)
+    log(f"  PDE filter: l_0={l_0:.4g}, edge p10/p50/p90 = {h10:.4g}/{h50:.4g}/{h90:.4g}, "
+        f"node-to-node noise kept {kept(h10):.0%}/{kept(h50):.0%}/{kept(h90):.0%}")
+    if kept(h10) > 0.9:
+        log(f"  Warning: filter has almost no effect even in the finest 10% of elements; refine the mesh or raise r")
+
+    return K,M,l_0
+
+def PDEFilter(stress_file_nodal,stress_file_elemental,r):
+    #Find geometry variables
+    npe = int(sum(1 for row in stress_file_elemental if row[0] == stress_file_elemental[0][0]))
+    assert npe == 4, f"expected linear tets (4 rows per element), got {npe}"
+    nelm = len(stress_file_elemental) // npe
+    assert nelm * npe == len(stress_file_elemental), f"row count {len(stress_file_elemental)} not divisible into {nelm}×{npe}"
+    eids = np.array([row[0] for row in stress_file_elemental]).reshape(nelm, npe)
+    assert np.all(eids == eids[:, :1]), "element rows are not grouped in contiguous blocks"
+    nnod = int(max(row[1] for row in stress_file_elemental))
+
+    nids = np.array([row[1] for row in stress_file_nodal])
+    assert np.array_equal(nids, np.arange(1, nnod + 1)), "nodal file is not one row per node, 1..nnod in order"
+    assert len({row[1] for row in stress_file_elemental}) == nnod, "some node ids are unused by elements (A would be singular)"
+
+    K,M,l_0 = constructPDEMatrix(stress_file_elemental,r,nnod,nelm,npe)
+
+    stress_nodal = np.array([r[5:11] for r in stress_file_nodal])
+
+    # solve once (nodal)
+    A_pde = (l_0**2 * K + M).tocsc()
+    stress_filt_nodal = spsolve(A_pde, M @ stress_nodal)
+
+    out = []
+    for row, s in zip(stress_file_nodal, stress_filt_nodal):
+        out.append(row[:5] + tuple(s.tolist()))
+
+    return out
+
+
 def main():
 
 
@@ -629,15 +732,17 @@ def main():
         )
     log(f"  [OK] {EXE_NAME} found")
 
+
     # Deduplication with binary cache
     # parse_loadcases is called here so that mode/history_filename are available
     # even when the binary cache is used.
     loadcases, omega, mode, history, n_cycles_max, n_steps_per_cycle, \
-        n_substeps_history, history_filename, stress_unit, stress_scale = \
+        n_substeps_history, history_filename, stress_unit, stress_scale, pde_radius = \
         parse_loadcases(loadcases_src)
 
     log(f"  stress unit of the export = {stress_unit} "
         f"(x{stress_scale:g} -> MPa, the unit of the OSR material parameters)")
+
 
     if USE_DEDUPLICATION:
 
@@ -646,7 +751,7 @@ def main():
         # loadcases.txt, and history.txt in HISTORY mode. Its metadata must
         # also match the current clamp and beta-deduplication settings.
         history_src = SHARED_DIR / history_filename if mode == "HISTORY" else None
-        cache_metadata = current_cache_metadata(mode, history_filename, stress_unit)
+        cache_metadata = current_cache_metadata(mode, history_filename, stress_unit, pde_radius)
 
         all_cache_valid = all(
             binary_cache_valid(
@@ -695,6 +800,14 @@ def main():
                     n_raw = len(all_rows_by_case[k])
                     n_out = len(kept_rows)
 
+                    # PDE Filter 
+
+                    if USE_PDE_FILTER:
+                        log(f"  PDE filter enabled, filtering {n_out} rows from {fname} with pde_radius={pde_radius}")
+                        kept_rows = PDEFilter(kept_rows, read_stress_file(SHARED_DIR / fname), pde_radius)
+                    else:
+                        log("PDE filter disabled, writing deduplicated rows without filtering")
+
                     # Text file written for human inspection.
                     write_rows_file(kept_rows, FORTRAN_DIR / fname)
 
@@ -741,6 +854,8 @@ def main():
 
             except Exception as e:
                 fail(f"Error processing {fname}: {e}")
+
+
 
     shutil.copy2(loadcases_src, FORTRAN_DIR / INPUT_LOADCASES)
     log("[OK] loadcases.txt copied")

@@ -88,6 +88,8 @@ def constructPDEMatrix(stress_file,filter_element_frac,nnod,nelm,npe):
 
 path = "C:/Users/samue/OSR/shared/sigma_export_nodes_testBracket.txt"
 stress_file = read_stress_file(path)
+path = "C:/Users/samue/OSR/OSR_model/sigma_export_nodes_testBracket.txt"
+stress_nodal_file = read_stress_file(path)
 
 stress = np.array([row[5:11] for row in stress_file])
 nodes = np.array([row[1] for row in stress_file])
@@ -106,36 +108,25 @@ nnod = int(max([row[1] for row in stress_file]))
 
 K,M,l_0 = constructPDEMatrix(stress_file,filter_element_frac,nnod,nelm,npe)
 
-
-""" stress_filt_tst = np.zeros([len(stress),6])
-for element in range(nelm):
-    idx = element*npe
-    stress_e = stress[idx:idx+npe][:]
-    nodes_e = nodes[idx:idx+npe] - 1
-
-    A_pde_e = A_pde[np.ix_(nodes_e, nodes_e)]
-
-    #Multipl a npexnpe matrix from A_pde with stress_e (npex6)
-    temp = A_pde_e @ stress_e
-    stress_filt_tst[idx:idx+npe][:] = temp """
-
 # collapse duplicated per-element rows into one value per node
 stress_nodal = np.zeros((nnod, 6))
-counts = np.zeros(nnod)
+count = np.zeros(nnod)
 for r in stress_file:
     nid = int(r[1]) - 1
     stress_nodal[nid] += r[5:11]
-    counts[nid] += 1
-stress_nodal /= counts[:, None]
+
 
 # solve once (nodal)
 A_pde = (l_0**2 * K + M).tocsc()
 stress_filt_nodal = spsolve(A_pde, M @ stress_nodal)
 
+
+
 # scatter back to original per-row structure, same order as stress_file
 out = np.empty((len(stress_file), 6))
 for k, r in enumerate(stress_file):
     nid = int(r[1]) - 1
+    print(nid)
     out[k] = stress_filt_nodal[nid]
 
 # write with identical columns: eid nid X Y Z SXX..SXZ
@@ -156,39 +147,3 @@ with open(out_path, "w") as f:
 
 
 
-
-
-
-
-""" from collections import defaultdict
-
-def von_mises(s):
-    sxx, syy, szz, sxy, syz, sxz = s
-    return np.sqrt(0.5*((sxx-syy)**2 + (syy-szz)**2 + (szz-sxx)**2)
-                   + 3*(sxy**2 + syz**2 + sxz**2))
-
-# gather all per-element vM values for each node
-vm_by_node = defaultdict(list)
-for r in stress_file:
-    vm_by_node[int(r[1])].append(von_mises(r[5:11]))
-
-# per-node percentage spread (only nodes shared by >1 element)
-spreads = []
-for nid, vals in vm_by_node.items():
-    if len(vals) < 2:
-        continue
-    vals = np.array(vals)
-    mean = vals.mean()
-    if mean == 0:
-        continue
-    pct_range = 100 * (vals.max() - vals.min()) / mean   # peak-to-peak vs mean
-    pct_std   = 100 * vals.std() / mean                   # std vs mean (CoV)
-    spreads.append((nid, len(vals), pct_range, pct_std))
-
-spreads = np.array([(s[2], s[3]) for s in spreads])
-print(f"Shared nodes: {len(spreads)}")
-print(f"Peak-to-peak spread vs mean:  median {np.median(spreads[:,0]):.1f}%,  "
-      f"90th pct {np.percentile(spreads[:,0],90):.1f}%,  max {spreads[:,0].max():.1f}%")
-print(f"Std/mean (CoV):               median {np.median(spreads[:,1]):.1f}%,  "
-      f"90th pct {np.percentile(spreads[:,1],90):.1f}%,  max {spreads[:,1].max():.1f}%")
- """

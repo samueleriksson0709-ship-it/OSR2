@@ -1,0 +1,9 @@
+# encoding: utf-8
+# 2026 R1
+SetScriptVersion(Version="26.1.175")
+system1 = GetSystem(Name="SYS 1")
+setupComponent1 = system1.GetComponent(Name="Setup")
+setupComponent1.Clean()
+setupComponent1.Update()
+Save(Overwrite=True)
+Open(FilePath="C:/Users/samue/OSR/OSR_cases/firstBracketTest.wbpj")

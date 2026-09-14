@@ -1,0 +1,14 @@
+# encoding: utf-8
+# 2026 R1
+SetScriptVersion(Version="26.1.174")
+Extensions.LoadExtension(
+    Id="SuperSolve",
+    Version="1.0",
+    Format="Scripted")
+system1 = GetSystem(Name="SYS 2")
+setup1 = system1.GetContainer(ComponentName="Setup")
+setup1.Edit()
+system2 = GetSystem(Name="SYS 6")
+solution1 = system2.GetContainer(ComponentName="Solution")
+solution1.Edit()
+Save(Overwrite=True)

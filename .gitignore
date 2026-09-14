@@ -6,6 +6,7 @@
 *.bin
 *.bin.meta.json
 *.wbpj
+*.stat
 
 # Runtime logs written into the shared folder
 shared/act_debug.txt

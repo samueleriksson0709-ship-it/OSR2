@@ -1,0 +1,90 @@
+# encoding: utf-8
+# 2026 R1
+SetScriptVersion(Version="26.1.174")
+system1 = GetSystem(Name="SYS")
+setup1 = system1.GetContainer(ComponentName="Setup")
+setup1.Edit()
+template1 = GetTemplate(TemplateName="External Data")
+system2 = template1.CreateSystem(
+    Position="Right",
+    RelativeTo=system1)
+setup2 = system2.GetContainer(ComponentName="Setup")
+externalLoadFileData1 = setup2.AddDataFile(FilePath="C:/Users/lukas/OSR/OSR_model/clean_damage_file.py")
+externalLoadFileDataProperty1 = externalLoadFileData1.GetDataProperty()
+externalLoadFileDataProperty1.SetLengthUnit(Unit="mm")
+externalLoadFileData1.SetStartImportAtLine(
+    FileDataProperty=externalLoadFileDataProperty1,
+    LineNumber=2)
+externalLoadData1 = setup2.GetExternalLoadData()
+externalLoadData1.DeleteFileData(FileData=externalLoadFileData1)
+externalLoadFileData2 = setup2.AddDataFile(FilePath="C:/Users/lukas/OSR/OSR_model/damage_field.txt")
+externalLoadFileDataProperty2 = externalLoadFileData2.GetDataProperty()
+externalLoadFileData2.SetStartImportAtLine(
+    FileDataProperty=externalLoadFileDataProperty2,
+    LineNumber=2)
+externalLoadFileData2.SetStartImportAtLine(
+    FileDataProperty=externalLoadFileDataProperty2,
+    LineNumber=1)
+externalLoadFileData2.SetStartImportAtLine(
+    FileDataProperty=externalLoadFileDataProperty2,
+    LineNumber=2)
+externalLoadFileDataProperty2.SetLengthUnit(Unit="mm")
+externalLoadFileDataProperty2.OriginX = 0
+externalLoadFileDataProperty2.OriginXUnit = "mm"
+externalLoadFileDataProperty2.OriginY = 0
+externalLoadFileDataProperty2.OriginYUnit = "mm"
+externalLoadFileDataProperty2.OriginZ = 0
+externalLoadFileDataProperty2.OriginZUnit = "mm"
+externalLoadColumnData1 = externalLoadFileDataProperty2.GetColumnData(Name="ExternalLoadColumnData")
+externalLoadFileDataProperty2.SetColumnDataType(
+    ColumnData=externalLoadColumnData1,
+    DataType="X Coordinate")
+externalLoadColumnData2 = externalLoadFileDataProperty2.GetColumnData(Name="ExternalLoadColumnData 1")
+externalLoadFileDataProperty2.SetColumnDataType(
+    ColumnData=externalLoadColumnData2,
+    DataType="Y Coordinate")
+externalLoadFileDataProperty2.SetColumnDataType(
+    ColumnData=externalLoadColumnData1,
+    DataType="Not Used")
+externalLoadFileDataProperty2.SetColumnDataType(
+    ColumnData=externalLoadColumnData2,
+    DataType="X Coordinate")
+externalLoadColumnData3 = externalLoadFileDataProperty2.GetColumnData(Name="ExternalLoadColumnData 2")
+externalLoadFileDataProperty2.SetColumnDataType(
+    ColumnData=externalLoadColumnData3,
+    DataType="Y Coordinate")
+externalLoadColumnData4 = externalLoadFileDataProperty2.GetColumnData(Name="ExternalLoadColumnData 3")
+externalLoadFileDataProperty2.SetColumnDataType(
+    ColumnData=externalLoadColumnData4,
+    DataType="Z Coordinate")
+externalLoadColumnData5 = externalLoadFileDataProperty2.GetColumnData(Name="ExternalLoadColumnData 4")
+externalLoadFileDataProperty2.SetColumnDataType(
+    ColumnData=externalLoadColumnData5,
+    DataType="Temperature")
+externalLoadColumnData5.Identifier = "Damage "
+externalLoadColumnData6 = externalLoadFileDataProperty2.GetColumnData(Name="ExternalLoadColumnData 5")
+externalLoadFileDataProperty2.SetColumnDataType(
+    ColumnData=externalLoadColumnData6,
+    DataType="Temperature")
+externalLoadColumnData6.Identifier = "N_failure"
+Save(Overwrite=True)
+setupComponent1 = system2.GetComponent(Name="Setup")
+setupComponent2 = system1.GetComponent(Name="Setup")
+setupComponent1.TransferData(TargetComponent=setupComponent2)
+modelComponent1 = system1.GetComponent(Name="Model")
+setupComponent1.TransferData(TargetComponent=modelComponent1)
+setupComponent1.DeleteTransfer(TargetComponent=setupComponent2)
+setupComponent1.Update(AllDependencies=True)
+modelComponent1.Refresh()
+modelComponent1.Refresh()
+modelComponent1.Update(AllDependencies=True)
+setupComponent1.DeleteTransfer(TargetComponent=modelComponent1)
+setupComponent1.TransferData(TargetComponent=setupComponent2)
+Update()
+setup1.Edit()
+Update()
+setup1.Edit()
+Save(Overwrite=True)
+model1 = system1.GetContainer(ComponentName="Model")
+model1.Exit()
+Save(Overwrite=True)

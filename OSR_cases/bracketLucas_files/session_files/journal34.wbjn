@@ -1,0 +1,16 @@
+# encoding: utf-8
+# 2026 R1
+SetScriptVersion(Version="26.1.174")
+Update()
+Update()
+Extensions.UnloadExtension(
+    Id="SuperSolve",
+    Version="1.0",
+    Format="Scripted")
+Extensions.LoadExtension(
+    Id="SuperSolve",
+    Version="1.0",
+    Format="Scripted")
+Update()
+Update()
+Save(Overwrite=True)
