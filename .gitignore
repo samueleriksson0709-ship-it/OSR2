@@ -15,3 +15,7 @@ shared/osr_stdout.txt
 shared/osr_stderr.txt
 shared/pipeline_log.txt
 shared/apdl_marker.txt
+*.rst
+*.dat
+*.err
+*.mechdb

@@ -8,16 +8,10 @@ dp0/SYS-8/DM/SYS-8.dsco
 dp0/SYS-8/ENGD/EngineeringData.xml
 dp0/SYS-8/ENGD/material.engd
 dp0/SYS-8/MECH/Setup 1/external_load_data.xml
-dp0/SYS-8/MECH/CAERep.xml
 dp0/SYS-8/MECH/cleanup-ansys-hlf-xx-12924.bat
-dp0/SYS-8/MECH/ds.dat
-dp0/SYS-8/MECH/file.cnd
-dp0/SYS-8/MECH/file.mntr
-dp0/SYS-8/MECH/file.rst
-dp0/SYS-8/MECH/file0.err
-dp0/SYS-8/MECH/file0.PCS
-dp0/SYS-8/MECH/MatML.xml
-dp0/SYS-8/MECH/solve.out
+dp0/SYS-8/MECH/cleanup-ansys-hlfWin2-18184.bat
+dp0/SYS-8/MECH/cleanup-ansys-hlfWin2-6984.bat
+dp0/SYS-8/MECH/EndMap.dat
 dp0/act.dat
 dp0/designPoint.wbdp
 session_files/journal1.wbjn
@@ -81,6 +75,7 @@ session_files/journal60.wbjn
 session_files/journal61.wbjn
 session_files/journal62.wbjn
 session_files/journal63.wbjn
+session_files/journal64.wbjn
 session_files/journal7.wbjn
 session_files/journal8.wbjn
 session_files/journal9.wbjn
