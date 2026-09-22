@@ -670,6 +670,13 @@ def constructPDEMatrix(stress_file,r,nnod,nelm,npe):
         f"node-to-node noise kept {kept(h10):.0%}/{kept(h50):.0%}/{kept(h90):.0%}")
     if kept(h10) > 0.9:
         log(f"  Warning: filter has almost no effect even in the finest 10% of elements; refine the mesh or raise r")
+    # kept() only catches "the filter does nothing"; it says nothing about whether the
+    # mesh resolves l_0. Below l_0 ~ h the solve is dominated by the discretisation, so
+    # the P1 assembly here and the P2 matrices from MAPDL answer different questions.
+    if l_0 < h50:
+        log(f"  Warning: l_0={l_0:.4g} is below the median edge h={h50:.4g} (l_0/h={l_0/h50:.2f}); "
+            f"the filtered field is mesh-dependent and the two implementations will not agree. "
+            f"Raise r to >= {2*np.sqrt(2)*h50:.4g} or refine the mesh")
 
     return K,M,l_0
 
@@ -835,20 +842,34 @@ def PDEFilter_export(stress_file_nodal,r):
 
     return out
 
-def filter_comp(kept_rows_const, kept_rows_ext):
-    # Compare the two PDE filter implementations
+def filter_comp(kept_rows_const, kept_rows_ext, rel_tol=1e-3):
+    # Compare the two PDE filter implementations.
+    # The comparison has to be relative: stresses are O(1e8) Pa, so an absolute
+    # tolerance of 1e-6 is ~1e-14 relative and no implementation can ever pass it.
+    # The two routes are also different discretisations of the same PDE -- P1 on the
+    # corner nodes here, P2 on the full 10-node mesh from MAPDL -- so they agree only
+    # to discretisation error, which shrinks as the mesh resolves l_0.
     max_diff = 0.0
     mean_diff = 0.0
+    scale = 0.0
     for r1, r2 in zip(kept_rows_const, kept_rows_ext):
-        diff = np.abs(np.array(r1[5:11]) - np.array(r2[5:11]))
+        s1 = np.array(r1[5:11])
+        diff = np.abs(s1 - np.array(r2[5:11]))
         max_diff = max(max_diff, diff.max())
         mean_diff += diff.mean()
+        scale = max(scale, np.abs(s1).max())
     mean_diff /= len(kept_rows_const)
-    if max_diff > 1e-6:
-        log(f"Warning: PDE filter implementations differ (max difference {max_diff:.3e})")
-        log(f"Warning: PDE filter implementations differ (mean difference {mean_diff:.3e})")
+    if scale == 0.0:
+        log("PDE filter comparison skipped: filtered stress is identically zero")
+        return
+    if max_diff > rel_tol * scale:
+        log(f"Warning: PDE filter implementations differ (max difference {max_diff:.3e}, "
+            f"{max_diff/scale:.2%} of peak stress {scale:.3e}; tolerance {rel_tol:.1%})")
+        log(f"Warning: PDE filter implementations differ (mean difference {mean_diff:.3e}, "
+            f"{mean_diff/scale:.2%} of peak stress)")
     else:
-        log("PDE filter implementations agree within tolerance")
+        log(f"PDE filter implementations agree within tolerance "
+            f"(max difference {max_diff/scale:.2%} of peak stress, tolerance {rel_tol:.1%})")
 
 def main():
 
