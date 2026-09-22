@@ -1,98 +1,160 @@
-
+from Run_pipeline import SHARED_DIR, log, fail, read_stress_file
+from pathlib import Path
+import subprocess
 import numpy as np
-from itertools import permutations
-from Run_pipeline import (read_stress_file, parse_loadcases_for_filenames, parse_loadcases, PDEFilter,
-                          constructPDEMatrix, SHARED_DIR, INPUT_LOADCASES)
+from scipy.sparse import coo_matrix
+from scipy.sparse.linalg import splu
 
 
-def stresses(rows):
-    return np.array([row[5:11] for row in rows])
+MAPDL_EXE_DIR = r"C:\Program Files\ANSYS Inc\v261\ansys\bin\winx64\ANSYS261.exe"
 
 
-def with_stress(rows, S):
-    return [row[:5] + tuple(s) for row, s in zip(rows, S.tolist())]
+def run_mapdl_extract():
+    export_files = ("K_pde.mtx", "M_pde.mtx", "mapb.mtx", "mapb_t.mtx",
+             "pde_dims.txt", "econn.txt", "nxyz.txt")
+    pde_deck = "pde_matrices_extract_in.txt"
+    for name in export_files:
+        p = SHARED_DIR / name
+        if p.exists():
+            p.unlink()
+
+    if not (SHARED_DIR / pde_deck).exists():
+        fail(f"{pde_deck} not found in {SHARED_DIR}")
+    if not (SHARED_DIR / "model.cdb").exists():
+        fail("model.cdb not found; add CDWRITE to the Mechanical Commands object")
+    if not Path(MAPDL_EXE_DIR).exists():
+        fail(f"MAPDL executable not found: {MAPDL_EXE_DIR}")
+
+    res = subprocess.run(
+        [MAPDL_EXE_DIR, "-b", "-np", "1", "-i", pde_deck, "-o", "pde_filter.out"],
+        cwd=str(SHARED_DIR), timeout=7200,
+    )
+    for name in export_files:
+        if not (SHARED_DIR / name).exists():
+            fail(f"{name} not written (code {res.returncode}), see pde_filter.out")
+
+    return int(float(np.loadtxt(SHARED_DIR / "pde_dims.txt")))
 
 
-def nodal_from_elemental(elem):
-    first = {}
-    for row in elem:
-        first.setdefault(row[1], row)
-    return [first[n] for n in sorted(first)]
+def read_mmf_triplets(path):
+    with open(path) as f:
+        header = f.readline()
+        symmetric = "symmetric" in header.lower()
+        line = f.readline()
+        while line.startswith("%"):
+            line = f.readline()
+        nrow, ncol, nnz = (int(v) for v in line.split())
+        data = np.loadtxt(f, max_rows=nnz)
+    i = data[:, 0].astype(np.int64) - 1
+    j = data[:, 1].astype(np.int64) - 1
+    v = data[:, 2]
+    if symmetric:
+        off = i != j
+        i, j, v = (np.concatenate([i, j[off]]),
+                   np.concatenate([j, i[off]]),
+                   np.concatenate([v, v[off]]))
+    return i, j, v, nrow
 
 
-def rel_err(a, b):
-    return np.abs(a - b).max() / np.abs(b).max()
+def build_csc(i, j, v, n):
+    return coo_matrix((v, (i, j)), shape=(n, n)).tocsc()
 
 
-def test_real_mesh(r):
-    fname = parse_loadcases_for_filenames(SHARED_DIR / INPUT_LOADCASES)[0]
-    elem = read_stress_file(SHARED_DIR / fname)
-    nodal = nodal_from_elemental(elem)
-    nnod = len(nodal)
-
-    C = np.tile(np.arange(1.0, 7.0), (nnod, 1))
-    e_const = rel_err(stresses(PDEFilter(with_stress(nodal, C), elem, r)), C)
-
-    S = stresses(nodal)
-    S_f = stresses(PDEFilter(nodal, elem, r))
-    _, M, _ = constructPDEMatrix(elem, r, nnod, len(elem) // 4, 4)
-    w = M @ np.ones(nnod)
-    e_int = rel_err(w @ S_f, w @ S)
-
-    e_id = rel_err(stresses(PDEFilter(nodal, elem, 1e-6 * r)), S)
-
-    print(f"real mesh: constant {e_const:.1e}, integral {e_int:.1e}, identity {e_id:.1e}")
-    assert e_const < 1e-10 and e_int < 1e-10 and e_id < 1e-6
-
-
-def box_mesh(n, L=1.0):
-    g = np.linspace(0.0, L, n + 1)
-    nid = lambda i, j, k: 1 + i + (n + 1) * (j + (n + 1) * k)
-    X = {nid(i, j, k): (g[i], g[j], g[k])
-         for i in range(n + 1) for j in range(n + 1) for k in range(n + 1)}
-    elem, eid = [], 0
-    for i in range(n):
-        for j in range(n):
-            for k in range(n):
-                for perm in permutations(range(3)):
-                    p = [i, j, k]
-                    path = [nid(*p)]
-                    for ax in perm:
-                        p[ax] += 1
-                        path.append(nid(*p))
-                    eid += 1
-                    elem += [(eid, m) + X[m] + (0.0,) * 6 for m in path]
-    nodal = [(0, m) + X[m] + (0.0,) * 6 for m in sorted(X)]
-    return elem, nodal, np.array([X[m] for m in sorted(X)])
-
-
-def test_box(n, L=1.0, l_0=0.1):
-    elem, nodal, X = box_mesh(n, L)
-    x, y, z = X.T
-    k1, k2 = 3 * np.pi / L, 2 * np.pi / L
-
-    S = np.zeros((len(nodal), 6))
-    S[:, 0] = np.cos(k1 * x)
-    S[:, 1] = np.cos(k2 * y) * np.cos(k2 * z)
-    S[:, 2] = x
-
-    exact = np.zeros_like(S)
-    exact[:, 0] = S[:, 0] / (1 + l_0**2 * k1**2)
-    exact[:, 1] = S[:, 1] / (1 + 2 * l_0**2 * k2**2)
-    exact[:, 2] = x + l_0 * (np.cosh((L - x) / l_0) - np.cosh(x / l_0)) / np.sinh(L / l_0)
-
-    S_f = stresses(PDEFilter(with_stress(nodal, S), elem, 2 * np.sqrt(2) * l_0))
-    err = np.abs(S_f - exact).max(axis=0)[:3]
-    top = np.isclose(x, L)
-    print(f"box n={n:3d}: cos {err[0]:.2e}, cos*cos {err[1]:.2e}, linear {err[2]:.2e}, "
-          f"x at x=L after filter {S_f[top, 2].mean():.4f} (exact {exact[top, 2].mean():.4f})")
-    return err
+def read_mmf_vector(path):
+    with open(path) as f:
+        lines = [ln for ln in f if not ln.startswith("%")]
+    data = np.loadtxt(lines[1:])
+    return data if data.ndim == 1 else data[:, -1]
+    
+def fill_midside(rhs, known, econn, lut, xyz, tol=0.25):
+    # Fill midside nodes by averaging the values of the two end nodes of each edge.
+    acc = np.zeros_like(rhs)
+    cnt = np.zeros(len(rhs))
+    for conn in econn:
+        nodes = np.unique(lut[conn[conn > 0]])
+        kn = nodes[known[nodes]]
+        un = nodes[~known[nodes]]
+        if len(un) == 0 or len(kn) < 2:
+            continue
+        ia, ib = np.triu_indices(len(kn), 1)
+        a, b = kn[ia], kn[ib]
+        mid = 0.5 * (xyz[a] + xyz[b])
+        L = np.linalg.norm(xyz[a] - xyz[b], axis=1)
+        d = np.linalg.norm(xyz[un, None, :] - mid[None], axis=2) / L
+        k = d.argmin(axis=1)
+        ok = d[np.arange(len(un)), k] < tol
+        for m, p in zip(un[ok], k[ok]):
+            acc[m] += 0.5 * (rhs[a[p]] + rhs[b[p]])
+            cnt[m] += 1
+    filled = cnt > 0
+    out = rhs.copy()
+    out[filled] = acc[filled] / cnt[filled, None]
+    return out, known | filled
 
 if __name__ == "__main__":
-    pde_radius = parse_loadcases(SHARED_DIR / INPUT_LOADCASES)[-1]
-    assert pde_radius is not None, "no filtRad on the header line of loadcases.txt"
-    print(f"filter radius from loadcases.txt: {pde_radius}")
+    nn = run_mapdl_extract()
+    ki, kj, kv, n = read_mmf_triplets(SHARED_DIR / "K_pde.mtx")
+    mi, mj, mv, nm = read_mmf_triplets(SHARED_DIR / "M_pde.mtx")
+    if n != nn or nm != nn:
+        fail(f"matrix size mismatch: K={n} M={nm} mesh nodes={nn}")
+    log(f"K: {n} rows, {len(kv)} nonzeros")
+    log(f"M: {n} rows, {len(mv)} nonzeros")
 
-    test_real_mesh(r=pde_radius)
-    errs = [test_box(n) for n in (8, 16, 24)]
-    print("rates:", np.log(errs[0] / errs[1]) / np.log(2), np.log(errs[1] / errs[2]) / np.log(1.5))
+    krow = np.zeros(n)
+    np.add.at(krow, ki, kv)
+    log(f"nullspace check |K@1|_max / |K|_max = {np.abs(krow).max() / np.abs(kv).max():.3e}")
+    log(f"M.sum() = {mv.sum():.6g}  (should equal mesh volume 4.63e-4)")
+
+    back = read_mmf_vector(SHARED_DIR / "mapb.mtx").astype(np.int64)
+    back_t = read_mmf_vector(SHARED_DIR / "mapb_t.mtx").astype(np.int64)
+    if not np.array_equal(back, back_t):
+        fail("equation ordering differs between pdesteady.full and pdetrans.full")
+    if len(back) != nn:
+        fail(f"mapping length {len(back)} != node count {nn}")
+
+    lut = np.full(back.max() + 1, -1, dtype=np.int64)
+    lut[back] = np.arange(n)
+
+    # PDE Filter test
+
+    path = "C:/Users/samue/OSR/OSR_model/sigma_export_nodes_testBracket.txt"
+    stress_file_nodal = read_stress_file(path)
+    l_0 = 0.003
+
+    nids = np.array([int(r[1]) for r in stress_file_nodal])
+    stress_nodal = np.array([r[5:11] for r in stress_file_nodal], dtype=float)
+    if nids.max() >= len(lut) or (lut[nids] < 0).any():
+        fail("stress-file nodes not in PDE mesh")
+    rows = lut[nids]
+
+    rhs = np.zeros((n, 6))
+    rhs[rows] = stress_nodal
+    known = np.zeros(n, dtype=bool)
+    known[rows] = True
+    log(f"stress file covers {known.sum()} of {n} nodes before midside fill")
+
+    econn = np.loadtxt(SHARED_DIR / "econn.txt").astype(np.int64).reshape(-1, 20)
+    nxyz = np.loadtxt(SHARED_DIR / "nxyz.txt").reshape(-1, 3)
+    xyz = nxyz[back - 1]
+
+    rhs, known = fill_midside(rhs, known, econn, lut, xyz)
+    if not known.all():
+        fail(f"{(~known).sum()} nodes still without stress after midside fill")
+
+    K = build_csc(ki, kj, kv, n)
+    M = build_csc(mi, mj, mv, n)
+    lu = splu((l_0**2 * K + M).tocsc())
+    sol = lu.solve(M @ rhs)
+    stress_filt_nodal = sol[rows]
+    stress_filt_all = sol
+
+    out_path = SHARED_DIR / "testStress.txt"
+    meta = np.array([r[0:5] for r in stress_file_nodal], dtype=float)
+    out = np.column_stack([meta, stress_filt_nodal])
+    np.savetxt(
+        out_path, out,
+        fmt=["%8d", "%8d"] + ["%14.6E"] * 9,
+        header="eid nid X Y Z SXX SYY SZZ SXY SYZ SXZ",
+        comments="# ",
+    )
+    log(f"filtered stress written to {out_path}")

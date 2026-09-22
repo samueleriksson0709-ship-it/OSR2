@@ -1,0 +1,1040 @@
+
+ Ansys Mechanical Enterprise Academic Research     
+
+
+ *------------------------------------------------------------------*
+ |                                                                  |
+ |   W E L C O M E   T O   T H E   A N S Y S (R)  P R O G R A M     |
+ |                                                                  |
+ *------------------------------------------------------------------*
+
+
+
+
+ ***************************************************************
+ *         ANSYS MAPDL 2026 R1.03       LEGAL NOTICES          *
+ ***************************************************************
+ *                                                             *
+ * Copyright (c) 2026 Synopsys, Inc. and ANSYS, Inc.           *
+ * All rights reserved.                                        *
+ * Unauthorized use, distribution or duplication is            *
+ * prohibited.                                                 *
+ *                                                             *
+ * Ansys is a registered trademark of Ansys, Inc. or its       *
+ * subsidiaries in the United States or other countries.       *
+ * See the Ansys, Inc. online documentation or the Ansys, Inc. *
+ * documentation CD or online help for the complete Legal      *
+ * Notice.                                                     *
+ *                                                             *
+ ***************************************************************
+ *                                                             *
+ * THIS ANSYS SOFTWARE PRODUCT AND PROGRAM DOCUMENTATION       *
+ * INCLUDE TRADE SECRETS AND CONFIDENTIAL AND PROPRIETARY      *
+ * PRODUCTS OF ANSYS, INC., ITS SUBSIDIARIES, OR LICENSORS.    *
+ * The software products and documentation are furnished by    *
+ * Ansys, Inc. or its subsidiaries under a software license    *
+ * agreement that contains provisions concerning               *
+ * non-disclosure, copying, length and nature of use,          *
+ * compliance with exporting laws, warranties, disclaimers,    *
+ * limitations of liability, and remedies, and other           *
+ * provisions.  The software products and documentation may be *
+ * used, disclosed, transferred, or copied only in accordance  *
+ * with the terms and conditions of that software license      *
+ * agreement.                                                  *
+ *                                                             *
+ * Ansys, Inc. is a UL registered                              *
+ * ISO 9001:2015 company.                                      *
+ *                                                             *
+ ***************************************************************
+ *                                                             *
+ * This product is subject to U.S. laws governing export and   *
+ * re-export.                                                  *
+ *                                                             *
+ * For U.S. Government users, except as specifically granted   *
+ * by the Ansys, Inc. software license agreement, the use,     *
+ * duplication, or disclosure by the United States Government  *
+ * is subject to restrictions stated in the Ansys, Inc.        *
+ * software license agreement and FAR 12.212 (for non-DOD      *
+ * licenses).                                                  *
+ *                                                             *
+ ***************************************************************
+
+ 2026 R1.03  
+     
+ Point Releases and Patches installed:   
+     
+ Ansys Service Pack 2026 R1.01   
+ Ansys Service Pack 2026 R1.02   
+ Ansys Service Pack 2026 R1.03   
+ Ansys, Inc. License Manager 2026 R1 
+ Ansys, Inc. License Manager 2026 R1.01  
+ Ansys, Inc. License Manager 2026 R1.02  
+ Ansys, Inc. License Manager 2026 R1.03  
+ Discovery (reduced install) 2026 R1 
+ Discovery (reduced install) 2026 R1.01  
+ Discovery (reduced install) 2026 R1.02  
+ Discovery (reduced install) 2026 R1.03  
+ Core WB Files 2026 R1   
+ Core WB Files 2026 R1.01
+ Core WB Files 2026 R1.02
+ Core WB Files 2026 R1.03
+ Additive 2026 R1
+ Additive 2026 R1.01 
+ Additive 2026 R1.02 
+ Additive 2026 R1.03 
+ optiSLang Core 2026 R1  
+ optiSLang Core 2026 R1.01   
+ optiSLang Core 2026 R1.02   
+ optiSLang Core 2026 R1.03   
+ optiSLang Core UI 2026 R1   
+ optiSLang Core UI 2026 R1.01
+ optiSLang Core UI 2026 R1.02
+ optiSLang Core UI 2026 R1.03
+ optiSLang AI 2026 R1
+ optiSLang AI 2026 R1.01 
+ optiSLang AI 2026 R1.02 
+ optiSLang AI 2026 R1.03 
+ optiSLang App Generation 2026 R1
+ optiSLang App Generation 2026 R1.01 
+ optiSLang App Generation 2026 R1.02 
+ optiSLang App Generation 2026 R1.03 
+ Behavior Execution Engine 2026 R1   
+ Behavior Execution Engine 2026 R1.01
+ Behavior Execution Engine 2026 R1.02
+ Behavior Execution Engine 2026 R1.03
+ ModelCenter 2026 R1 
+ ModelCenter 2026 R1.01  
+ ModelCenter 2026 R1.02  
+ ModelCenter 2026 R1.03  
+ ModelCenter Remote Execution 2026 R1
+ ModelCenter Remote Execution 2026 R1.01 
+ ModelCenter Remote Execution 2026 R1.02 
+ ModelCenter Remote Execution 2026 R1.03 
+ ModelCenter MBSE 2026 R1
+ ModelCenter MBSE 2026 R1.01 
+ ModelCenter MBSE 2026 R1.02 
+ ModelCenter MBSE 2026 R1.03 
+ Scade One 2026 R1   
+ Scade One 2026 R1.01
+ Scade One 2026 R1.02
+ Scade One 2026 R1.03
+ medini analyze 2026 R1  
+ medini analyze 2026 R1.01   
+ medini analyze 2026 R1.02   
+ medini analyze 2026 R1.03   
+ scaderapidprototyper archive 2026 R1
+ scaderapidprototyper archive 2026 R1.01 
+ scaderapidprototyper archive 2026 R1.02 
+ scaderapidprototyper archive 2026 R1.03 
+ Granta Selector 2026 R1 
+ Granta Selector 2026 R1.01  
+ Granta Selector 2026 R1.02  
+ Granta Selector 2026 R1.03  
+ Dynamic Reporting 2026 R1   
+ Dynamic Reporting 2026 R1.01
+ Dynamic Reporting 2026 R1.02
+ Dynamic Reporting 2026 R1.03
+ Remote Solve Manager Standalone Services 2026 R1
+ Remote Solve Manager Standalone Services 2026 R1.01 
+ Remote Solve Manager Standalone Services 2026 R1.02 
+ Remote Solve Manager Standalone Services 2026 R1.03 
+ medini analyze QKit 2026 R1 
+ medini analyze QKit 2026 R1.01  
+ medini analyze QKit 2026 R1.02  
+ medini analyze QKit 2026 R1.03  
+ Aqwa 2026 R1
+ Aqwa 2026 R1.01 
+ Aqwa 2026 R1.02 
+ Aqwa 2026 R1.03 
+ Autodyn 2026 R1 
+ Autodyn 2026 R1.01  
+ Autodyn 2026 R1.02  
+ Autodyn 2026 R1.03  
+ Customization Files for User Programmable Features 2026 R1  
+ Customization Files for User Programmable Features 2026 R1.01   
+ Customization Files for User Programmable Features 2026 R1.02   
+ Customization Files for User Programmable Features 2026 R1.03   
+ ICEM CFD 2026 R1
+ ICEM CFD 2026 R1.01 
+ ICEM CFD 2026 R1.02 
+ ICEM CFD 2026 R1.03 
+ LS-DYNA 2026 R1 
+ LS-DYNA 2026 R1.01  
+ LS-DYNA 2026 R1.02  
+ LS-DYNA 2026 R1.03  
+ Material Calibration App 2026 R1
+ Material Calibration App 2026 R1.01 
+ Material Calibration App 2026 R1.02 
+ Material Calibration App 2026 R1.03 
+ Mechanical Products 2026 R1 
+ Mechanical Products 2026 R1.01  
+ Mechanical Products 2026 R1.02  
+ Mechanical Products 2026 R1.03  
+ Motion 2026 R1  
+ Motion 2026 R1.01   
+ Motion 2026 R1.02   
+ Motion 2026 R1.03   
+ RBF Morph 2026 R1   
+ RBF Morph 2026 R1.01
+ RBF Morph 2026 R1.02
+ RBF Morph 2026 R1.03
+ Sherlock 2026 R1
+ Sherlock 2026 R1.01 
+ Sherlock 2026 R1.02 
+ Sherlock 2026 R1.03 
+ Sound - SAS 2026 R1 
+ Sound - SAS 2026 R1.01  
+ Sound - SAS 2026 R1.02  
+ Sound - SAS 2026 R1.03  
+ ACIS Geometry Interface 2026 R1 
+ ACIS Geometry Interface 2026 R1.01  
+ ACIS Geometry Interface 2026 R1.02  
+ ACIS Geometry Interface 2026 R1.03  
+ AutoCAD Geometry Interface 2026 R1  
+ AutoCAD Geometry Interface 2026 R1.01   
+ AutoCAD Geometry Interface 2026 R1.02   
+ AutoCAD Geometry Interface 2026 R1.03   
+ Catia, Version 4 Geometry Interface 2026 R1 
+ Catia, Version 4 Geometry Interface 2026 R1.01  
+ Catia, Version 4 Geometry Interface 2026 R1.02  
+ Catia, Version 4 Geometry Interface 2026 R1.03  
+ Catia, Version 5 Geometry Interface 2026 R1 
+ Catia, Version 5 Geometry Interface 2026 R1.01  
+ Catia, Version 5 Geometry Interface 2026 R1.02  
+ Catia, Version 5 Geometry Interface 2026 R1.03  
+ Catia, Version 6 Geometry Interface 2026 R1 
+ Catia, Version 6 Geometry Interface 2026 R1.01  
+ Catia, Version 6 Geometry Interface 2026 R1.02  
+ Catia, Version 6 Geometry Interface 2026 R1.03  
+ Creo Elements/Direct Modeling Geometry Interface 2026 R1
+ Creo Elements/Direct Modeling Geometry Interface 2026 R1.01 
+ Creo Elements/Direct Modeling Geometry Interface 2026 R1.02 
+ Creo Elements/Direct Modeling Geometry Interface 2026 R1.03 
+ Creo Parametric Geometry Interface 2026 R1  
+ Creo Parametric Geometry Interface 2026 R1.01   
+ Creo Parametric Geometry Interface 2026 R1.02   
+ Creo Parametric Geometry Interface 2026 R1.03   
+ Inventor Geometry Interface 2026 R1 
+ Inventor Geometry Interface 2026 R1.01  
+ Inventor Geometry Interface 2026 R1.02  
+ Inventor Geometry Interface 2026 R1.03  
+ JTOpen Geometry Interface 2026 R1   
+ JTOpen Geometry Interface 2026 R1.01
+ JTOpen Geometry Interface 2026 R1.02
+ JTOpen Geometry Interface 2026 R1.03
+ NX Geometry Interface 2026 R1   
+ NX Geometry Interface 2026 R1.01
+ NX Geometry Interface 2026 R1.02
+ NX Geometry Interface 2026 R1.03
+ Parasolid Geometry Interface  2026 R1   
+ Parasolid Geometry Interface  2026 R1.01
+ Parasolid Geometry Interface  2026 R1.02
+ Parasolid Geometry Interface  2026 R1.03
+ Solid Edge Geometry Interface 2026 R1   
+ Solid Edge Geometry Interface 2026 R1.01
+ Solid Edge Geometry Interface 2026 R1.02
+ Solid Edge Geometry Interface 2026 R1.03
+ SOLIDWORKS Geometry Interface 2026 R1   
+ SOLIDWORKS Geometry Interface 2026 R1.01
+ SOLIDWORKS Geometry Interface 2026 R1.02
+ SOLIDWORKS Geometry Interface 2026 R1.03
+
+
+          *****  MAPDL COMMAND LINE ARGUMENTS  *****
+  BATCH MODE REQUESTED (-b)    = LIST
+  INPUT FILE COPY MODE (-c)    = COPY
+       1 PARALLEL PROCESSES REQUESTED WITH SINGLE THREAD PER PROCESS
+    TOTAL OF     1 CORES REQUESTED
+  INPUT FILE NAME              = C:\Users\samue\OSR\shared\pde_matrices_extract_in.txt
+  OUTPUT FILE NAME             = C:\Users\samue\OSR\shared\pde_filter.out
+
+ RELEASE= 2026 R1.03           BUILD= 26.1      UP20260202   VERSION=WINDOWS x64 
+ CURRENT JOBNAME=file  16:09:56  SEP 22, 2026  Elapsed Time=       0.062
+
+     1  /CLEAR,NOSTART  
+     2  /CWD,'C:\Users\samue\OSR\shared'
+     3      
+     4  /INQUIRE,fex,EXIST,'model','cdb'
+     5  *IF,fex,EQ,0,THEN   
+     6    *MSG,ERROR
+     7  model.cdb not found 
+     8    /EOF  
+     9  *ENDIF  
+    10      
+    11  /FILNAME,pdesteady,1
+    12  /PREP7  
+    13  CDREAD,DB,'model','cdb' 
+    14  DDELE,ALL,ALL   
+    15  FDELE,ALL,ALL   
+    16  SFDELE,ALL,ALL  
+    17  BFDELE,ALL,ALL  
+    18  BFEDELE,ALL,ALL 
+    19  ESEL,S,ENAME,,169,177   
+    20  EDELE,ALL   
+    21  ESEL,ALL
+    22  NSLE,S  
+    23  NSEL,INVE   
+    24  NDELE,ALL   
+    25  NSEL,ALL
+    26  ETDELE,2,3  
+    27  ETCHG,STT   
+    28  ETLIST,ALL  
+    29  *GET,nn,NODE,,COUNT 
+    30  *GET,nmat_,MAT,,NUM,MAX 
+    31  *DO,imat_,1,nmat_   
+    32    MP,KXX,imat_,1
+    33    MP,DENS,imat_,1   
+    34    MP,C,imat_,1  
+    35  *ENDDO  
+    36  FINISH  
+    37      
+    38  /SOLU   
+    39  ANTYPE,STATIC   
+    40  EQSLV,SPARSE
+    41  WRFULL,1
+    42  SOLVE   
+    43  FINISH  
+    44      
+    45  /FILNAME,pdetrans,1 
+    46  /SOLU   
+    47  ANTYPE,TRANS
+    48  TRNOPT,FULL 
+    49  TIMINT,ON   
+    50  TINTP,,,,1.0
+    51  LUMPM,OFF   
+    52  NSUBST,1
+    53  TIME,1  
+    54  WRFULL,1
+    55  SOLVE   
+    56  FINISH  
+    57      
+    58  /INQUIRE,s1,EXIST,'pdesteady','full'
+    59  /INQUIRE,s2,EXIST,'pdetrans','full' 
+    60  *IF,s1,EQ,0,THEN
+    61    *MSG,ERROR
+    62  pdesteady.full not written  
+    63    /EOF  
+    64  *ENDIF  
+    65  *IF,s2,EQ,0,THEN
+    66    *MSG,ERROR
+    67  pdetrans.full not written   
+    68    /EOF  
+    69  *ENDIF  
+    70      
+    71  *SMAT,Kt,D,IMPORT,FULL,pdesteady.full,STIFF 
+    72  *SMAT,Keff,D,IMPORT,FULL,pdetrans.full,STIFF
+    73  *AXPY,-1.0,,Kt,1.0,,Keff
+    74      
+    75  *VEC,MapB,I,IMPORT,FULL,pdesteady.full,BACK 
+    76  *VEC,MapBt,I,IMPORT,FULL,pdetrans.full,BACK 
+    77      
+    78  *EXPORT,Kt,MMF,K_pde.mtx
+    79  *EXPORT,Keff,MMF,M_pde.mtx  
+    80  *EXPORT,MapB,MMF,mapb.mtx   
+    81  *EXPORT,MapBt,MMF,mapb_t.mtx
+    82      
+    83  *CFOPEN,pde_dims,txt
+    84  *VWRITE,nn  
+    85  (G24.16)
+    86  *CFCLOS 
+    87      
+    88  *GET,ne_,ELEM,,COUNT
+    89  *DIM,econn,ARRAY,ne_*20 
+    90  e_=0
+    91  *DO,k_,1,ne_
+    92    e_=ELNEXT(e_) 
+    93    *DO,j_,1,20   
+    94      econn((k_-1)*20+j_)=NELEM(e_,j_)
+    95    *ENDDO
+    96  *ENDDO  
+    97  *CFOPEN,econn,txt   
+    98  *VWRITE,econn(1)
+    99  (F10.0) 
+   100  *CFCLOS 
+   101      
+   102  *GET,ndmax_,NODE,,NUM,MAX   
+   103  *DIM,nxyz,ARRAY,ndmax_,3
+   104  *VGET,nxyz(1,1),NODE,1,LOC,X
+   105  *VGET,nxyz(1,2),NODE,1,LOC,Y
+   106  *VGET,nxyz(1,3),NODE,1,LOC,Z
+   107  *CFOPEN,nxyz,txt
+   108  *VWRITE,nxyz(1,1),nxyz(1,2),nxyz(1,3)   
+   109  (3E24.15)   
+   110  *CFCLOS 
+
+ RUN SETUP PROCEDURE FROM FILE= C:\Program Files\ANSYS Inc\v261\Ansys\apdl\start.ans
+
+ /INPUT FILE= C:\Program Files\ANSYS Inc\v261\Ansys\apdl\start.ans  LINE=       0
+
+ CLEAR MAPDL DATABASE AND RESTART
+
+ Ansys Mechanical Enterprise Academic Research     
+
+ Current working directory switched to C:\Users\samue\OSR\shared                                                                                                                                                                                                                               
+
+ PARAMETER FEX      =         1.000000
+
+ *IF  fex  ( =   1.00000     )  EQ  
+      0  ( =   0.00000     )  THEN    
+
+ *ENDIF
+
+ CURRENT JOBNAME REDEFINED AS pdesteady
+     Opening new LOG, ERROR, LOCK and PAGE FILES
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.03       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 00489238  VERSION=WINDOWS x64   16:09:58  SEP 22, 2026 Elapsed Time=      6.883
+
+                                                                               
+
+
+
+          ***** MAPDL ANALYSIS DEFINITION (PREP7) *****
+
+ READ CDWRITE FILE: model.cdb                                                                                                                                                                                                                                                           
+
+ /INPUT FILE= cdread.tmp  LINE=       0
+
+ /INPUT FILE= model.cdb  LINE=       0
+ ANSYS RELEASE 2026 R1.03        BUILD 26.1      UP20260202       11:32:58
+ You have already entered the general preprocessor (PREP7).              
+
+ DO NOT COMBINE ELEMENT SAVE DATA FILES (.esav) AFTER DISTRIBUTED PARALLEL SOLUTION
+
+ DO NOT COMBINE ELEMENT MATRIX FILES (.emat) AFTER DISTRIBUTED PARALLEL SOLUTION
+
+ *** WARNING ***                         ELAPSED TIME =       7.070   TIME= 16:09:58
+ Shape testing revealed that 2 of the 20323 new or modified elements     
+ violate shape warning limits.  To review test results, please see the   
+ output file or issue the CHECK command.                                 
+
+ *** WARNING ***                         ELAPSED TIME =       7.072   TIME= 16:09:58
+ The NLDIAG command is only valid in /SOLUTION Module.  The NLDIAG       
+ command is ignored.                                                     
+
+ *** WARNING ***                         ELAPSED TIME =       7.072   TIME= 16:09:58
+ The NLDIAG command is only valid in /SOLUTION Module.  The NLDIAG       
+ command is ignored.                                                     
+
+ *** WARNING ***                         ELAPSED TIME =       7.072   TIME= 16:09:58
+ The NLDIAG command is only valid in /SOLUTION Module.  The NLDIAG       
+ command is ignored.                                                     
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =         7.113
+
+
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.03       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 00489238  VERSION=WINDOWS x64   16:09:58  SEP 22, 2026 Elapsed Time=      7.113
+
+ bracket--Static Structural (B5)                                               
+
+
+
+          ***** MAPDL ANALYSIS DEFINITION (PREP7) *****
+
+ DELETE ALL SPECIFIED CONSTRAINTS FROM NODE         1 TO     34904 BY       1
+
+ NUMBER OF SPECIFIED CONSTRAINTS DELETED=    1734
+
+ DELETE ALL SPECIFIED NODAL LOADS FROM NODE         1 TO     34904 BY       1
+
+ NUMBER OF NODAL LOADS DELETED=       3
+
+ DELETE SPECIFIED BODY FORCE TEMP FOR ALL SELECTED NODES
+
+ NUMBER OF TEMP BODY FORCES DELETED=   34903
+
+ SELECT       FOR ITEM=ENAM COMPONENT=    
+  IN RANGE       169 TO        177 STEP          1
+
+        137  ELEMENTS (OF      20460  DEFINED) SELECTED BY  ESEL  COMMAND.
+
+ DELETE ALL SELECTED ELEMENTS.
+
+ ALL SELECT   FOR ITEM=ELEM COMPONENT=    
+  IN RANGE         1 TO      27923 STEP          1
+
+      20323  ELEMENTS (OF      20323  DEFINED) SELECTED BY  ESEL  COMMAND.
+
+ SELECT      ALL NODES HAVING ANY ELEMENT IN ELEMENT SET.
+
+      34903 NODES (OF      34904  DEFINED) SELECTED FROM
+    20323 SELECTED ELEMENTS BY NSLE COMMAND.
+
+ INVERT       FOR ITEM=NODE COMPONENT=    
+  IN RANGE         1 TO      34904 STEP          1
+
+          1  NODES (OF      34904  DEFINED) SELECTED BY  NSEL  COMMAND.
+
+ DELETE ALL SELECTED NODES.
+
+ ALL SELECT   FOR ITEM=NODE COMPONENT=    
+  IN RANGE         1 TO      34904 STEP          1
+
+      34903  NODES (OF      34903  DEFINED) SELECTED BY NSEL  COMMAND.
+
+ DELETE ELEMENT TYPES FROM          2 TO          3 BY          1
+
+ CURRENT NODAL DOF SET IS  UX    UY    UZ    ROTX  ROTY  ROTZ
+  THREE-DIMENSIONAL MODEL
+
+ CONVERT ALL STRUCTURAL ELEMENT TYPES TO THEIR COMPANION THERMAL ELEMENT TYPES
+
+  FOR ELEMENT TYPE   1, SOLID187 HAS BEEN CHANGED TO SOLID87 
+  Element KEYOPTs were all set to zero; please adjust their settings if needed.
+
+ ------------------------------------------------------------------------------
+            <<<<<<          SHAPE TESTING SUMMARY           >>>>>>
+            <<<<<<       FOR NEW OR MODIFIED ELEMENTS       >>>>>>
+ ------------------------------------------------------------------------------
+                    --------------------------------------
+                    |  Element count     20323 SOLID87   |
+                    --------------------------------------
+
+  Test                Number tested  Warning count  Error count    Warn+Err %
+  ----                -------------  -------------  -----------    ----------
+  Aspect Ratio              20323              0             0         0.00 %
+  Maximum Angle             20323              0             0         0.00 %
+  Jacobian Ratio            20323              2             0         0.01 %
+
+  Any                       20323              2             0         0.01 %
+ ------------------------------------------------------------------------------
+
+ *** WARNING ***                         ELAPSED TIME =       7.213   TIME= 16:09:58
+ Shape testing revealed that 2 of the 20323 new or modified elements     
+ violate shape warning limits.  To review test results, please see the   
+ output file or issue the CHECK command.                                 
+
+ *** WARNING ***                         ELAPSED TIME =       7.214   TIME= 16:09:58
+ The ETCHG command has changed some element types.  Please examine not   
+ only the KEYOPTs, but also the real constants, material properties,     
+ boundary conditions, and loadings, and then modify as needed.           
+
+ LIST ELEMENT TYPES FROM        1 TO        3 BY        1
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.03       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 00489238  VERSION=WINDOWS x64   16:09:58  SEP 22, 2026 Elapsed Time=      7.214
+
+ bracket--Static Structural (B5)                                               
+
+
+
+ ELEMENT TYPE        1 IS SOLID87      3-D 10-NODE TET THERM. SOLID
+  KEYOPT( 1- 6)=        0      0      0        0      0      0
+  KEYOPT( 7-12)=        0      0      0        0      0      0
+  KEYOPT(13-18)=        0      0      0        0      0      0
+
+ CURRENT NODAL DOF SET IS  ROTX  ROTY  ROTZ  TEMP
+  THREE-DIMENSIONAL MODEL
+
+ *GET  NN        FROM  NODE  ITEM=COUN       VALUE=  34903.0000     
+
+ *GET  NMAT_     FROM  MAT   ITEM=NUM  MAX   VALUE=  1.00000000    
+
+ *DO LOOP ON PARAMETER= IMAT_ FROM  1.0000     TO  1.0000     BY  1.0000    
+
+ MATERIAL          1     KXX  =   1.000000      
+
+ MATERIAL          1     DENS =   1.000000      
+
+ MATERIAL          1     C    =   1.000000      
+
+ *ENDDO  INDEX= IMAT_                           
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =         7.216
+
+
+
+ *****  MAPDL SOLUTION ROUTINE  *****
+
+
+ PERFORM A STATIC ANALYSIS
+  THIS WILL BE A NEW ANALYSIS
+
+ USE SPARSE MATRIX DIRECT SOLVER
+
+ STOP SOLUTION AFTER FULL FILE HAS BEEN WRITTEN
+   LOADSTEP =    1 SUBSTEP =    1 EQ. ITER =    1
+
+ *****  MAPDL SOLVE    COMMAND  *****
+
+ *** WARNING ***                         ELAPSED TIME =       7.362   TIME= 16:09:58
+ Previous testing revealed that 2 of the 20323 selected elements violate 
+ shape warning limits.  To review warning messages, please see the       
+ output or error file, or issue the CHECK command.                       
+
+ *** NOTE ***                            ELAPSED TIME =       7.362   TIME= 16:09:58
+ The model data was checked and warning messages were found.             
+  Please review output or errors file (                                  
+ C:\Users\samue\OSR\shared\pdesteady.err ) for these warning messages.   
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.03       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 00489238  VERSION=WINDOWS x64   16:09:58  SEP 22, 2026 Elapsed Time=      7.362
+
+ bracket--Static Structural (B5)                                               
+
+
+
+                       S O L U T I O N   O P T I O N S
+
+   PROBLEM DIMENSIONALITY. . . . . . . . . . . . .3-D                  
+   DEGREES OF FREEDOM. . . . . . ROTX ROTY ROTZ TEMP
+   ANALYSIS TYPE . . . . . . . . . . . . . . . . .STATIC (STEADY-STATE)
+   OFFSET TEMPERATURE FROM ABSOLUTE ZERO . . . . .  273.15    
+   EQUATION SOLVER OPTION. . . . . . . . . . . . .SPARSE             
+   STOP SOLUTION AFTER ASSEMBLY. . . . . . . . . .ON 
+      LOADSTEP . . . . . . . . . . . . . . . . . .    1
+      SUBSTEP. . . . . . . . . . . . . . . . . . .    1
+      EQUILIBRIUM ITERATION. . . . . . . . . . . .    1
+   GLOBALLY ASSEMBLED MATRIX . . . . . . . . . . .SYMMETRIC  
+
+ *** WARNING ***                         ELAPSED TIME =       7.370   TIME= 16:09:58
+ No constraints have been defined using the D command.                   
+
+ *** NOTE ***                            ELAPSED TIME =       7.370   TIME= 16:09:58
+ The step data was checked and warning messages were found.              
+  Please review output or errors file (                                  
+ C:\Users\samue\OSR\shared\pdesteady.err ) for these warning messages.   
+
+ *** NOTE ***                            ELAPSED TIME =       7.370   TIME= 16:09:58
+ The Solution Control Option is only valid for single field structural,  
+ single field thermal, single field diffusion, coupled                   
+ thermal-diffusion analyses and coupled-field analyses with structural   
+ degrees of freedom.  The SOLCONTROL,ON command (if present) has been    
+ de-activated.                                                           
+
+ *** NOTE ***                            ELAPSED TIME =       7.370   TIME= 16:09:58
+ The conditions for direct assembly have been met.  No .emat or .erot    
+ files will be produced.                                                 
+
+                      L O A D   S T E P   O P T I O N S
+
+   LOAD STEP NUMBER. . . . . . . . . . . . . . . .     1
+   TIME AT END OF THE LOAD STEP. . . . . . . . . .  1.0000    
+   NUMBER OF SUBSTEPS. . . . . . . . . . . . . . .     1
+   STEP CHANGE BOUNDARY CONDITIONS . . . . . . . .    NO
+   COPY INTEGRATION POINT VALUES TO NODE . . . . .   YES
+   PRINT OUTPUT CONTROLS . . . . . . . . . . . . .NO PRINTOUT
+   DATABASE OUTPUT CONTROLS
+      ITEM     FREQUENCY   COMPONENT
+       ALL       NONE               
+      NSOL        ALL               
+      RSOL        ALL               
+      EANG        ALL               
+      ETMP        ALL               
+      VENG        ALL               
+      STRS        ALL               
+      EPEL        ALL               
+      EPPL        ALL               
+      EPTH        ALL               
+      CONT        ALL               
+
+
+
+
+
+            **** CENTER OF MASS, MASS, AND MASS MOMENTS OF INERTIA ****
+
+  CALCULATIONS ASSUME ELEMENT MASS AT ELEMENT CENTROID
+
+  TOTAL MASS =  0.46326E-03
+
+                           MOM. OF INERTIA         MOM. OF INERTIA
+  CENTER OF MASS            ABOUT ORIGIN        ABOUT CENTER OF MASS
+
+  XC = -0.76797E-01      IXX =   0.6055E-06      IXX =   0.3333E-06
+  YC =  0.53113E-03      IYY =   0.3990E-05      IYY =   0.9857E-06
+  ZC =  0.24235E-01      IZZ =   0.3744E-05      IZZ =   0.1012E-05
+                         IXY =   0.5953E-07      IXY =   0.4063E-07
+                         IYZ =   0.9027E-07      IYZ =   0.9623E-07
+                         IZX =   0.8195E-06      IZX =  -0.4269E-07
+
+
+  *** MASS SUMMARY BY ELEMENT TYPE ***
+
+  TYPE      MASS
+     1  0.463261E-03
+
+ Range of element maximum matrix coefficients in global coordinates
+ Maximum = 1.822436268E-02 at element 20271.                             
+ Minimum = 1.025584052E-03 at element 20114.                             
+
+   *** ELEMENT MATRIX FORMULATION TIMES
+     TYPE    NUMBER     ENAME   TOTAL ELAPSED   AVG ELAPSED
+
+        1     20323   SOLID87          0.1376   0.000006773
+ Elapsed Time at end of element matrix formulation = 7.6436085.          
+
+ *** NOTE ***                            ELAPSED TIME =       7.681   TIME= 16:09:59
+ The requested load step, substep, and equilibrium iteration have been   
+ reached and the FULL file has been written.  Skipping equation          
+ solution and exiting the SOLVE command.                                 
+
+
+ *** MAPDL BINARY FILE STATISTICS
+  BUFFER SIZE USED= 16384
+        9.188 MB WRITTEN ON ASSEMBLED MATRIX FILE: pdesteady.full
+        0.000 MB WRITTEN ON RESULTS FILE: pdesteady.rst
+
+ FINISH SOLUTION PROCESSING
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =         7.696
+
+
+
+ CURRENT JOBNAME REDEFINED AS pdetrans
+     Opening new LOG, ERROR, LOCK and PAGE FILES
+
+ *****  MAPDL SOLUTION ROUTINE  *****
+
+
+ PERFORM A TRANSIENT ANALYSIS
+  THIS WILL BE A NEW ANALYSIS
+
+ *** NOTE ***                            ELAPSED TIME =       7.708   TIME= 16:09:59
+ Some analysis options have been reset to their defaults.  Please verify 
+ current settings or respecify as required.                              
+
+ PERFORM A FULL TRANSIENT ANALYSIS
+  USING NEWMARK ALGORITHM
+
+ INCLUDE TRANSIENT EFFECTS FOR  ALL DEGREES OF FREEDOM THIS LOAD STEP
+
+ USE DEFAULT AMPLITUDE DECAY FACTOR FOR SECOND ORDER TRANSIENT PARAMETERS
+   GAMMA= 0.5000E-02  (ALPHA= 0.2525      DELTA= 0.5050    )
+
+ USE FIRST ORDER TRANSIENT PARAMETER THETA=  1.000    
+
+ USE DEFAULT FIRST ORDER OSCILLATION LIMIT OF  0.5000     FOR AUTO LOADING
+  WITH A TOLERANCE OF  0.2000    
+
+ USE DEFAULT MASS MATRIX FORMULATION
+
+ USE       1 SUBSTEPS INITIALLY THIS LOAD STEP FOR ALL  DEGREES OF FREEDOM
+ FOR AUTOMATIC TIME STEPPING:
+   USE      1 SUBSTEPS AS A MAXIMUM
+   USE      1 SUBSTEPS AS A MINIMUM
+
+ TIME=  1.0000    
+
+ STOP SOLUTION AFTER FULL FILE HAS BEEN WRITTEN
+   LOADSTEP =    1 SUBSTEP =    1 EQ. ITER =    1
+
+ *****  MAPDL SOLVE    COMMAND  *****
+
+ *** WARNING ***                         ELAPSED TIME =       7.766   TIME= 16:09:59
+ Previous testing revealed that 2 of the 20323 selected elements violate 
+ shape warning limits.  To review warning messages, please see the       
+ output or error file, or issue the CHECK command.                       
+
+ *** NOTE ***                            ELAPSED TIME =       7.766   TIME= 16:09:59
+ The model data was checked and warning messages were found.             
+  Please review output or errors file (                                  
+ C:\Users\samue\OSR\shared\pdetrans.err ) for these warning messages.    
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.03       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 00489238  VERSION=WINDOWS x64   16:09:59  SEP 22, 2026 Elapsed Time=      7.766
+
+ bracket--Static Structural (B5)                                               
+
+
+
+                       S O L U T I O N   O P T I O N S
+
+   PROBLEM DIMENSIONALITY. . . . . . . . . . . . .3-D                  
+   DEGREES OF FREEDOM. . . . . . ROTX ROTY ROTZ TEMP
+   ANALYSIS TYPE . . . . . . . . . . . . . . . . .TRANSIENT            
+      SOLUTION METHOD. . . . . . . . . . . . . . .FULL                 
+   OFFSET TEMPERATURE FROM ABSOLUTE ZERO . . . . .  273.15    
+   STOP SOLUTION AFTER ASSEMBLY. . . . . . . . . .ON 
+      LOADSTEP . . . . . . . . . . . . . . . . . .    1
+      SUBSTEP. . . . . . . . . . . . . . . . . . .    1
+      EQUILIBRIUM ITERATION. . . . . . . . . . . .    1
+   GLOBALLY ASSEMBLED MATRIX . . . . . . . . . . .SYMMETRIC  
+
+ *** WARNING ***                         ELAPSED TIME =       7.774   TIME= 16:09:59
+ No constraints have been defined using the D command.                   
+
+ *** NOTE ***                            ELAPSED TIME =       7.774   TIME= 16:09:59
+ The step data was checked and warning messages were found.              
+  Please review output or errors file (                                  
+ C:\Users\samue\OSR\shared\pdetrans.err ) for these warning messages.    
+
+ *** NOTE ***                            ELAPSED TIME =       7.774   TIME= 16:09:59
+ The Solution Control Option is only valid for single field structural,  
+ single field thermal, single field diffusion, coupled                   
+ thermal-diffusion analyses and coupled-field analyses with structural   
+ degrees of freedom.  The SOLCONTROL,ON command (if present) has been    
+ de-activated.                                                           
+
+ *** NOTE ***                            ELAPSED TIME =       7.774   TIME= 16:09:59
+ The conditions for direct assembly have been met.  No .emat or .erot    
+ files will be produced.                                                 
+
+                      L O A D   S T E P   O P T I O N S
+
+   LOAD STEP NUMBER. . . . . . . . . . . . . . . .     1
+   TIME AT END OF THE LOAD STEP. . . . . . . . . .  1.0000    
+   NUMBER OF SUBSTEPS. . . . . . . . . . . . . . .     1
+   STEP CHANGE BOUNDARY CONDITIONS . . . . . . . .    NO
+   TRANSIENT (INERTIA) EFFECTS
+      STRUCTURAL DOFS. . . . . . . . . . . . . . .    ON
+      THERMAL DOFS . . . . . . . . . . . . . . . .    ON
+   TRANSIENT INTEGRATION PARAMETERS
+      ALPHA. . . . . . . . . . . . . . . . . . . . 0.25251    
+      DELTA. . . . . . . . . . . . . . . . . . . . 0.50500    
+      THETA. . . . . . . . . . . . . . . . . . . .  1.0000    
+      OSCILLATION LIMIT CRITERION. . . . . . . . . 0.50000    
+      TOLERANCE. . . . . . . . . . . . . . . . . . 0.20000    
+   COPY INTEGRATION POINT VALUES TO NODE . . . . .   YES
+   PRINT OUTPUT CONTROLS . . . . . . . . . . . . .NO PRINTOUT
+   DATABASE OUTPUT CONTROLS
+      ITEM     FREQUENCY   COMPONENT
+       ALL       NONE               
+      NSOL        ALL               
+      RSOL        ALL               
+      EANG        ALL               
+      ETMP        ALL               
+      VENG        ALL               
+      STRS        ALL               
+      EPEL        ALL               
+      EPPL        ALL               
+      EPTH        ALL               
+      CONT        ALL               
+
+
+
+
+
+            **** CENTER OF MASS, MASS, AND MASS MOMENTS OF INERTIA ****
+
+  CALCULATIONS ASSUME ELEMENT MASS AT ELEMENT CENTROID
+
+  TOTAL MASS =  0.46326E-03
+
+                           MOM. OF INERTIA         MOM. OF INERTIA
+  CENTER OF MASS            ABOUT ORIGIN        ABOUT CENTER OF MASS
+
+  XC = -0.76797E-01      IXX =   0.6055E-06      IXX =   0.3333E-06
+  YC =  0.53113E-03      IYY =   0.3990E-05      IYY =   0.9857E-06
+  ZC =  0.24235E-01      IZZ =   0.3744E-05      IZZ =   0.1012E-05
+                         IXY =   0.5953E-07      IXY =   0.4063E-07
+                         IYZ =   0.9027E-07      IYZ =   0.9623E-07
+                         IZX =   0.8195E-06      IZX =  -0.4269E-07
+
+
+  *** MASS SUMMARY BY ELEMENT TYPE ***
+
+  TYPE      MASS
+     1  0.463261E-03
+
+ Range of element maximum matrix coefficients in global coordinates
+ Maximum = 1.822436268E-02 at element 20271.                             
+ Minimum = 1.025584052E-03 at element 20114.                             
+
+   *** ELEMENT MATRIX FORMULATION TIMES
+     TYPE    NUMBER     ENAME   TOTAL ELAPSED   AVG ELAPSED
+
+        1     20323   SOLID87          0.1437   0.000007069
+ Elapsed Time at end of element matrix formulation = 8.1002412.          
+
+ ALL CURRENT MAPDL DATA WRITTEN TO FILE NAME= pdetrans.rdb
+  FOR POSSIBLE RESUME FROM THIS POINT
+
+ *** NOTE ***                            ELAPSED TIME =       8.256   TIME= 16:09:59
+ The requested load step, substep, and equilibrium iteration have been   
+ reached and the FULL file has been written.  Skipping equation          
+ solution and exiting the SOLVE command.                                 
+
+
+ *** MAPDL BINARY FILE STATISTICS
+  BUFFER SIZE USED= 16384
+        9.188 MB WRITTEN ON ASSEMBLED MATRIX FILE: pdetrans.full
+        0.000 MB WRITTEN ON RESULTS FILE: pdetrans.rst
+
+ FINISH SOLUTION PROCESSING
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =         8.272
+
+
+
+ PARAMETER S1       =         1.000000
+
+ PARAMETER S2       =         1.000000
+
+ *IF  s1  ( =   1.00000     )  EQ  
+      0  ( =   0.00000     )  THEN    
+
+ *ENDIF
+
+ *IF  s2  ( =   1.00000     )  EQ  
+      0  ( =   0.00000     )  THEN    
+
+ *ENDIF
+
+  Import Data From File pdesteady.full (Format=FULL)
+
+  Import The STIFF Matrix (34903 by 34903)
+
+  Import Data From File pdetrans.full (Format=FULL)
+
+  Import The STIFF Matrix (34903 by 34903)
+
+ *AXP COMMAND : ADD KT CONTRIBUTION TO KEFF MATRIX
+
+  Import Data From File pdesteady.full (Format=FULL)
+
+  Import Data From File pdetrans.full (Format=FULL)
+
+  Export KT object to K_pde.mtx (Format=MMF)
+
+  Export KEFF object to M_pde.mtx (Format=MMF)
+
+  Export MAPB object to mapb.mtx (Format=MMF)
+
+  Export MAPBT object to mapb_t.mtx (Format=MMF)
+
+ OPENED FILE= pde_dims.txt FOR COMMAND FILE DATA 
+
+
+  COMMAND FILE CLOSED 
+
+
+ *GET  NE_       FROM  ELEM  ITEM=COUN           VALUE=  20323.0000    
+
+ SET PARAMETER DIMENSIONS ON  ECONN
+  TYPE=ARRA  DIMENSIONS=   406460        1        1
+
+ PARAMETER E_ =     0.000000000    
+
+ *DO LOOP ON PARAMETER= K_ FROM  1.0000     TO  20323.     BY  1.0000    
+
+ PARAMETER E_ =     1.000000000    
+
+ *DO LOOP ON PARAMETER= J_ FROM  1.0000     TO  20.000     BY  1.0000    
+
+ PARAMETER ECONN((K_-1)*20+J_) =     4303.000000    
+
+ *ENDDO  INDEX= J_                              
+
+ *ENDDO  INDEX= K_                              
+
+ OPENED FILE= econn.txt FOR COMMAND FILE DATA 
+
+
+  COMMAND FILE CLOSED 
+
+
+ *GET  NDMAX_    FROM  NODE  ITEM=NUM  MAX   VALUE=  34903.0000     
+
+ SET PARAMETER DIMENSIONS ON  NXYZ TYPE=ARRA  DIMENSIONS= 34903     3     1
+
+ VECTOR GET OPERATION  nxyz(1,1)  VECTOR LENGTH=   34903
+ NAME= NODE         1  LOC   X   
+
+ VECTOR GET OPERATION  nxyz(1,2)  VECTOR LENGTH=   34903
+ NAME= NODE         1  LOC   Y   
+
+ VECTOR GET OPERATION  nxyz(1,3)  VECTOR LENGTH=   34903
+ NAME= NODE         1  LOC   Z   
+
+ OPENED FILE= nxyz.txt FOR COMMAND FILE DATA 
+
+
+  COMMAND FILE CLOSED 
+
+
+ ***** END OF INPUT ENCOUNTERED *****
+
+ PURGE ALL SOLUTION AND POST DATA
+ SAVE ALL MODEL DATA
+
+ ALL CURRENT MAPDL DATA WRITTEN TO FILE NAME= pdetrans.db
+  FOR POSSIBLE RESUME FROM THIS POINT
+
+
+ NUMBER OF WARNING MESSAGES ENCOUNTERED=          2
+ NUMBER OF ERROR   MESSAGES ENCOUNTERED=          0
+
++--------------------- M A P D L   S T A T I S T I C S ------------------------+
+
+Release: 2026 R1.03         Build: 26.1       Update: UP20260202   Platform: WINDOWS x64 
+Date Run: 09/22/2026   Time: 16:10     Process ID: 11988
+Operating System: Windows 11  (Build: 26200)
+
+Processor Model: Intel(R) Core(TM) i7-8700K CPU @ 3.70GHz
+
+Compiler: Intel(R) Fortran Compiler Classic Version 2021.9  (Build: 20230302)
+          Intel(R) C/C++ Compiler Classic Version 2021.9  (Build: 20230302)
+          Intel(R) oneAPI Math Kernel Library Version 2024.2.3-Product Build 20250403
+
+Number of machines requested            :    1
+Total number of cores available         :   12
+Number of physical cores available      :    6
+Number of processes requested           :    1
+Number of threads per process requested :    1
+Total number of cores requested         :    1 (Shared Memory Parallel)                    
+
+GPU Acceleration: Not Requested
+
+Job Name: pdetrans
+Input File: pde_matrices_extract_in.txt
+Working Directory: C:\Users\samue\OSR\shared
+
+Total CPU time for main thread                    :        7.6 seconds
+Total CPU time summed for all threads             :        7.5 seconds
+
+Elapsed time spent obtaining a license            :        0.3 seconds
+Elapsed time spent pre-processing model (/PREP7)  :        0.3 seconds
+Elapsed time spent solution - preprocessing       :        0.2 seconds
+Elapsed time spent computing solution             :        0.6 seconds
+   Elapsed time in element formation & assembly   :        0.4 seconds
+   Elapsed time in equation solver                :        0.1 seconds
+   Elapsed time in element result calculations    :        0.0 seconds
+Elapsed time spent solution - postprocessing      :        0.0 seconds
+Elapsed time spent post-processing model (/POST1) :        0.0 seconds
+ 
+Equation solver used                              :            Sparse (symmetric)
+
+Sum of disk space used on all processes           :       34.3 MB
+
+Sum of memory used on all processes               :      116.0 MB
+Sum of memory allocated on all processes          :     2304.0 MB
+Physical memory available                         :         32 GB
+Total amount of I/O written to disk               :        0.0 GB
+Total amount of I/O read from disk                :        0.0 GB
+
++------------------ E N D   M A P D L   S T A T I S T I C S -------------------+
+
+
+ *-----------------------------------------------------------------------------*
+ |                                                                             |
+ |                               RUN COMPLETED                                 |
+ |                                                                             |
+ |-----------------------------------------------------------------------------|
+ |                                                                             |
+ |  Ansys MAPDL 2026 R1.03      Build 26.1         UP20260202    WINDOWS x64   |
+ |                                                                             |
+ |-----------------------------------------------------------------------------|
+ |                                                                             |
+ |  Database Requested(-db)     1024 MB     Scratch Memory Requested   1024 MB |
+ |  Max Database Used(Master)     37 MB     Max Scratch Used(Master)     79 MB |
+ |  Max Database Used(Workers)     0 MB     Max Scratch Used(Workers)     0 MB |
+ |  Sum Database Used(All)        37 MB     Sum Scratch Used(All)        79 MB |
+ |                                                                             |
+ |-----------------------------------------------------------------------------|
+ |                                                                             |
+ |        CP Time      (sec) =          7.453       Time  =  16:10:16          |
+ |        Elapsed Time (sec) =         25.147       Date  =  09/22/2026        |
+ |                                                                             |
+ *-----------------------------------------------------------------------------*

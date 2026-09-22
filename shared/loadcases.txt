@@ -2,19 +2,16 @@
 1 6.283185307   SINUS   PA   0.003
 
 # fichier                   amp  phase  mean   
-sigma_export_nodes_vertical      1.0   0.0   0.0
-sigma_export_nodes_horizontal.txt      1.0   0.0   0.0   
-sigma_export_nodes_42deg      1.0   0.0   0.0
-sigma_export_nodes_torsion      1.0   0.0   0.0
+sigma_export_nodes_testBracket.txt      1.0   0.0   0.0
 
 #n_cycles_max n_steps_per_cycle n_substeps_history
 100000 100 4 
   
 # history_file
-- 
+-  
  
 # integrator 
 RK4 
 
 
-			
+			 

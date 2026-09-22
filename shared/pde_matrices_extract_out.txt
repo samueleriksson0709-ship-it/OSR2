@@ -1,0 +1,396 @@
+
+ Ansys Mechanical Enterprise Academic Research     
+
+
+ *------------------------------------------------------------------*
+ |                                                                  |
+ |   W E L C O M E   T O   T H E   A N S Y S (R)  P R O G R A M     |
+ |                                                                  |
+ *------------------------------------------------------------------*
+
+
+
+
+ ***************************************************************
+ *         ANSYS MAPDL 2026 R1.03       LEGAL NOTICES          *
+ ***************************************************************
+ *                                                             *
+ * Copyright (c) 2026 Synopsys, Inc. and ANSYS, Inc.           *
+ * All rights reserved.                                        *
+ * Unauthorized use, distribution or duplication is            *
+ * prohibited.                                                 *
+ *                                                             *
+ * Ansys is a registered trademark of Ansys, Inc. or its       *
+ * subsidiaries in the United States or other countries.       *
+ * See the Ansys, Inc. online documentation or the Ansys, Inc. *
+ * documentation CD or online help for the complete Legal      *
+ * Notice.                                                     *
+ *                                                             *
+ ***************************************************************
+ *                                                             *
+ * THIS ANSYS SOFTWARE PRODUCT AND PROGRAM DOCUMENTATION       *
+ * INCLUDE TRADE SECRETS AND CONFIDENTIAL AND PROPRIETARY      *
+ * PRODUCTS OF ANSYS, INC., ITS SUBSIDIARIES, OR LICENSORS.    *
+ * The software products and documentation are furnished by    *
+ * Ansys, Inc. or its subsidiaries under a software license    *
+ * agreement that contains provisions concerning               *
+ * non-disclosure, copying, length and nature of use,          *
+ * compliance with exporting laws, warranties, disclaimers,    *
+ * limitations of liability, and remedies, and other           *
+ * provisions.  The software products and documentation may be *
+ * used, disclosed, transferred, or copied only in accordance  *
+ * with the terms and conditions of that software license      *
+ * agreement.                                                  *
+ *                                                             *
+ * Ansys, Inc. is a UL registered                              *
+ * ISO 9001:2015 company.                                      *
+ *                                                             *
+ ***************************************************************
+ *                                                             *
+ * This product is subject to U.S. laws governing export and   *
+ * re-export.                                                  *
+ *                                                             *
+ * For U.S. Government users, except as specifically granted   *
+ * by the Ansys, Inc. software license agreement, the use,     *
+ * duplication, or disclosure by the United States Government  *
+ * is subject to restrictions stated in the Ansys, Inc.        *
+ * software license agreement and FAR 12.212 (for non-DOD      *
+ * licenses).                                                  *
+ *                                                             *
+ ***************************************************************
+
+ 2026 R1.03  
+     
+ Point Releases and Patches installed:   
+     
+ Ansys Service Pack 2026 R1.01   
+ Ansys Service Pack 2026 R1.02   
+ Ansys Service Pack 2026 R1.03   
+ Ansys, Inc. License Manager 2026 R1 
+ Ansys, Inc. License Manager 2026 R1.01  
+ Ansys, Inc. License Manager 2026 R1.02  
+ Ansys, Inc. License Manager 2026 R1.03  
+ Discovery (reduced install) 2026 R1 
+ Discovery (reduced install) 2026 R1.01  
+ Discovery (reduced install) 2026 R1.02  
+ Discovery (reduced install) 2026 R1.03  
+ Core WB Files 2026 R1   
+ Core WB Files 2026 R1.01
+ Core WB Files 2026 R1.02
+ Core WB Files 2026 R1.03
+ Additive 2026 R1
+ Additive 2026 R1.01 
+ Additive 2026 R1.02 
+ Additive 2026 R1.03 
+ optiSLang Core 2026 R1  
+ optiSLang Core 2026 R1.01   
+ optiSLang Core 2026 R1.02   
+ optiSLang Core 2026 R1.03   
+ optiSLang Core UI 2026 R1   
+ optiSLang Core UI 2026 R1.01
+ optiSLang Core UI 2026 R1.02
+ optiSLang Core UI 2026 R1.03
+ optiSLang AI 2026 R1
+ optiSLang AI 2026 R1.01 
+ optiSLang AI 2026 R1.02 
+ optiSLang AI 2026 R1.03 
+ optiSLang App Generation 2026 R1
+ optiSLang App Generation 2026 R1.01 
+ optiSLang App Generation 2026 R1.02 
+ optiSLang App Generation 2026 R1.03 
+ Behavior Execution Engine 2026 R1   
+ Behavior Execution Engine 2026 R1.01
+ Behavior Execution Engine 2026 R1.02
+ Behavior Execution Engine 2026 R1.03
+ ModelCenter 2026 R1 
+ ModelCenter 2026 R1.01  
+ ModelCenter 2026 R1.02  
+ ModelCenter 2026 R1.03  
+ ModelCenter Remote Execution 2026 R1
+ ModelCenter Remote Execution 2026 R1.01 
+ ModelCenter Remote Execution 2026 R1.02 
+ ModelCenter Remote Execution 2026 R1.03 
+ ModelCenter MBSE 2026 R1
+ ModelCenter MBSE 2026 R1.01 
+ ModelCenter MBSE 2026 R1.02 
+ ModelCenter MBSE 2026 R1.03 
+ Scade One 2026 R1   
+ Scade One 2026 R1.01
+ Scade One 2026 R1.02
+ Scade One 2026 R1.03
+ medini analyze 2026 R1  
+ medini analyze 2026 R1.01   
+ medini analyze 2026 R1.02   
+ medini analyze 2026 R1.03   
+ scaderapidprototyper archive 2026 R1
+ scaderapidprototyper archive 2026 R1.01 
+ scaderapidprototyper archive 2026 R1.02 
+ scaderapidprototyper archive 2026 R1.03 
+ Granta Selector 2026 R1 
+ Granta Selector 2026 R1.01  
+ Granta Selector 2026 R1.02  
+ Granta Selector 2026 R1.03  
+ Dynamic Reporting 2026 R1   
+ Dynamic Reporting 2026 R1.01
+ Dynamic Reporting 2026 R1.02
+ Dynamic Reporting 2026 R1.03
+ Remote Solve Manager Standalone Services 2026 R1
+ Remote Solve Manager Standalone Services 2026 R1.01 
+ Remote Solve Manager Standalone Services 2026 R1.02 
+ Remote Solve Manager Standalone Services 2026 R1.03 
+ medini analyze QKit 2026 R1 
+ medini analyze QKit 2026 R1.01  
+ medini analyze QKit 2026 R1.02  
+ medini analyze QKit 2026 R1.03  
+ Aqwa 2026 R1
+ Aqwa 2026 R1.01 
+ Aqwa 2026 R1.02 
+ Aqwa 2026 R1.03 
+ Autodyn 2026 R1 
+ Autodyn 2026 R1.01  
+ Autodyn 2026 R1.02  
+ Autodyn 2026 R1.03  
+ Customization Files for User Programmable Features 2026 R1  
+ Customization Files for User Programmable Features 2026 R1.01   
+ Customization Files for User Programmable Features 2026 R1.02   
+ Customization Files for User Programmable Features 2026 R1.03   
+ ICEM CFD 2026 R1
+ ICEM CFD 2026 R1.01 
+ ICEM CFD 2026 R1.02 
+ ICEM CFD 2026 R1.03 
+ LS-DYNA 2026 R1 
+ LS-DYNA 2026 R1.01  
+ LS-DYNA 2026 R1.02  
+ LS-DYNA 2026 R1.03  
+ Material Calibration App 2026 R1
+ Material Calibration App 2026 R1.01 
+ Material Calibration App 2026 R1.02 
+ Material Calibration App 2026 R1.03 
+ Mechanical Products 2026 R1 
+ Mechanical Products 2026 R1.01  
+ Mechanical Products 2026 R1.02  
+ Mechanical Products 2026 R1.03  
+ Motion 2026 R1  
+ Motion 2026 R1.01   
+ Motion 2026 R1.02   
+ Motion 2026 R1.03   
+ RBF Morph 2026 R1   
+ RBF Morph 2026 R1.01
+ RBF Morph 2026 R1.02
+ RBF Morph 2026 R1.03
+ Sherlock 2026 R1
+ Sherlock 2026 R1.01 
+ Sherlock 2026 R1.02 
+ Sherlock 2026 R1.03 
+ Sound - SAS 2026 R1 
+ Sound - SAS 2026 R1.01  
+ Sound - SAS 2026 R1.02  
+ Sound - SAS 2026 R1.03  
+ ACIS Geometry Interface 2026 R1 
+ ACIS Geometry Interface 2026 R1.01  
+ ACIS Geometry Interface 2026 R1.02  
+ ACIS Geometry Interface 2026 R1.03  
+ AutoCAD Geometry Interface 2026 R1  
+ AutoCAD Geometry Interface 2026 R1.01   
+ AutoCAD Geometry Interface 2026 R1.02   
+ AutoCAD Geometry Interface 2026 R1.03   
+ Catia, Version 4 Geometry Interface 2026 R1 
+ Catia, Version 4 Geometry Interface 2026 R1.01  
+ Catia, Version 4 Geometry Interface 2026 R1.02  
+ Catia, Version 4 Geometry Interface 2026 R1.03  
+ Catia, Version 5 Geometry Interface 2026 R1 
+ Catia, Version 5 Geometry Interface 2026 R1.01  
+ Catia, Version 5 Geometry Interface 2026 R1.02  
+ Catia, Version 5 Geometry Interface 2026 R1.03  
+ Catia, Version 6 Geometry Interface 2026 R1 
+ Catia, Version 6 Geometry Interface 2026 R1.01  
+ Catia, Version 6 Geometry Interface 2026 R1.02  
+ Catia, Version 6 Geometry Interface 2026 R1.03  
+ Creo Elements/Direct Modeling Geometry Interface 2026 R1
+ Creo Elements/Direct Modeling Geometry Interface 2026 R1.01 
+ Creo Elements/Direct Modeling Geometry Interface 2026 R1.02 
+ Creo Elements/Direct Modeling Geometry Interface 2026 R1.03 
+ Creo Parametric Geometry Interface 2026 R1  
+ Creo Parametric Geometry Interface 2026 R1.01   
+ Creo Parametric Geometry Interface 2026 R1.02   
+ Creo Parametric Geometry Interface 2026 R1.03   
+ Inventor Geometry Interface 2026 R1 
+ Inventor Geometry Interface 2026 R1.01  
+ Inventor Geometry Interface 2026 R1.02  
+ Inventor Geometry Interface 2026 R1.03  
+ JTOpen Geometry Interface 2026 R1   
+ JTOpen Geometry Interface 2026 R1.01
+ JTOpen Geometry Interface 2026 R1.02
+ JTOpen Geometry Interface 2026 R1.03
+ NX Geometry Interface 2026 R1   
+ NX Geometry Interface 2026 R1.01
+ NX Geometry Interface 2026 R1.02
+ NX Geometry Interface 2026 R1.03
+ Parasolid Geometry Interface  2026 R1   
+ Parasolid Geometry Interface  2026 R1.01
+ Parasolid Geometry Interface  2026 R1.02
+ Parasolid Geometry Interface  2026 R1.03
+ Solid Edge Geometry Interface 2026 R1   
+ Solid Edge Geometry Interface 2026 R1.01
+ Solid Edge Geometry Interface 2026 R1.02
+ Solid Edge Geometry Interface 2026 R1.03
+ SOLIDWORKS Geometry Interface 2026 R1   
+ SOLIDWORKS Geometry Interface 2026 R1.01
+ SOLIDWORKS Geometry Interface 2026 R1.02
+ SOLIDWORKS Geometry Interface 2026 R1.03
+
+
+          *****  MAPDL COMMAND LINE ARGUMENTS  *****
+  BATCH MODE REQUESTED (-b)    = LIST
+  INPUT FILE COPY MODE (-c)    = COPY
+  SHARED MEMORY PARALLEL REQUESTED
+  INPUT FILE NAME              = C:\Users\samue\OSR\shared\pde_matrices_extract_in.txt
+  OUTPUT FILE NAME             = C:\Users\samue\OSR\shared\pde_matrices_extract_out.txt
+
+ RELEASE= 2026 R1.03           BUILD= 26.1      UP20260202   VERSION=WINDOWS x64 
+ CURRENT JOBNAME=file  10:36:23  SEP 15, 2026  Elapsed Time=       0.078
+
+     1  /CLEAR,NOSTART  
+     2  /FILNAME,pdefilter,1
+     3  /CWD,'C:\Users\samue\OSR\shared'
+     4      
+     5  /INQUIRE,fex,EXIST,'C:\Users\samue\OSR\shared\model','cdb'  
+     6  *IF,fex,EQ,0,THEN   
+     7    *MSG,ERROR
+     8  model.cdb not found in C:\Users\samue\OSR\shared
+     9    /EOF  
+    10  *ENDIF  
+    11      
+    12  /PREP7  
+    13  CDREAD,DB,'C:\Users\samue\OSR\shared\model','cdb'   
+    14  DDELE,ALL,ALL   
+    15  FDELE,ALL,ALL   
+    16  SFDELE,ALL,ALL  
+    17  BFDELE,ALL,ALL  
+    18  BFEDELE,ALL,ALL 
+    19  ETCHG,STT   
+    20  MP,KXX,1,1  
+    21  MP,DENS,1,1 
+    22  MP,C,1,1
+    23  FINISH  
+    24      
+    25  /SOLU   
+    26  ANTYPE,TRANS
+    27  TRNOPT,FULL 
+    28  TIMINT,ON   
+    29  TINTP,,,,1.0
+    30  LUMPM,OFF   
+    31  NSUBST,1
+    32  TIME,1  
+    33  WRFULL,1
+    34  SOLVE   
+    35  FINISH  
+    36      
+    37  /INQUIRE,fullex,EXIST,'pdefilter','full'
+    38  *IF,fullex,EQ,0,THEN
+    39    *MSG,ERROR
+    40  pdefilter.full was not written - check for DMP jobname suffix or solve errors   
+    41    /EOF  
+    42  *ENDIF  
+    43      
+    44  *SMAT,Kt,D,IMPORT,FULL,pdefilter.full,STIFF 
+    45  *SMAT,Mt,D,IMPORT,FULL,pdefilter.full,DAMP  
+    46  *VEC,Map,I,IMPORT,FULL,pdefilter.full,BACK  
+    47  *EXPORT,Kt,MMF,'C:\Users\samue\OSR\shared\K_pde.mtx'
+    48  *EXPORT,Mt,MMF,'C:\Users\samue\OSR\shared\M_pde.mtx'
+    49  *EXPORT,Map,MMF,'C:\Users\samue\OSR\shared\map_pde.mtx' 
+
+ RUN SETUP PROCEDURE FROM FILE= C:\Program Files\ANSYS Inc\v261\Ansys\apdl\start.ans
+
+ /INPUT FILE= C:\Program Files\ANSYS Inc\v261\Ansys\apdl\start.ans  LINE=       0
+
+ CLEAR MAPDL DATABASE AND RESTART
+
+ Ansys Mechanical Enterprise Academic Research     
+
+ CURRENT JOBNAME REDEFINED AS pdefilter
+     Opening new LOG, ERROR, LOCK and PAGE FILES
+
+ Current working directory switched to C:\Users\samue\OSR\shared                                                                                                                                                                                                                               
+
+ PARAMETER FEX      =         0.000000
+
+ *IF  fex  ( =   0.00000     )  EQ  
+      0  ( =   0.00000     )  THEN    
+
+ *** ERROR ***                           ELAPSED TIME =       7.136   TIME= 10:36:25
+ Model.cdb not found in C:\Users\samue\OSR\shared.                       
+
+
+ NUMBER OF WARNING MESSAGES ENCOUNTERED=          0
+ NUMBER OF ERROR   MESSAGES ENCOUNTERED=          1
+
++--------------------- M A P D L   S T A T I S T I C S ------------------------+
+
+Release: 2026 R1.03         Build: 26.1       Update: UP20260202   Platform: WINDOWS x64 
+Date Run: 09/15/2026   Time: 10:36     Process ID: 13028
+Operating System: Windows 11  (Build: 26200)
+
+Processor Model: Intel(R) Core(TM) i7-8700K CPU @ 3.70GHz
+
+Compiler: Intel(R) Fortran Compiler Classic Version 2021.9  (Build: 20230302)
+          Intel(R) C/C++ Compiler Classic Version 2021.9  (Build: 20230302)
+          Intel(R) oneAPI Math Kernel Library Version 2024.2.3-Product Build 20250403
+
+Number of machines requested            :    1
+Total number of cores available         :   12
+Number of physical cores available      :    6
+Number of processes requested           :    1
+Number of threads per process requested :    4
+Total number of cores requested         :    4 (Shared Memory Parallel)                    
+
+GPU Acceleration: Not Requested
+
+Job Name: pdefilter
+Input File: pde_matrices_extract_in.txt
+Working Directory: C:\Users\samue\OSR\shared
+
+Total CPU time for main thread                    :        0.5 seconds
+Total CPU time summed for all threads             :        0.4 seconds
+
+Elapsed time spent obtaining a license            :        1.1 seconds
+Elapsed time spent pre-processing model (/PREP7)  :        0.0 seconds
+Elapsed time spent solution - preprocessing       :        0.0 seconds
+Elapsed time spent computing solution             :        0.0 seconds
+   Elapsed time in element formation & assembly   :        0.0 seconds
+   Elapsed time in equation solver                :        0.0 seconds
+   Elapsed time in element result calculations    :        0.0 seconds
+Elapsed time spent solution - postprocessing      :        0.0 seconds
+Elapsed time spent post-processing model (/POST1) :        0.0 seconds
+ 
+
+Sum of disk space used on all processes           :        0.0 MB
+
+Sum of memory used on all processes               :        7.0 MB
+Sum of memory allocated on all processes          :     2304.0 MB
+Physical memory available                         :         32 GB
+Total amount of I/O written to disk               :        0.0 GB
+Total amount of I/O read from disk                :        0.0 GB
+
++------------------ E N D   M A P D L   S T A T I S T I C S -------------------+
+
+
+ *-----------------------------------------------------------------------------*
+ |                                                                             |
+ |                               RUN COMPLETED                                 |
+ |                                                                             |
+ |-----------------------------------------------------------------------------|
+ |                                                                             |
+ |  Ansys MAPDL 2026 R1.03      Build 26.1         UP20260202    WINDOWS x64   |
+ |                                                                             |
+ |-----------------------------------------------------------------------------|
+ |                                                                             |
+ |  Database Requested(-db)  1024 MB     Scratch Memory Requested      1024 MB |
+ |  Maximum Database Used       1 MB     Maximum Scratch Memory Used      6 MB |
+ |                                                                             |
+ |-----------------------------------------------------------------------------|
+ |                                                                             |
+ |        CP Time      (sec) =          0.359       Time  =  10:36:35          |
+ |        Elapsed Time (sec) =         17.433       Date  =  09/15/2026        |
+ |                                                                             |
+ *-----------------------------------------------------------------------------*

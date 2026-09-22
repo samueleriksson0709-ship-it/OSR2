@@ -1,0 +1,110 @@
+/CLEAR,NOSTART  
+/CWD,'C:\Users\samue\OSR\shared'
+    
+/INQUIRE,fex,EXIST,'model','cdb'
+*IF,fex,EQ,0,THEN   
+  *MSG,ERROR
+model.cdb not found 
+  /EOF  
+*ENDIF  
+    
+/FILNAME,pdesteady,1
+/PREP7  
+CDREAD,DB,'model','cdb' 
+DDELE,ALL,ALL   
+FDELE,ALL,ALL   
+SFDELE,ALL,ALL  
+BFDELE,ALL,ALL  
+BFEDELE,ALL,ALL 
+ESEL,S,ENAME,,169,177   
+EDELE,ALL   
+ESEL,ALL
+NSLE,S  
+NSEL,INVE   
+NDELE,ALL   
+NSEL,ALL
+ETDELE,2,3  
+ETCHG,STT   
+ETLIST,ALL  
+*GET,nn,NODE,,COUNT 
+*GET,nmat_,MAT,,NUM,MAX 
+*DO,imat_,1,nmat_   
+  MP,KXX,imat_,1
+  MP,DENS,imat_,1   
+  MP,C,imat_,1  
+*ENDDO  
+FINISH  
+    
+/SOLU   
+ANTYPE,STATIC   
+EQSLV,SPARSE
+WRFULL,1
+SOLVE   
+FINISH  
+    
+/FILNAME,pdetrans,1 
+/SOLU   
+ANTYPE,TRANS
+TRNOPT,FULL 
+TIMINT,ON   
+TINTP,,,,1.0
+LUMPM,OFF   
+NSUBST,1
+TIME,1  
+WRFULL,1
+SOLVE   
+FINISH  
+    
+/INQUIRE,s1,EXIST,'pdesteady','full'
+/INQUIRE,s2,EXIST,'pdetrans','full' 
+*IF,s1,EQ,0,THEN
+  *MSG,ERROR
+pdesteady.full not written  
+  /EOF  
+*ENDIF  
+*IF,s2,EQ,0,THEN
+  *MSG,ERROR
+pdetrans.full not written   
+  /EOF  
+*ENDIF  
+    
+*SMAT,Kt,D,IMPORT,FULL,pdesteady.full,STIFF 
+*SMAT,Keff,D,IMPORT,FULL,pdetrans.full,STIFF
+*AXPY,-1.0,,Kt,1.0,,Keff
+    
+*VEC,MapB,I,IMPORT,FULL,pdesteady.full,BACK 
+*VEC,MapBt,I,IMPORT,FULL,pdetrans.full,BACK 
+    
+*EXPORT,Kt,MMF,K_pde.mtx
+*EXPORT,Keff,MMF,M_pde.mtx  
+*EXPORT,MapB,MMF,mapb.mtx   
+*EXPORT,MapBt,MMF,mapb_t.mtx
+    
+*CFOPEN,pde_dims,txt
+*VWRITE,nn  
+(G24.16)
+*CFCLOS 
+    
+*GET,ne_,ELEM,,COUNT
+*DIM,econn,ARRAY,ne_*20 
+e_=0
+*DO,k_,1,ne_
+  e_=ELNEXT(e_) 
+  *DO,j_,1,20   
+    econn((k_-1)*20+j_)=NELEM(e_,j_)
+  *ENDDO
+*ENDDO  
+*CFOPEN,econn,txt   
+*VWRITE,econn(1)
+(F10.0) 
+*CFCLOS 
+    
+*GET,ndmax_,NODE,,NUM,MAX   
+*DIM,nxyz,ARRAY,ndmax_,3
+*VGET,nxyz(1,1),NODE,1,LOC,X
+*VGET,nxyz(1,2),NODE,1,LOC,Y
+*VGET,nxyz(1,3),NODE,1,LOC,Z
+*CFOPEN,nxyz,txt
+*VWRITE,nxyz(1,1),nxyz(1,2),nxyz(1,3)   
+(3E24.15)   
+*CFCLOS 

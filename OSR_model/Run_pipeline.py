@@ -24,7 +24,8 @@ from datetime import datetime
 from pathlib import Path
 import numpy as np 
 from scipy import sparse
-from scipy.sparse.linalg import spsolve
+from scipy.sparse import coo_matrix
+from scipy.sparse.linalg import spsolve, splu
 
 # PATH CONFIGURATION
 # Nothing here is tied to a particular machine or user account. The folders are
@@ -40,6 +41,7 @@ OSR_ROOT   = Path(os.environ.get("OSR_ROOT") or SCRIPT_DIR.parent)
 FORTRAN_DIR = Path(os.environ.get("OSR_FORTRAN_DIR") or SCRIPT_DIR)
 SHARED_DIR  = Path(os.environ.get("OSR_SHARED_DIR") or (OSR_ROOT / "shared"))
 EXE_NAME    = "osr_pipeline_multi.exe" if os.name == "nt" else "osr_pipeline_multi"
+MAPDL_EXE_DIR = r"C:\Program Files\ANSYS Inc\v261\ansys\bin\winx64\ANSYS261.exe" #TODO auto-detect the MAPDL executable path from the registry or the ANSYS environment variable
 
 # Optional: reuse the existing Workbench ACT configuration when available.
 # The current script mainly uses it to retrieve omp_threads, while keeping the
@@ -87,7 +89,7 @@ DEFAULT_STRESS_UNIT = "MPA"
 # enable this only for geometries where fixed-support singularities must be excluded from fatigue post-processing
 USE_CLAMP_FILTER  = False 
 USE_DEDUPLICATION = True
-USE_PDE_FILTER = False
+USE_PDE_FILTER = True
 
 
 # Change this string if the binary-cache format or the deduplication criterion
@@ -452,6 +454,7 @@ def parse_loadcases(loadcases_path): # read the different values needed for the 
         if pde_radius <= 0.0:
             fail(f"PDE filter radius must be positive, got {pde_radius}")
 
+
     if mode not in ("SINUS", "HISTORY"):
         fail(f"invalid loading mode '{mode}' in loadcases.txt"
              "Expected SINUS or HISTORY")
@@ -670,7 +673,7 @@ def constructPDEMatrix(stress_file,r,nnod,nelm,npe):
 
     return K,M,l_0
 
-def PDEFilter(stress_file_nodal,stress_file_elemental,r):
+def PDEFilter_construct(stress_file_nodal,stress_file_elemental,r):
     #Find geometry variables
     npe = int(sum(1 for row in stress_file_elemental if row[0] == stress_file_elemental[0][0]))
     assert npe == 4, f"expected linear tets (4 rows per element), got {npe}"
@@ -699,8 +702,155 @@ def PDEFilter(stress_file_nodal,stress_file_elemental,r):
     return out
 
 
-def main():
+def run_mapdl_extract():
+    export_files = ("K_pde.mtx", "M_pde.mtx", "mapb.mtx", "mapb_t.mtx",
+             "pde_dims.txt", "econn.txt", "nxyz.txt")
+    pde_deck = "pde_matrices_extract_in.txt"
+    for name in export_files:
+        p = SHARED_DIR / name
+        if p.exists():
+            p.unlink()
 
+    if not (SHARED_DIR / pde_deck).exists():
+        fail(f"{pde_deck} not found in {SHARED_DIR}")
+    if not (SHARED_DIR / "model.cdb").exists():
+        fail("model.cdb not found; add CDWRITE to the Mechanical Commands object")
+    if not Path(MAPDL_EXE_DIR).exists():
+        fail(f"MAPDL executable not found: {MAPDL_EXE_DIR}")
+
+    res = subprocess.run(
+        [MAPDL_EXE_DIR, "-b", "-np", "1", "-i", pde_deck, "-o", "pde_filter.out"],
+        cwd=str(SHARED_DIR), timeout=7200,
+    )
+    for name in export_files:
+        if not (SHARED_DIR / name).exists():
+            fail(f"{name} not written (code {res.returncode}), see pde_filter.out")
+
+    return int(float(np.loadtxt(SHARED_DIR / "pde_dims.txt")))
+
+
+def read_mmf_triplets(path):
+    with open(path) as f:
+        header = f.readline()
+        symmetric = "symmetric" in header.lower()
+        line = f.readline()
+        while line.startswith("%"):
+            line = f.readline()
+        nrow, ncol, nnz = (int(v) for v in line.split())
+        data = np.loadtxt(f, max_rows=nnz)
+    i = data[:, 0].astype(np.int64) - 1
+    j = data[:, 1].astype(np.int64) - 1
+    v = data[:, 2]
+    if symmetric:
+        off = i != j
+        i, j, v = (np.concatenate([i, j[off]]),
+                   np.concatenate([j, i[off]]),
+                   np.concatenate([v, v[off]]))
+    return i, j, v, nrow
+
+
+def build_csc(i, j, v, n):
+    return coo_matrix((v, (i, j)), shape=(n, n)).tocsc()
+
+
+def read_mmf_vector(path):
+    with open(path) as f:
+        lines = [ln for ln in f if not ln.startswith("%")]
+    data = np.loadtxt(lines[1:])
+    return data if data.ndim == 1 else data[:, -1]
+    
+def fill_midside(rhs, known, econn, lut, xyz, tol=0.25):
+    # Fill midside nodes by averaging the values of the two end nodes of each edge.
+    acc = np.zeros_like(rhs)
+    cnt = np.zeros(len(rhs))
+    for conn in econn:
+        nodes = np.unique(lut[conn[conn > 0]])
+        kn = nodes[known[nodes]]
+        un = nodes[~known[nodes]]
+        if len(un) == 0 or len(kn) < 2:
+            continue
+        ia, ib = np.triu_indices(len(kn), 1)
+        a, b = kn[ia], kn[ib]
+        mid = 0.5 * (xyz[a] + xyz[b])
+        L = np.linalg.norm(xyz[a] - xyz[b], axis=1)
+        d = np.linalg.norm(xyz[un, None, :] - mid[None], axis=2) / L
+        k = d.argmin(axis=1)
+        ok = d[np.arange(len(un)), k] < tol
+        for m, p in zip(un[ok], k[ok]):
+            acc[m] += 0.5 * (rhs[a[p]] + rhs[b[p]])
+            cnt[m] += 1
+    filled = cnt > 0
+    out = rhs.copy()
+    out[filled] = acc[filled] / cnt[filled, None]
+    return out, known | filled
+
+def PDEFilter_export(stress_file_nodal,r):
+    nn = run_mapdl_extract()
+    ki, kj, kv, n = read_mmf_triplets(SHARED_DIR / "K_pde.mtx")
+    mi, mj, mv, nm = read_mmf_triplets(SHARED_DIR / "M_pde.mtx")
+    if n != nn or nm != nn:
+        fail(f"matrix size mismatch: K={n} M={nm} mesh nodes={nn}")
+    log(f"K: {n} rows, {len(kv)} nonzeros")
+    log(f"M: {n} rows, {len(mv)} nonzeros")
+
+    back = read_mmf_vector(SHARED_DIR / "mapb.mtx").astype(np.int64)
+    back_t = read_mmf_vector(SHARED_DIR / "mapb_t.mtx").astype(np.int64)
+    if not np.array_equal(back, back_t):
+        fail("equation ordering differs between pdesteady.full and pdetrans.full")
+    if len(back) != nn:
+        fail(f"mapping length {len(back)} != node count {nn}")
+
+    lut = np.full(back.max() + 1, -1, dtype=np.int64)
+    lut[back] = np.arange(n)
+
+    nids = np.array([int(r[1]) for r in stress_file_nodal])
+    if nids.max() >= len(lut) or (lut[nids] < 0).any():
+        fail("stress-file nodes not in PDE mesh")
+    rows = lut[nids]
+
+    stress_nodal = np.array([r[5:11] for r in stress_file_nodal], dtype=float)
+    rhs = np.zeros((n, 6))
+    rhs[rows] = stress_nodal
+    known = np.zeros(n, dtype=bool)
+    known[rows] = True
+
+    econn = np.loadtxt(SHARED_DIR / "econn.txt").astype(np.int64).reshape(-1, 20)
+    nxyz = np.loadtxt(SHARED_DIR / "nxyz.txt").reshape(-1, 3)
+    xyz = nxyz[back - 1]
+
+    rhs, known = fill_midside(rhs, known, econn, lut, xyz)
+    if not known.all():
+        fail(f"{(~known).sum()} nodes still without stress after midside fill")
+
+    l_0 = r / (2*np.sqrt(2))
+    K = build_csc(ki, kj, kv, n)
+    M = build_csc(mi, mj, mv, n)
+    lu = splu((l_0**2 * K + M).tocsc())
+    sol = lu.solve(M @ rhs)
+    stress_filt_nodal = sol[rows]
+
+    out = []
+    for row, s in zip(stress_file_nodal, stress_filt_nodal):
+        out.append(row[:5] + tuple(s.tolist()))
+
+    return out
+
+def filter_comp(kept_rows_const, kept_rows_ext):
+    # Compare the two PDE filter implementations
+    max_diff = 0.0
+    mean_diff = 0.0
+    for r1, r2 in zip(kept_rows_const, kept_rows_ext):
+        diff = np.abs(np.array(r1[5:11]) - np.array(r2[5:11]))
+        max_diff = max(max_diff, diff.max())
+        mean_diff += diff.mean()
+    mean_diff /= len(kept_rows_const)
+    if max_diff > 1e-6:
+        log(f"Warning: PDE filter implementations differ (max difference {max_diff:.3e})")
+        log(f"Warning: PDE filter implementations differ (mean difference {mean_diff:.3e})")
+    else:
+        log("PDE filter implementations agree within tolerance")
+
+def main():
 
     SHARED_DIR.mkdir(parents=True, exist_ok=True)
     log("Python script started")
@@ -804,7 +954,12 @@ def main():
 
                     if USE_PDE_FILTER:
                         log(f"  PDE filter enabled, filtering {n_out} rows from {fname} with pde_radius={pde_radius}")
-                        kept_rows = PDEFilter(kept_rows, read_stress_file(SHARED_DIR / fname), pde_radius)
+                        kept_rows_const = PDEFilter_construct(kept_rows, read_stress_file(SHARED_DIR / fname), pde_radius)
+                        kept_rows_ext = PDEFilter_export(kept_rows, pde_radius)
+
+                        # Compare the two PDE filter implementations
+                        filter_comp(kept_rows_const,kept_rows_ext)
+
                     else:
                         log("PDE filter disabled, writing deduplicated rows without filtering")
 
