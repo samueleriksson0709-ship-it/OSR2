@@ -57,13 +57,13 @@ OUTPUT_CRITICAL = "critical_points.txt"
 # Coordinates of the fixed supports, in the length unit of the export (these ones
 # come from a model meshed in mm). Update them for a model solved in MKS, where
 # the exported coordinates are in m, before turning USE_CLAMP_FILTER on.
-CLAMP_CENTERS = [ (-1.4912e-11, -25.936 , 28.185),
-    (-1.5118e-11, 2.6002, 2.9392),
-    (-148.06, -22.569, 25.206),
-    (-148.06, 16.431, -9.2965)
+CLAMP_CENTERS = [ (-1.4912e-14, -0.025936 , 0.028185),
+    (-1.5118e-14, 2.6002e-3, 2.9392e-3),
+    (-0.14806, -0.022569, 0.025206),
+    (-0.14806, 0.016431, -0.0092965)
 ]
 
-CLAMP_RADIUS = 15.0
+CLAMP_RADIUS = 0.015
 
 A_OSR = 0.225
 SIGMA_OE = 490.0
@@ -87,7 +87,7 @@ STRESS_UNITS = {
 DEFAULT_STRESS_UNIT = "MPA"
 
 # enable this only for geometries where fixed-support singularities must be excluded from fatigue post-processing
-USE_CLAMP_FILTER  = False 
+USE_CLAMP_FILTER  = True 
 USE_DEDUPLICATION = True
 USE_PDE_FILTER = True
 
@@ -706,7 +706,9 @@ def PDEFilter_construct(stress_file_nodal,stress_file_elemental,r):
     for row, s in zip(stress_file_nodal, stress_filt_nodal):
         out.append(row[:5] + tuple(s.tolist()))
 
-    return out
+    xyz = np.array([row[2:5] for row in stress_file_nodal])
+
+    return out, K, M, xyz
 
 
 def run_mapdl_extract():
@@ -840,36 +842,28 @@ def PDEFilter_export(stress_file_nodal,r):
     for row, s in zip(stress_file_nodal, stress_filt_nodal):
         out.append(row[:5] + tuple(s.tolist()))
 
+    #return out, K, M, xyz
     return out
 
-def filter_comp(kept_rows_const, kept_rows_ext, rel_tol=1e-3):
-    # Compare the two PDE filter implementations.
-    # The comparison has to be relative: stresses are O(1e8) Pa, so an absolute
-    # tolerance of 1e-6 is ~1e-14 relative and no implementation can ever pass it.
-    # The two routes are also different discretisations of the same PDE -- P1 on the
-    # corner nodes here, P2 on the full 10-node mesh from MAPDL -- so they agree only
-    # to discretisation error, which shrinks as the mesh resolves l_0.
-    max_diff = 0.0
-    mean_diff = 0.0
-    scale = 0.0
-    for r1, r2 in zip(kept_rows_const, kept_rows_ext):
-        s1 = np.array(r1[5:11])
-        diff = np.abs(s1 - np.array(r2[5:11]))
-        max_diff = max(max_diff, diff.max())
-        mean_diff += diff.mean()
-        scale = max(scale, np.abs(s1).max())
-    mean_diff /= len(kept_rows_const)
-    if scale == 0.0:
-        log("PDE filter comparison skipped: filtered stress is identically zero")
-        return
-    if max_diff > rel_tol * scale:
-        log(f"Warning: PDE filter implementations differ (max difference {max_diff:.3e}, "
-            f"{max_diff/scale:.2%} of peak stress {scale:.3e}; tolerance {rel_tol:.1%})")
-        log(f"Warning: PDE filter implementations differ (mean difference {mean_diff:.3e}, "
-            f"{mean_diff/scale:.2%} of peak stress)")
-    else:
-        log(f"PDE filter implementations agree within tolerance "
-            f"(max difference {max_diff/scale:.2%} of peak stress, tolerance {rel_tol:.1%})")
+
+def matrix_checks(K, M, xyz):
+    ones = np.ones(K.shape[0])
+    Mx = M @ ones
+    vol = ones @ Mx
+    out = {"n_nodes": K.shape[0], "volume": vol,
+           "max|K 1| / max|K|": np.abs(K @ ones).max() / abs(K).max()}
+    for d, name in enumerate("xyz"):
+        u = xyz[:, d] - (Mx @ xyz[:, d]) / vol
+        out[f"u'Ku/V ({name})"] = u @ (K @ u) / vol
+        out[f"u'Mu ({name})"] = u @ (M @ u)
+    return out
+
+def filter_comp(kept_rows_const, kept_rows_ext, K_const, M_const, xyz_const, K_ext, M_ext, xyz_ext, rel_tol=1e-3):    
+    a = matrix_checks(K_const, M_const, xyz_const)
+    b = matrix_checks(K_ext, M_ext, xyz_ext)
+    for k in a:
+        rel = abs(a[k] - b[k]) / max(abs(a[k]), abs(b[k]), 1e-300)
+        log(f"  {k}: P1 {a[k]:.6g}  P2 {b[k]:.6g}  rel diff {rel:.2e}")
 
 def main():
 
@@ -945,19 +939,10 @@ def main():
             # Cache miss: read, filter, deduplicate, and write a new cache.
             log("Binary cache missing or stale: running full deduplication")
             all_rows_by_case = []
-            raw_counts_by_case = []
 
             for fname in stress_filenames:
                 rows = read_stress_file(SHARED_DIR / fname)
-                n_raw_before_filter = len(rows)
-                rows, n_removed = filter_clamps(rows)
                 all_rows_by_case.append(rows)
-                raw_counts_by_case.append(n_raw_before_filter)
-
-                if USE_CLAMP_FILTER : 
-                    log(f" {fname}: {len(rows)} rows after clamp filtering ({n_removed} removed)")
-                else : 
-                    log(f" {fname}: {len(rows)} rows read (clamp filter disabled)")
 
             chosen_eids = select_reference_eids_by_max_beta(
                 all_rows_by_case, loadcases, mode=mode, history=history,
@@ -975,14 +960,26 @@ def main():
 
                     if USE_PDE_FILTER:
                         log(f"  PDE filter enabled, filtering {n_out} rows from {fname} with pde_radius={pde_radius}")
-                        kept_rows_const = PDEFilter_construct(kept_rows, read_stress_file(SHARED_DIR / fname), pde_radius)
-                        kept_rows_ext = PDEFilter_export(kept_rows, pde_radius)
+                        kept_rows = PDEFilter_export(kept_rows, pde_radius)
 
-                        # Compare the two PDE filter implementations
-                        filter_comp(kept_rows_const,kept_rows_ext)
+                        #kept_rows_const, K_const, M_const, xyz_const = PDEFilter_construct(kept_rows, read_stress_file(SHARED_DIR / fname), pde_radius)
+                        #kept_rows_ext, K_ext, M_ext, xyz_ext = PDEFilter_export(kept_rows, pde_radius)
+                        #filter_comp(kept_rows_const, kept_rows_ext, K_const, M_const, xyz_const, K_ext, M_ext, xyz_ext)
+                        #TODO clean and remove comp
 
                     else:
                         log("PDE filter disabled, writing deduplicated rows without filtering")
+
+
+                    # Clamp filter
+
+                    n_raw_before_filter = len(kept_rows)
+                    kept_rows, n_removed = filter_clamps(kept_rows)
+                    if USE_CLAMP_FILTER : 
+                        log(f" {fname}: {len(kept_rows)} rows after clamp filtering ({n_removed} removed)")
+                    else : 
+                        log(f" {fname}: {len(kept_rows)} rows read (clamp filter disabled)")
+
 
                     # Text file written for human inspection.
                     write_rows_file(kept_rows, FORTRAN_DIR / fname)

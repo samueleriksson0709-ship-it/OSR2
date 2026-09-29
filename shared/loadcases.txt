@@ -1,5 +1,5 @@
 # n_cases omega mode stress_unit filtRad
-1 6.283185307   SINUS   PA   0.003
+1 6.283185307   SINUS   PA   0.0015
 
 # fichier                   amp  phase  mean   
 sigma_export_nodes_testBracket.txt      1.0   0.0   0.0
@@ -8,10 +8,10 @@ sigma_export_nodes_testBracket.txt      1.0   0.0   0.0
 100000 100 4 
   
 # history_file
--  
+-    
  
-# integrator 
+# integrator   
 RK4 
 
 
-			 
+			       

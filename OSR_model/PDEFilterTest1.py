@@ -148,13 +148,4 @@ if __name__ == "__main__":
     stress_filt_nodal = sol[rows]
     stress_filt_all = sol
 
-    out_path = SHARED_DIR / "testStress.txt"
-    meta = np.array([r[0:5] for r in stress_file_nodal], dtype=float)
-    out = np.column_stack([meta, stress_filt_nodal])
-    np.savetxt(
-        out_path, out,
-        fmt=["%8d", "%8d"] + ["%14.6E"] * 9,
-        header="eid nid X Y Z SXX SYY SZZ SXY SYZ SXZ",
-        comments="# ",
-    )
-    log(f"filtered stress written to {out_path}")
+
