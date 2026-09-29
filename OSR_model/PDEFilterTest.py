@@ -3,14 +3,13 @@ from pathlib import Path
 import subprocess
 import numpy as np
 from scipy.sparse import coo_matrix
-from scipy.sparse.linalg import splu
 
 
 MAPDL_EXE_DIR = r"C:\Program Files\ANSYS Inc\v261\ansys\bin\winx64\ANSYS261.exe"
 
 
 def run_mapdl_extract():
-    export_files = ("K_pde.mtx", "M_pde.mtx", "mapb.mtx", "mapb_t.mtx",
+    export_files = ("A_pde.mtx", "mapb.mtx", "mapb_t.mtx",
              "pde_dims.txt", "econn.txt", "nxyz.txt")
     pde_deck = "pde_matrices_extract_in.txt"
     for name in export_files:
@@ -60,6 +59,20 @@ def build_csc(i, j, v, n):
     return coo_matrix((v, (i, j)), shape=(n, n)).tocsc()
 
 
+def read_mmf_dense(path):
+    with open(path, "rb") as f:
+        header = f.readline().decode().lower()
+        line = f.readline()
+        while line.startswith(b"%"):
+            line = f.readline()
+        nrow, ncol = (int(v) for v in line.split()[:2])
+        if "coordinate" in header:
+            i, j, v, _ = read_mmf_triplets(path)
+            return coo_matrix((v, (i, j)), shape=(nrow, ncol)).toarray()
+        data = np.fromfile(f, sep=" ")
+    return data.reshape(ncol, nrow).T
+
+
 def read_mmf_vector(path):
     with open(path) as f:
         lines = [ln for ln in f if not ln.startswith("%")]
@@ -93,17 +106,14 @@ def fill_midside(rhs, known, econn, lut, xyz, tol=0.25):
 
 if __name__ == "__main__":
     nn = run_mapdl_extract()
-    ki, kj, kv, n = read_mmf_triplets(SHARED_DIR / "K_pde.mtx")
-    mi, mj, mv, nm = read_mmf_triplets(SHARED_DIR / "M_pde.mtx")
-    if n != nn or nm != nn:
-        fail(f"matrix size mismatch: K={n} M={nm} mesh nodes={nn}")
-    log(f"K: {n} rows, {len(kv)} nonzeros")
-    log(f"M: {n} rows, {len(mv)} nonzeros")
+    A = read_mmf_dense(SHARED_DIR / "A_pde.mtx")
+    n = A.shape[0]
+    if A.shape != (nn, nn):
+        fail(f"matrix size mismatch: A={A.shape} mesh nodes={nn}")
+    log(f"A: {n} x {n}")
 
-    krow = np.zeros(n)
-    np.add.at(krow, ki, kv)
-    log(f"nullspace check |K@1|_max / |K|_max = {np.abs(krow).max() / np.abs(kv).max():.3e}")
-    log(f"M.sum() = {mv.sum():.6g}  (should equal mesh volume 4.63e-4)")
+    # K@1 = 0  =>  A@1 = 1
+    log(f"row-sum check |A@1 - 1|_max = {np.abs(A.sum(axis=1) - 1).max():.3e}")
 
     back = read_mmf_vector(SHARED_DIR / "mapb.mtx").astype(np.int64)
     back_t = read_mmf_vector(SHARED_DIR / "mapb_t.mtx").astype(np.int64)
@@ -119,8 +129,6 @@ if __name__ == "__main__":
 
     path = "C:/Users/samue/OSR/OSR_model/sigma_export_nodes_testBracket.txt"
     stress_file_nodal = read_stress_file(path)
-    l_0 = 0.003
-
     nids = np.array([int(r[1]) for r in stress_file_nodal])
     stress_nodal = np.array([r[5:11] for r in stress_file_nodal], dtype=float)
     if nids.max() >= len(lut) or (lut[nids] < 0).any():
@@ -141,10 +149,7 @@ if __name__ == "__main__":
     if not known.all():
         fail(f"{(~known).sum()} nodes still without stress after midside fill")
 
-    K = build_csc(ki, kj, kv, n)
-    M = build_csc(mi, mj, mv, n)
-    lu = splu((l_0**2 * K + M).tocsc())
-    sol = lu.solve(M @ rhs)
+    sol = A @ rhs
     stress_filt_nodal = sol[rows]
     stress_filt_all = sol
 
