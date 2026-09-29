@@ -72,21 +72,11 @@ pdetrans.full not written
 *SMAT,Keff,D,IMPORT,FULL,pdetrans.full,STIFF
 *AXPY,-1.0,,Kt,1.0,,Keff
 
-! A_pde = inv(K + M)*M   (Kt = K, Keff = M)
-*SMAT,KpM,D,COPY,Kt
-*AXPY,1.0,,Keff,1.0,,KpM
-*LSENGINE,BCS,PdeSolv,KpM
-*LSFACTOR,PdeSolv
-*DMAT,Md,D,COPY,Keff
-*DMAT,A_pde,D,COPY,Md
-*LSBAC,PdeSolv,Md,A_pde
-*FREE,Md
-*FREE,PdeSolv
-
 *VEC,MapB,I,IMPORT,FULL,pdesteady.full,BACK
 *VEC,MapBt,I,IMPORT,FULL,pdetrans.full,BACK
 
-*EXPORT,A_pde,MMF,A_pde.mtx
+*EXPORT,Kt,MMF,K_pde.mtx
+*EXPORT,Keff,MMF,M_pde.mtx
 *EXPORT,MapB,MMF,mapb.mtx
 *EXPORT,MapBt,MMF,mapb_t.mtx
 

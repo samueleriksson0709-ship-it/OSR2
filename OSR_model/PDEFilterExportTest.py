@@ -4,11 +4,8 @@ from scipy.sparse.linalg import spsolve
 import os
 from Run_pipeline import read_stress_file, SHARED_DIR, Path, MAPDL_EXE_DIR, subprocess, fail, log, coo_matrix
 
-def run_mapdl_extract():
-    export_files = ("A_pde.mtx", "mapb.mtx", "mapb_t.mtx",
-             "pde_dims.txt", "econn.txt", "nxyz.txt")
-    pde_deck = "pde_matrices_extract_in.txt"
-    for name in export_files:
+def run_mapdl(pde_deck, job, export_files):
+    for name in export_files + (f"{job}.lock",):
         p = SHARED_DIR / name
         if p.exists():
             p.unlink()
@@ -21,14 +18,32 @@ def run_mapdl_extract():
         fail(f"MAPDL executable not found: {MAPDL_EXE_DIR}")
 
     res = subprocess.run(
-        [MAPDL_EXE_DIR, "-b", "-np", "1", "-i", pde_deck, "-o", "pde_filter.out"],
+        [MAPDL_EXE_DIR, "-b", "-np", "1", "-j", job,
+         "-i", pde_deck, "-o", f"{job}.out"],
         cwd=str(SHARED_DIR), timeout=7200,
     )
     for name in export_files:
         if not (SHARED_DIR / name).exists():
-            fail(f"{name} not written (code {res.returncode}), see pde_filter.out")
+            fail(f"{name} not written (code {res.returncode}), see {job}.out")
 
+
+def run_mapdl_extract():
+    run_mapdl("pde_matrices_extract_in.txt", "pdeextract",
+              ("mapb.mtx", "mapb_t.mtx", "pde_dims.txt", "econn.txt", "nxyz.txt"))
     return int(float(np.loadtxt(SHARED_DIR / "pde_dims.txt")))
+
+
+def run_mapdl_solve(rhs, l_0):
+    # Solves (l_0^2 K + M) sol = M rhs in MAPDL; rhs is n x 6 in equation order.
+    n = rhs.shape[0]
+    with open(SHARED_DIR / "pde_params.txt", "w") as f:
+        f.write(f"n_={n}\nl0sq_={l_0**2:.16e}\n")
+    np.savetxt(SHARED_DIR / "rhs_pde.txt", rhs, fmt="%25.15E", delimiter="")
+    run_mapdl("pde_filter_solve_in.txt", "pdesolve", ("sol_pde.txt",))
+    sol = np.loadtxt(SHARED_DIR / "sol_pde.txt").reshape(-1, 6)
+    if sol.shape != rhs.shape:
+        fail(f"sol_pde.txt has shape {sol.shape}, expected {rhs.shape}")
+    return sol
 
 
 def read_mmf_triplets(path):
@@ -53,20 +68,6 @@ def read_mmf_triplets(path):
 
 def build_csc(i, j, v, n):
     return coo_matrix((v, (i, j)), shape=(n, n)).tocsc()
-
-
-def read_mmf_dense(path):
-    with open(path, "rb") as f:
-        header = f.readline().decode().lower()
-        line = f.readline()
-        while line.startswith(b"%"):
-            line = f.readline()
-        nrow, ncol = (int(v) for v in line.split()[:2])
-        if "coordinate" in header:
-            i, j, v, _ = read_mmf_triplets(path)
-            return coo_matrix((v, (i, j)), shape=(nrow, ncol)).toarray()
-        data = np.fromfile(f, sep=" ")
-    return data.reshape(ncol, nrow).T
 
 
 def read_mmf_vector(path):
@@ -100,15 +101,9 @@ def fill_midside(rhs, known, econn, lut, xyz, tol=0.25):
     out[filled] = acc[filled] / cnt[filled, None]
     return out, known | filled
 
-def PDEFilter_export(stress_file_nodal):
+def PDEFilter_export(stress_file_nodal,r):
     nn = run_mapdl_extract()
-    A = read_mmf_dense(SHARED_DIR / "A_pde.mtx")
-    n = A.shape[0]
-    if A.shape != (nn, nn):
-        fail(f"matrix size mismatch: A={A.shape} mesh nodes={nn}")
-    log(f"A: {n} x {n}")
-    # K@1 = 0  =>  A@1 = 1
-    log(f"row-sum check |A@1 - 1|_max = {np.abs(A.sum(axis=1) - 1).max():.3e}")
+    n = nn
 
     back = read_mmf_vector(SHARED_DIR / "mapb.mtx").astype(np.int64)
     back_t = read_mmf_vector(SHARED_DIR / "mapb_t.mtx").astype(np.int64)
@@ -139,7 +134,8 @@ def PDEFilter_export(stress_file_nodal):
     if not known.all():
         fail(f"{(~known).sum()} nodes still without stress after midside fill")
 
-    sol = A @ rhs
+    l_0 = r / (2*np.sqrt(2))
+    sol = run_mapdl_solve(rhs, l_0)
     stress_filt_nodal = sol[rows]
 
     out = []
@@ -156,4 +152,5 @@ for row in rows:
     nodal.setdefault(row[1], row)
 stress_file_nodal = sorted(nodal.values(), key=lambda r: r[1])
 
-out = PDEFilter_export(stress_file_nodal)
+r = 0.003
+out = PDEFilter_export(stress_file_nodal, r)

@@ -1,0 +1,33 @@
+/CLEAR,NOSTART
+/CWD,'C:\Users\samue\OSR\shared'
+
+! Solve (l0^2*K + M) * sol = M * rhs for the 6 stress components.
+! Needs pdesteady.full and pdetrans.full from pde_matrices_extract_in.txt,
+! plus pde_params.txt (n_, l0sq_) and rhs_pde.txt (n_ x 6, equation order)
+! written by Python.
+
+/INPUT,pde_params,txt
+
+*SMAT,Kt,D,IMPORT,FULL,pdesteady.full,STIFF
+*SMAT,Keff,D,IMPORT,FULL,pdetrans.full,STIFF
+*AXPY,-1.0,,Kt,1.0,,Keff
+*AXPY,1.0,,Keff,l0sq_,,Kt
+
+*LSENGINE,BCS,PdeSolv,Kt
+*LSFACTOR,PdeSolv
+
+*DIM,rhs_,ARRAY,n_,6
+*VREAD,rhs_(1,1),rhs_pde,txt,,JIK,6,n_
+(6E25.15)
+*DMAT,Rhs,D,IMPORT,APDL,rhs_
+
+*MULT,Keff,,Rhs,,MRhs
+*DMAT,Sol,D,COPY,MRhs
+*LSBAC,PdeSolv,MRhs,Sol
+
+*DIM,sol_,ARRAY,n_,6
+*EXPORT,Sol,APDL,sol_
+*CFOPEN,sol_pde,txt
+*VWRITE,sol_(1,1),sol_(1,2),sol_(1,3),sol_(1,4),sol_(1,5),sol_(1,6)
+(6E25.15)
+*CFCLOS
