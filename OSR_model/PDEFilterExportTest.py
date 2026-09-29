@@ -2,10 +2,10 @@ import numpy as np
 from scipy import sparse
 from scipy.sparse.linalg import spsolve
 import os
-from Run_pipeline import read_stress_file, SHARED_DIR, Path, MAPDL_EXE_DIR, subprocess, fail, log, splu, coo_matrix
+from Run_pipeline import read_stress_file, SHARED_DIR, Path, MAPDL_EXE_DIR, subprocess, fail, log, coo_matrix
 
 def run_mapdl_extract():
-    export_files = ("K_pde.mtx", "M_pde.mtx", "mapb.mtx", "mapb_t.mtx",
+    export_files = ("A_pde.mtx", "mapb.mtx", "mapb_t.mtx",
              "pde_dims.txt", "econn.txt", "nxyz.txt")
     pde_deck = "pde_matrices_extract_in.txt"
     for name in export_files:
@@ -55,6 +55,20 @@ def build_csc(i, j, v, n):
     return coo_matrix((v, (i, j)), shape=(n, n)).tocsc()
 
 
+def read_mmf_dense(path):
+    with open(path, "rb") as f:
+        header = f.readline().decode().lower()
+        line = f.readline()
+        while line.startswith(b"%"):
+            line = f.readline()
+        nrow, ncol = (int(v) for v in line.split()[:2])
+        if "coordinate" in header:
+            i, j, v, _ = read_mmf_triplets(path)
+            return coo_matrix((v, (i, j)), shape=(nrow, ncol)).toarray()
+        data = np.fromfile(f, sep=" ")
+    return data.reshape(ncol, nrow).T
+
+
 def read_mmf_vector(path):
     with open(path) as f:
         lines = [ln for ln in f if not ln.startswith("%")]
@@ -86,14 +100,15 @@ def fill_midside(rhs, known, econn, lut, xyz, tol=0.25):
     out[filled] = acc[filled] / cnt[filled, None]
     return out, known | filled
 
-def PDEFilter_export(stress_file_nodal,r):
+def PDEFilter_export(stress_file_nodal):
     nn = run_mapdl_extract()
-    ki, kj, kv, n = read_mmf_triplets(SHARED_DIR / "K_pde.mtx")
-    mi, mj, mv, nm = read_mmf_triplets(SHARED_DIR / "M_pde.mtx")
-    if n != nn or nm != nn:
-        fail(f"matrix size mismatch: K={n} M={nm} mesh nodes={nn}")
-    log(f"K: {n} rows, {len(kv)} nonzeros")
-    log(f"M: {n} rows, {len(mv)} nonzeros")
+    A = read_mmf_dense(SHARED_DIR / "A_pde.mtx")
+    n = A.shape[0]
+    if A.shape != (nn, nn):
+        fail(f"matrix size mismatch: A={A.shape} mesh nodes={nn}")
+    log(f"A: {n} x {n}")
+    # K@1 = 0  =>  A@1 = 1
+    log(f"row-sum check |A@1 - 1|_max = {np.abs(A.sum(axis=1) - 1).max():.3e}")
 
     back = read_mmf_vector(SHARED_DIR / "mapb.mtx").astype(np.int64)
     back_t = read_mmf_vector(SHARED_DIR / "mapb_t.mtx").astype(np.int64)
@@ -124,11 +139,7 @@ def PDEFilter_export(stress_file_nodal,r):
     if not known.all():
         fail(f"{(~known).sum()} nodes still without stress after midside fill")
 
-    l_0 = r / (2*np.sqrt(2))
-    K = build_csc(ki, kj, kv, n)
-    M = build_csc(mi, mj, mv, n)
-    lu = splu((l_0**2 * K + M).tocsc())
-    sol = lu.solve(M @ rhs)
+    sol = A @ rhs
     stress_filt_nodal = sol[rows]
 
     out = []
@@ -145,5 +156,4 @@ for row in rows:
     nodal.setdefault(row[1], row)
 stress_file_nodal = sorted(nodal.values(), key=lambda r: r[1])
 
-r = 0.003
-out = PDEFilter_export(stress_file_nodal, r)
+out = PDEFilter_export(stress_file_nodal)
