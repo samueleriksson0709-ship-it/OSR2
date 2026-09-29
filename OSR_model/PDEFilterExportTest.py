@@ -1,13 +1,8 @@
-from Run_pipeline import SHARED_DIR, log, fail, read_stress_file
-from pathlib import Path
-import subprocess
 import numpy as np
-from scipy.sparse import coo_matrix
-from scipy.sparse.linalg import splu
-
-
-MAPDL_EXE_DIR = r"C:\Program Files\ANSYS Inc\v261\ansys\bin\winx64\ANSYS261.exe"
-
+from scipy import sparse
+from scipy.sparse.linalg import spsolve
+import os
+from Run_pipeline import read_stress_file, SHARED_DIR, Path, MAPDL_EXE_DIR, subprocess, fail, log, splu, coo_matrix
 
 def run_mapdl_extract():
     export_files = ("K_pde.mtx", "M_pde.mtx", "mapb.mtx", "mapb_t.mtx",
@@ -65,7 +60,7 @@ def read_mmf_vector(path):
         lines = [ln for ln in f if not ln.startswith("%")]
     data = np.loadtxt(lines[1:])
     return data if data.ndim == 1 else data[:, -1]
-    
+
 def fill_midside(rhs, known, econn, lut, xyz, tol=0.25):
     # Fill midside nodes by averaging the values of the two end nodes of each edge.
     acc = np.zeros_like(rhs)
@@ -91,7 +86,7 @@ def fill_midside(rhs, known, econn, lut, xyz, tol=0.25):
     out[filled] = acc[filled] / cnt[filled, None]
     return out, known | filled
 
-if __name__ == "__main__":
+def PDEFilter_export(stress_file_nodal,r):
     nn = run_mapdl_extract()
     ki, kj, kv, n = read_mmf_triplets(SHARED_DIR / "K_pde.mtx")
     mi, mj, mv, nm = read_mmf_triplets(SHARED_DIR / "M_pde.mtx")
@@ -99,11 +94,6 @@ if __name__ == "__main__":
         fail(f"matrix size mismatch: K={n} M={nm} mesh nodes={nn}")
     log(f"K: {n} rows, {len(kv)} nonzeros")
     log(f"M: {n} rows, {len(mv)} nonzeros")
-
-    krow = np.zeros(n)
-    np.add.at(krow, ki, kv)
-    log(f"nullspace check |K@1|_max / |K|_max = {np.abs(krow).max() / np.abs(kv).max():.3e}")
-    log(f"M.sum() = {mv.sum():.6g}  (should equal mesh volume 4.63e-4)")
 
     back = read_mmf_vector(SHARED_DIR / "mapb.mtx").astype(np.int64)
     back_t = read_mmf_vector(SHARED_DIR / "mapb_t.mtx").astype(np.int64)
@@ -115,23 +105,16 @@ if __name__ == "__main__":
     lut = np.full(back.max() + 1, -1, dtype=np.int64)
     lut[back] = np.arange(n)
 
-    # PDE Filter test
-
-    path = "C:/Users/samue/OSR/OSR_model/sigma_export_nodes_testBracket.txt"
-    stress_file_nodal = read_stress_file(path)
-    l_0 = 0.003
-
     nids = np.array([int(r[1]) for r in stress_file_nodal])
-    stress_nodal = np.array([r[5:11] for r in stress_file_nodal], dtype=float)
     if nids.max() >= len(lut) or (lut[nids] < 0).any():
         fail("stress-file nodes not in PDE mesh")
     rows = lut[nids]
 
+    stress_nodal = np.array([r[5:11] for r in stress_file_nodal], dtype=float)
     rhs = np.zeros((n, 6))
     rhs[rows] = stress_nodal
     known = np.zeros(n, dtype=bool)
     known[rows] = True
-    log(f"stress file covers {known.sum()} of {n} nodes before midside fill")
 
     econn = np.loadtxt(SHARED_DIR / "econn.txt").astype(np.int64).reshape(-1, 20)
     nxyz = np.loadtxt(SHARED_DIR / "nxyz.txt").reshape(-1, 3)
@@ -141,20 +124,26 @@ if __name__ == "__main__":
     if not known.all():
         fail(f"{(~known).sum()} nodes still without stress after midside fill")
 
+    l_0 = r / (2*np.sqrt(2))
     K = build_csc(ki, kj, kv, n)
     M = build_csc(mi, mj, mv, n)
     lu = splu((l_0**2 * K + M).tocsc())
     sol = lu.solve(M @ rhs)
     stress_filt_nodal = sol[rows]
-    stress_filt_all = sol
 
-    out_path = SHARED_DIR / "testStress.txt"
-    meta = np.array([r[0:5] for r in stress_file_nodal], dtype=float)
-    out = np.column_stack([meta, stress_filt_nodal])
-    np.savetxt(
-        out_path, out,
-        fmt=["%8d", "%8d"] + ["%14.6E"] * 9,
-        header="eid nid X Y Z SXX SYY SZZ SXY SYZ SXZ",
-        comments="# ",
-    )
-    log(f"filtered stress written to {out_path}")
+    out = []
+    for row, s in zip(stress_file_nodal, stress_filt_nodal):
+        out.append(row[:5] + tuple(s.tolist()))
+
+    #return out, K, M, xyz
+    return out
+
+rows = read_stress_file(SHARED_DIR / "sigma_export_nodes_testBracket.txt")
+
+nodal = {}
+for row in rows:
+    nodal.setdefault(row[1], row)
+stress_file_nodal = sorted(nodal.values(), key=lambda r: r[1])
+
+r = 0.003
+out = PDEFilter_export(stress_file_nodal, r)
