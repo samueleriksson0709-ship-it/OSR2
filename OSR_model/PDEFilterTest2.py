@@ -145,12 +145,13 @@ def PDEFilter_export(stress_file_nodal,r):
     #return out, K, M, xyz
     return out
 
-rows = read_stress_file(SHARED_DIR / "sigma_export_nodes_testBracket.txt")
+if __name__ == "__main__":
+    rows = read_stress_file(SHARED_DIR / "sigma_export_nodes_testBracket.txt")
 
-nodal = {}
-for row in rows:
-    nodal.setdefault(row[1], row)
-stress_file_nodal = sorted(nodal.values(), key=lambda r: r[1])
+    nodal = {}
+    for row in rows:
+        nodal.setdefault(row[1], row)
+    stress_file_nodal = sorted(nodal.values(), key=lambda r: r[1])
 
-r = 0.003
-out = PDEFilter_export(stress_file_nodal, r)
+    r = 0.003
+    out = PDEFilter_export(stress_file_nodal, r)
