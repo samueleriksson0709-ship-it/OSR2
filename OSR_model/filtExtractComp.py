@@ -1,13 +1,14 @@
-"""Compare the two PDE filter implementations on the same stress field.
+"""Compare the PDE filter implementations on the same stress field.
 
-  Test1 (PDEFilterTest1.PDEFilter_splu):  K, M exported from MAPDL, solve in Python (splu)
+  Test1 (PDEFilterTest1.PDEFilter_splu):   K, M exported from MAPDL, solve in Python (splu)
   Test2 (PDEFilterTest2.PDEFilter_export): solve done inside MAPDL (*LSENGINE / *LSBAC)
+  Test3 (PDEFilterTest3.PDEFilter_onerun): mesh read from model.cdb, one MAPDL run
 
-Both get the same de-duplicated nodal stress rows and the same filter length
-l_0 = r / (2*sqrt(2)) (the Run_pipeline convention). Test1 is used as the reference
-for the percentage differences.
+All get the same de-duplicated nodal stress rows and the same filter length
+l_0 = r / (2*sqrt(2)) (the Run_pipeline convention). The first method run is the
+reference for the percentage differences.
 
-Usage:  python filtExtractComp.py [--stress-file FILE] [--r 0.003] [--repeats 1]
+Usage:  python filtExtractComp.py [--stress-file FILE] [--r 0.003] [--repeats 1] [--methods 1 2 3]
 """
 import argparse
 import time
@@ -17,6 +18,7 @@ import numpy as np
 
 import PDEFilterTest1 as t1
 import PDEFilterTest2 as t2
+import PDEFilterTest3 as t3
 from Run_pipeline import SHARED_DIR, read_stress_file
 
 COMPONENTS = ("SXX", "SYY", "SZZ", "SXY", "SYZ", "SXZ")
@@ -85,9 +87,9 @@ def print_timing(label, runs, stages):
     print(f"  {'other (Python)':<20s} {other:10.2f} s")
 
 
-def compare(s1, s2, nids):
+def compare(s1, s2, nids, name1="Test1", name2="Test2"):
     d = s2 - s1
-    print("\nPer-component difference (Test2 vs Test1 reference)")
+    print(f"\nPer-component difference ({name2} vs {name1} reference)")
     print(f"  {'comp':<5s} {'rel L2 %':>10s} {'max|d| % of max|s1|':>21s} {'mean|d| % of mean|s1|':>23s}")
     for c, name in enumerate(COMPONENTS):
         a, dc = s1[:, c], d[:, c]
@@ -104,9 +106,9 @@ def compare(s1, s2, nids):
     sig = vm1 > 0.01 * vm1.max()
     node_pct = np.abs(dvm[sig]) / vm1[sig] * 100.0
 
-    print("\nVon Mises")
-    print(f"  peak Test1               {vm1[i_peak1]:.6e}  (node {nids[i_peak1]})")
-    print(f"  peak Test2               {vm2[i_peak2]:.6e}  (node {nids[i_peak2]})")
+    print(f"\nVon Mises ({name2} vs {name1})")
+    print(f"  peak {name1:<20s}{vm1[i_peak1]:.6e}  (node {nids[i_peak1]})")
+    print(f"  peak {name2:<20s}{vm2[i_peak2]:.6e}  (node {nids[i_peak2]})")
     print(f"  peak difference          {pct(vm2[i_peak2] - vm1[i_peak1], vm1[i_peak1]):+.4f} %")
     print(f"  rel L2 difference        {pct(np.linalg.norm(dvm), np.linalg.norm(vm1)):.4f} %")
     print(f"  max |d| / peak           {pct(np.abs(dvm).max(), vm1.max()):.4f} %  (node {nids[i_worst]})")
@@ -120,6 +122,8 @@ def main():
     ap.add_argument("--stress-file", default=str(SHARED_DIR / "sigma_export_nodes_testBracket.txt"))
     ap.add_argument("--r", type=float, default=0.003, help="filter radius; l_0 = r/(2*sqrt(2))")
     ap.add_argument("--repeats", type=int, default=1, help="runs per method for timing")
+    ap.add_argument("--methods", type=int, nargs="+", default=[1, 2, 3], choices=[1, 2, 3],
+                    help="which tests to run; the first one is the reference")
     args = ap.parse_args()
 
     stress_file_nodal = load_nodal(args.stress_file)
@@ -128,29 +132,40 @@ def main():
     print(f"Stress file: {args.stress_file}  ({len(stress_file_nodal)} unique nodes)")
     print(f"r = {args.r:g}, l_0 = {l_0:.6g}, repeats = {args.repeats}")
 
-    stages1 = ("run_mapdl_extract", "splu")
-    stages2 = ("run_mapdl_extract", "run_mapdl_solve")
+    def rows_to_array(out):
+        if not np.array_equal(nids, [row[1] for row in out]):
+            raise SystemExit("output node order differs from input")
+        return np.array([row[5:11] for row in out], dtype=float)
 
-    (s1, _), runs1 = run_timed(lambda: t1.PDEFilter_splu(stress_file_nodal, l_0),
-                               t1, stages1, args.repeats)
-    out2, runs2 = run_timed(lambda: t2.PDEFilter_export(stress_file_nodal, args.r),
-                            t2, stages2, args.repeats)
-    s2 = np.array([row[5:11] for row in out2], dtype=float)
+    methods = {
+        1: ("Test1", "Python splu solve", t1, ("run_mapdl_extract", "splu"),
+            lambda: t1.PDEFilter_splu(stress_file_nodal, l_0)[0]),
+        2: ("Test2", "MAPDL solve", t2, ("run_mapdl_extract", "run_mapdl_solve"),
+            lambda: rows_to_array(t2.PDEFilter_export(stress_file_nodal, args.r))),
+        3: ("Test3", "single MAPDL run", t3, ("read_cdb_mesh", "run_mapdl"),
+            lambda: rows_to_array(t3.PDEFilter_onerun(stress_file_nodal, args.r))),
+    }
 
-    if s1.shape != s2.shape:
-        raise SystemExit(f"output shapes differ: Test1 {s1.shape}, Test2 {s2.shape}")
-    if not np.array_equal(nids, [row[1] for row in out2]):
-        raise SystemExit("Test2 output node order differs from input")
+    results = []
+    for m in dict.fromkeys(args.methods):
+        name, desc, module, stages, run = methods[m]
+        s, runs = run_timed(run, module, stages, args.repeats)
+        results.append((name, desc, stages, s, runs))
 
     print("\nRun time (mean over repeats)")
-    print_timing("Test1 (Python splu solve)", runs1, stages1)
-    print_timing("Test2 (MAPDL solve)", runs2, stages2)
-    t1_mean = np.mean([r["total"] for r in runs1])
-    t2_mean = np.mean([r["total"] for r in runs2])
-    print(f"\n  Test2 / Test1 total time = {t2_mean / t1_mean:.3f}  "
-          f"({pct(t2_mean - t1_mean, t1_mean):+.1f} %)")
+    for name, desc, stages, _, runs in results:
+        print_timing(f"{name} ({desc})", runs, stages)
+    ref_name, _, _, s_ref, runs_ref = results[0]
+    t_ref = np.mean([r["total"] for r in runs_ref])
+    print()
+    for name, _, _, _, runs in results[1:]:
+        t = np.mean([r["total"] for r in runs])
+        print(f"  {name} / {ref_name} total time = {t / t_ref:.3f}  ({pct(t - t_ref, t_ref):+.1f} %)")
 
-    compare(s1, s2, nids)
+    for name, _, _, s, _ in results[1:]:
+        if s.shape != s_ref.shape:
+            raise SystemExit(f"output shapes differ: {ref_name} {s_ref.shape}, {name} {s.shape}")
+        compare(s_ref, s, nids, ref_name, name)
 
 
 if __name__ == "__main__":
