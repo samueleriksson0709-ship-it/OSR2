@@ -29,7 +29,7 @@ def run_mapdl(pde_deck, job, export_files):
 
 def run_mapdl_extract():
     run_mapdl("pde_matrices_extract_in.txt", "pdeextract",
-              ("mapb.mtx", "mapb_t.mtx", "pde_dims.txt", "econn.txt", "nxyz.txt"))
+              ("K_pde.mtx", "M_pde.mtx", "mapb.mtx", "mapb_t.mtx", "pde_dims.txt", "econn.txt", "nxyz.txt"))
     return int(float(np.loadtxt(SHARED_DIR / "pde_dims.txt")))
 
 
