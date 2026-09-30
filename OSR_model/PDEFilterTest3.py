@@ -9,7 +9,7 @@ the result with node numbers.
 import re
 import numpy as np
 from Run_pipeline import read_stress_file, SHARED_DIR, fail, log
-from PDEFilterTest2 import run_mapdl, fill_midside
+from PDEFilterTest2 import run_mapdl, fill_midside, read_mmf_vector
 
 # Element types the decks delete before building the PDE matrices (ESEL,S,ENAME,,169,177).
 EXCLUDED_ENAMES = range(169, 178)
@@ -126,12 +126,17 @@ def PDEFilter_onerun(stress_file_nodal, r):
         f.write(f"nrow_={nrow}\nl0sq_={l_0**2:.16e}\n")
     np.savetxt(SHARED_DIR / "rhs_nodes.txt", rhs_by_nid, fmt="%25.15E", delimiter="")
 
-    run_mapdl("pde_filter_onerun_in.txt", "pdeonerun", ("sol_onerun.txt",))
+    run_mapdl("pde_filter_onerun_in.txt", "pdeonerun",
+              ("mapb.mtx", "mapb_t.mtx", "sol_onerun.txt"))
 
-    data = np.loadtxt(SHARED_DIR / "sol_onerun.txt").reshape(-1, 8)
-    back, back_t, sol = data[:, 0].astype(np.int64), data[:, 1].astype(np.int64), data[:, 2:]
+    back = read_mmf_vector(SHARED_DIR / "mapb.mtx").astype(np.int64)
+    back_t = read_mmf_vector(SHARED_DIR / "mapb_t.mtx").astype(np.int64)
     if not np.array_equal(back, back_t):
         fail("equation ordering differs between pdesteady.full and pdetrans.full")
+    data = np.loadtxt(SHARED_DIR / "sol_onerun.txt").reshape(-1, 7)
+    sol = data[:, 1:]
+    if not np.array_equal(data[:, 0].astype(np.int64), back):
+        fail("node numbers in sol_onerun.txt differ from mapb.mtx (mapping read wrongly by *VREAD)")
     if len(back) != n or not np.array_equal(np.sort(back), mesh_nids):
         fail(f"MAPDL mesh ({len(back)} nodes) differs from model.cdb mesh ({n} nodes)")
 

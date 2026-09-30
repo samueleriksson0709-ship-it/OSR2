@@ -5,7 +5,8 @@
 ! Needs model.cdb, plus from Python (PDEFilterTest3.py):
 !   pde_onerun_params.txt  (nrow_, l0sq_)
 !   rhs_nodes.txt          (nrow_ x 6, row k = stresses of node number k, midside nodes filled)
-! Writes sol_onerun.txt: node (steady), node (trans), 6 filtered components, in equation order.
+! Writes mapb.mtx, mapb_t.mtx (equation -> node number, steady/trans) and
+! sol_onerun.txt: node number, 6 filtered components, in equation order.
 
 /INQUIRE,fex,EXIST,'model','cdb'
 *IF,fex,EQ,0,THEN
@@ -82,13 +83,16 @@ pdetrans.full not written
 *AXPY,-1.0,,Kt,1.0,,Keff
 *AXPY,1.0,,Keff,l0sq_,,Kt
 
-! Equation -> node number mapping (one DOF per node, so n_ equations)
+! Equation -> node number mapping (one DOF per node, so n_ equations).
+! *EXPORT to APDL only takes real data and the mapping is integer, so go through the
+! MMF files instead (6 comment lines + 1 size line, then one node number per line).
 *VEC,MapB,I,IMPORT,FULL,pdesteady.full,BACK
 *VEC,MapBt,I,IMPORT,FULL,pdetrans.full,BACK
+*EXPORT,MapB,MMF,mapb.mtx
+*EXPORT,MapBt,MMF,mapb_t.mtx
 *DIM,mapb_,ARRAY,n_
-*DIM,mapbt_,ARRAY,n_
-*EXPORT,MapB,APDL,mapb_
-*EXPORT,MapBt,APDL,mapbt_
+*VREAD,mapb_(1),mapb,mtx,,IJK,n_,1,1,7
+(F20.0)
 
 ! Stresses by node number -> equation order: rhs_(i,j) = rhsn_(mapb_(i),j)
 *DIM,rhsn_,ARRAY,nrow_,6
@@ -111,6 +115,6 @@ pdetrans.full not written
 *DIM,sol_,ARRAY,n_,6
 *EXPORT,Sol,APDL,sol_
 *CFOPEN,sol_onerun,txt
-*VWRITE,mapb_(1),mapbt_(1),sol_(1,1),sol_(1,2),sol_(1,3),sol_(1,4),sol_(1,5),sol_(1,6)
-(2F12.0,6E25.15)
+*VWRITE,mapb_(1),sol_(1,1),sol_(1,2),sol_(1,3),sol_(1,4),sol_(1,5),sol_(1,6)
+(F12.0,6E25.15)
 *CFCLOS
