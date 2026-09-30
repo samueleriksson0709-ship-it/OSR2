@@ -91,7 +91,7 @@ def fill_midside(rhs, known, econn, lut, xyz, tol=0.25):
     out[filled] = acc[filled] / cnt[filled, None]
     return out, known | filled
 
-if __name__ == "__main__":
+def PDEFilter_splu(stress_file_nodal, l_0):
     nn = run_mapdl_extract()
     ki, kj, kv, n = read_mmf_triplets(SHARED_DIR / "K_pde.mtx")
     mi, mj, mv, nm = read_mmf_triplets(SHARED_DIR / "M_pde.mtx")
@@ -114,12 +114,6 @@ if __name__ == "__main__":
 
     lut = np.full(back.max() + 1, -1, dtype=np.int64)
     lut[back] = np.arange(n)
-
-    # PDE Filter test
-
-    path = "C:/Users/samue/OSR/OSR_model/sigma_export_nodes_testBracket.txt"
-    stress_file_nodal = read_stress_file(path)
-    l_0 = 0.003
 
     nids = np.array([int(r[1]) for r in stress_file_nodal])
     stress_nodal = np.array([r[5:11] for r in stress_file_nodal], dtype=float)
@@ -147,5 +141,13 @@ if __name__ == "__main__":
     sol = lu.solve(M @ rhs)
     stress_filt_nodal = sol[rows]
     stress_filt_all = sol
+    return stress_filt_nodal, stress_filt_all
 
 
+if __name__ == "__main__":
+    # PDE Filter test
+
+    path = "C:/Users/samue/OSR/OSR_model/sigma_export_nodes_testBracket.txt"
+    stress_file_nodal = read_stress_file(path)
+    l_0 = 0.003
+    stress_filt_nodal, stress_filt_all = PDEFilter_splu(stress_file_nodal, l_0)

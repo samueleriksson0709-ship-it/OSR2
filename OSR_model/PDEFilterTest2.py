@@ -29,7 +29,7 @@ def run_mapdl(pde_deck, job, export_files):
 
 def run_mapdl_extract():
     run_mapdl("pde_matrices_extract_in.txt", "pdeextract",
-              ("mapb.mtx", "mapb_t.mtx", "pde_dims.txt", "econn.txt", "nxyz.txt"))
+              ("K_pde.mtx", "M_pde.mtx", "mapb.mtx", "mapb_t.mtx", "pde_dims.txt", "econn.txt", "nxyz.txt"))
     return int(float(np.loadtxt(SHARED_DIR / "pde_dims.txt")))
 
 
@@ -145,12 +145,13 @@ def PDEFilter_export(stress_file_nodal,r):
     #return out, K, M, xyz
     return out
 
-rows = read_stress_file(SHARED_DIR / "sigma_export_nodes_testBracket.txt")
+if __name__ == "__main__":
+    rows = read_stress_file(SHARED_DIR / "sigma_export_nodes_testBracket.txt")
 
-nodal = {}
-for row in rows:
-    nodal.setdefault(row[1], row)
-stress_file_nodal = sorted(nodal.values(), key=lambda r: r[1])
+    nodal = {}
+    for row in rows:
+        nodal.setdefault(row[1], row)
+    stress_file_nodal = sorted(nodal.values(), key=lambda r: r[1])
 
-r = 0.003
-out = PDEFilter_export(stress_file_nodal, r)
+    r = 0.003
+    out = PDEFilter_export(stress_file_nodal, r)

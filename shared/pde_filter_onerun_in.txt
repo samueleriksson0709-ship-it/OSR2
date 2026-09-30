@@ -1,0 +1,120 @@
+/CLEAR,NOSTART
+
+! PDE filter in a single MAPDL run: build K and M, solve (l0^2*K + M) * sol = M * rhs
+! for the 6 stress components and write the result with node numbers.
+! Needs model.cdb, plus from Python (PDEFilterTest3.py):
+!   pde_onerun_params.txt  (nrow_, l0sq_)
+!   rhs_nodes.txt          (nrow_ x 6, row k = stresses of node number k, midside nodes filled)
+! Writes mapb.mtx, mapb_t.mtx (equation -> node number, steady/trans) and
+! sol_onerun.txt: node number, 6 filtered components, in equation order.
+
+/INQUIRE,fex,EXIST,'model','cdb'
+*IF,fex,EQ,0,THEN
+  *MSG,ERROR
+model.cdb not found
+  /EOF
+*ENDIF
+
+/INPUT,pde_onerun_params,txt
+
+! ---- model setup, identical to pde_matrices_extract_in.txt ----
+/FILNAME,pdesteady,1
+/PREP7
+CDREAD,DB,'model','cdb'
+DDELE,ALL,ALL
+FDELE,ALL,ALL
+SFDELE,ALL,ALL
+BFDELE,ALL,ALL
+BFEDELE,ALL,ALL
+ESEL,S,ENAME,,169,177
+EDELE,ALL
+ESEL,ALL
+NSLE,S
+NSEL,INVE
+NDELE,ALL
+NSEL,ALL
+ETDELE,2,3
+ETCHG,STT
+*GET,n_,NODE,,COUNT
+*GET,nmat_,MAT,,NUM,MAX
+*DO,imat_,1,nmat_
+  MP,KXX,imat_,1
+  MP,DENS,imat_,1
+  MP,C,imat_,1
+*ENDDO
+FINISH
+
+/SOLU
+ANTYPE,STATIC
+EQSLV,SPARSE
+WRFULL,1
+SOLVE
+FINISH
+
+/FILNAME,pdetrans,1
+/SOLU
+ANTYPE,TRANS
+TRNOPT,FULL
+TIMINT,ON
+TINTP,,,,1.0
+LUMPM,OFF
+NSUBST,1
+TIME,1
+WRFULL,1
+SOLVE
+FINISH
+
+/INQUIRE,s1,EXIST,'pdesteady','full'
+/INQUIRE,s2,EXIST,'pdetrans','full'
+*IF,s1,EQ,0,THEN
+  *MSG,ERROR
+pdesteady.full not written
+  /EOF
+*ENDIF
+*IF,s2,EQ,0,THEN
+  *MSG,ERROR
+pdetrans.full not written
+  /EOF
+*ENDIF
+
+! ---- matrices, as in pde_filter_solve_in.txt ----
+*SMAT,Kt,D,IMPORT,FULL,pdesteady.full,STIFF
+*SMAT,Keff,D,IMPORT,FULL,pdetrans.full,STIFF
+*AXPY,-1.0,,Kt,1.0,,Keff
+*AXPY,1.0,,Keff,l0sq_,,Kt
+
+! Equation -> node number mapping (one DOF per node, so n_ equations).
+! *EXPORT to APDL only takes real data and the mapping is integer, so go through the
+! MMF files instead (6 comment lines + 1 size line, then one node number per line).
+*VEC,MapB,I,IMPORT,FULL,pdesteady.full,BACK
+*VEC,MapBt,I,IMPORT,FULL,pdetrans.full,BACK
+*EXPORT,MapB,MMF,mapb.mtx
+*EXPORT,MapBt,MMF,mapb_t.mtx
+*DIM,mapb_,ARRAY,n_
+*VREAD,mapb_(1),mapb,mtx,,IJK,n_,1,1,7
+(F20.0)
+
+! Stresses by node number -> equation order: rhs_(i,j) = rhsn_(mapb_(i),j)
+*DIM,rhsn_,ARRAY,nrow_,6
+*VREAD,rhsn_(1,1),rhs_nodes,txt,,JIK,6,nrow_
+(6E25.15)
+*DIM,rhs_,ARRAY,n_,6
+*DO,j_,1,6
+  *VLEN,n_
+  *VOPER,rhs_(1,j_),rhsn_(1,j_),GATH,mapb_(1)
+*ENDDO
+*DMAT,Rhs,D,IMPORT,APDL,rhs_
+
+*LSENGINE,BCS,PdeSolv,Kt
+*LSFACTOR,PdeSolv
+
+*MULT,Keff,,Rhs,,MRhs
+*DMAT,Sol,D,COPY,MRhs
+*LSBAC,PdeSolv,MRhs,Sol
+
+*DIM,sol_,ARRAY,n_,6
+*EXPORT,Sol,APDL,sol_
+*CFOPEN,sol_onerun,txt
+*VWRITE,mapb_(1),sol_(1,1),sol_(1,2),sol_(1,3),sol_(1,4),sol_(1,5),sol_(1,6)
+(F12.0,6E25.15)
+*CFCLOS
