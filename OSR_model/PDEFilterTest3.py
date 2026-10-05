@@ -15,7 +15,38 @@ from PDEFilterTest2 import run_mapdl, fill_midside, read_mmf_vector
 EXCLUDED_ENAMES = range(169, 178)
 
 
-def _field_widths(fmt_line, kind):
+def run_mapdl_onerun(rhs, mesh_nids, l_0):
+    # Builds K and M and solves (l_0^2 K + M) sol = M rhs in one MAPDL run;
+    # rhs is n x 6 with row k belonging to node mesh_nids[k], sol is returned the same way.
+    n = rhs.shape[0]
+
+    # Row k of rhs_nodes.txt holds node number k (zeros for numbers not in the mesh).
+    nrow = int(mesh_nids.max())
+    rhs_by_nid = np.zeros((nrow, 6))
+    rhs_by_nid[mesh_nids - 1] = rhs
+    with open(SHARED_DIR / "pde_onerun_params.txt", "w") as f:
+        f.write(f"nrow_={nrow}\nl0sq_={l_0**2:.16e}\n")
+    np.savetxt(SHARED_DIR / "rhs_nodes.txt", rhs_by_nid, fmt="%25.15E", delimiter="")
+    run_mapdl("pde_filter_onerun_in.txt", "pdeonerun",
+              ("mapb.mtx", "mapb_t.mtx", "sol_onerun.txt"))
+
+    back = read_mmf_vector(SHARED_DIR / "mapb.mtx").astype(np.int64)
+    back_t = read_mmf_vector(SHARED_DIR / "mapb_t.mtx").astype(np.int64)
+    if not np.array_equal(back, back_t):
+        fail("equation ordering differs between pdesteady.full and pdetrans.full")
+    data = np.loadtxt(SHARED_DIR / "sol_onerun.txt").reshape(-1, 7)
+    if not np.array_equal(data[:, 0].astype(np.int64), back):
+        fail("node numbers in sol_onerun.txt differ from mapb.mtx (mapping read wrongly by *VREAD)")
+    if len(back) != n or not np.array_equal(np.sort(back), mesh_nids):
+        fail(f"MAPDL mesh ({len(back)} nodes) differs from model.cdb mesh ({n} nodes)")
+
+    # Equation order -> mesh_nids order (mesh_nids is sorted, so searchsorted gives the row).
+    sol = np.empty_like(rhs)
+    sol[np.searchsorted(mesh_nids, back)] = data[:, 1:]
+    return sol
+
+
+def cdb_field_widths(fmt_line, kind):
     # "(3i9,6e21.13e3)" -> ([9, 9, 9, 21, ...], 3);  "(19i10)" -> ([10]*19, 19)
     widths, nint = [], 0
     for count, letter, width in re.findall(r"(\d*)([ie])(\d+)", fmt_line.lower()):
@@ -27,7 +58,7 @@ def _field_widths(fmt_line, kind):
     return widths, nint
 
 
-def _split_fixed(line, widths):
+def split_fixed(line, widths):
     out, pos = [], 0
     for w in widths:
         s = line[pos:pos + w].strip()
@@ -59,26 +90,26 @@ def read_cdb_mesh(path):
                         break
                     ename[int(p[0])] = int(p[1])
             elif key.startswith("NBLOCK"):
-                widths, nint = _field_widths(next(lines), "NBLOCK")
+                widths, nint = cdb_field_widths(next(lines), "NBLOCK")
                 for ln in lines:
                     s = ln.strip()
                     if s == "-1" or s.upper().startswith("N,"):
                         break
-                    p = _split_fixed(ln, widths)
+                    p = split_fixed(ln, widths)
                     xyz = [float(v) for v in p[nint:nint + 3]]
                     coords[int(p[0])] = xyz + [0.0] * (3 - len(xyz))  # trailing zeros are omitted
             elif key.startswith("EBLOCK"):
                 if "SOLID" not in line.upper():
                     fail(f"only the SOLID EBLOCK format is supported: {line.strip()}")
-                widths, _ = _field_widths(next(lines), "EBLOCK")
+                widths, _ = cdb_field_widths(next(lines), "EBLOCK")
                 for ln in lines:
-                    p = _split_fixed(ln, widths)
+                    p = split_fixed(ln, widths)
                     if p[0] == "-1":
                         break
                     etype, nnode = int(p[1]), int(p[8])
                     nodes = [int(v) for v in p[11:]]
                     while len(nodes) < nnode:
-                        nodes += [int(v) for v in _split_fixed(next(lines), widths)]
+                        nodes += [int(v) for v in split_fixed(next(lines), widths)]
                     if ename.get(etype) not in EXCLUDED_ENAMES:
                         elems.append((int(p[10]), nodes[:nnode]))
 
@@ -99,6 +130,7 @@ def read_cdb_mesh(path):
 def PDEFilter_onerun(stress_file_nodal, r):
     mesh_nids, xyz, econn = read_cdb_mesh(SHARED_DIR / "model.cdb")
     n = len(mesh_nids)
+
     lut = np.full(mesh_nids.max() + 1, -1, dtype=np.int64)
     lut[mesh_nids] = np.arange(n)
 
@@ -117,32 +149,9 @@ def PDEFilter_onerun(stress_file_nodal, r):
     if not known.all():
         fail(f"{(~known).sum()} nodes still without stress after midside fill")
 
-    # Row k of rhs_nodes.txt holds node number k (zeros for numbers not in the mesh).
-    nrow = int(mesh_nids.max())
-    rhs_by_nid = np.zeros((nrow, 6))
-    rhs_by_nid[mesh_nids - 1] = rhs
     l_0 = r / (2*np.sqrt(2))
-    with open(SHARED_DIR / "pde_onerun_params.txt", "w") as f:
-        f.write(f"nrow_={nrow}\nl0sq_={l_0**2:.16e}\n")
-    np.savetxt(SHARED_DIR / "rhs_nodes.txt", rhs_by_nid, fmt="%25.15E", delimiter="")
-
-    run_mapdl("pde_filter_onerun_in.txt", "pdeonerun",
-              ("mapb.mtx", "mapb_t.mtx", "sol_onerun.txt"))
-
-    back = read_mmf_vector(SHARED_DIR / "mapb.mtx").astype(np.int64)
-    back_t = read_mmf_vector(SHARED_DIR / "mapb_t.mtx").astype(np.int64)
-    if not np.array_equal(back, back_t):
-        fail("equation ordering differs between pdesteady.full and pdetrans.full")
-    data = np.loadtxt(SHARED_DIR / "sol_onerun.txt").reshape(-1, 7)
-    sol = data[:, 1:]
-    if not np.array_equal(data[:, 0].astype(np.int64), back):
-        fail("node numbers in sol_onerun.txt differ from mapb.mtx (mapping read wrongly by *VREAD)")
-    if len(back) != n or not np.array_equal(np.sort(back), mesh_nids):
-        fail(f"MAPDL mesh ({len(back)} nodes) differs from model.cdb mesh ({n} nodes)")
-
-    sol_by_row = np.empty_like(sol)
-    sol_by_row[lut[back]] = sol
-    stress_filt_nodal = sol_by_row[rows]
+    sol = run_mapdl_onerun(rhs, mesh_nids, l_0)
+    stress_filt_nodal = sol[rows]
 
     out = []
     for row, s in zip(stress_file_nodal, stress_filt_nodal):
