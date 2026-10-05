@@ -6,15 +6,22 @@ Run after a PDE filter run, from the OSR_model folder:
 It reads what that run leaves in the folder (model.cdb, sol_onerun.txt, grad_onerun.txt,
 pde_onerun_params.txt) and checks the MAPDL gradient against the filtered stress two ways:
 
-1. Recompute (10-node tets only): differentiate the filtered field with the SOLID187
-   shape functions and average over the elements at each corner node. MAPDL's nodal TG is
-   the same quantity, so the two should agree to round-off; anything above ~1e-4 % means
-   MAPDL averages or extrapolates differently, or the files are mapped wrongly.
-2. Edge derivatives (any quadratic element): along each element edge, the derivative of
-   the field at a corner follows exactly from the three edge nodes,
-   df/ds = -3 f_a + 4 f_m - f_b, and must equal grad f . dx/ds. The MAPDL gradient is an
-   average over elements, so the match is close rather than exact; a slope far from 1 or
-   a low R^2 means wrong scaling, units, axis order or node mapping.
+1. Recompute (10-node tets only): differentiate the filtered field the way MAPDL does
+   with ERESX,YES -- SOLID87 gradient at its 4 Gauss points, extrapolated linearly to the
+   corner nodes, averaged over the elements at each node. MAPDL's nodal TG is that same
+   quantity, so the two should agree to round-off; anything above ~1e-4 % means a
+   different extrapolation setting (ERESX,NO copies Gauss point values instead) or wrongly
+   mapped files. For information it also shows how far that extrapolated gradient is from
+   the gradient evaluated exactly at the node: on straight-edged elements the two are equal,
+   on curved ones (fillets) they differ, which is a property of the method, not an error.
+2. Edge gradient (any quadratic element, no shape functions): along an element edge the
+   field and the coordinates are quadratic in the edge parameter s, so at a corner
+   df/ds = -3 f_a + 4 f_m - f_b and dx/ds likewise follow exactly from the three edge
+   nodes. The three edges meeting at a corner give dx/ds_k . grad f = df/ds_k, k = 1..3,
+   which fixes the element gradient at that corner exactly; averaged over the elements at
+   the node it must match MAPDL on nodes that touch only straight-edged elements (where
+   extrapolation is exact). Anything above ~1e-4 % there means wrong scaling, units, axis
+   order or node mapping.
 """
 import sys
 from pathlib import Path
@@ -90,7 +97,33 @@ def corner_mask(econn, lut, n):
     return corner
 
 
-def check_recompute(econn, lut, xyz, sol, grad, corner):
+def curved_elements(econn, lut, xyz, tol=1e-6):
+    """True for quadratic elements with a midside node off the chord of its edge."""
+    curved = np.zeros(len(econn), dtype=bool)
+    nnode = (econn > 0).sum(1)
+    for nn, edges in EDGES.items():
+        sel = np.flatnonzero(nnode == nn)
+        if not len(sel):
+            continue
+        X = xyz[lut[econn[sel, :nn]]]
+        for a, b, m in edges:
+            chord = np.linalg.norm(X[:, a] - X[:, b], axis=1)
+            off = np.linalg.norm(X[:, m] - 0.5 * (X[:, a] + X[:, b]), axis=1)
+            curved[sel] |= off > tol * np.maximum(chord, 1e-300)
+    return curved
+
+
+def print_diff_table(ref, grad, nodes):
+    print("  differences in % of the largest reference gradient of each component")
+    print("  component  max|g| (ref)    max diff [%]   99th pct diff [%]")
+    for c, name in enumerate(COMPONENTS):
+        r, m = ref[nodes, :, c], grad[nodes, :, c]
+        scale = np.abs(r).max() or 1.0
+        rel = np.linalg.norm(m - r, axis=1) / scale
+        print(f"  {name:9s}  {scale:12.4e}   {100 * rel.max():12.3g}   {100 * np.percentile(rel, 99):12.3g}")
+
+
+def check_recompute(econn, lut, xyz, sol, grad, corner, curved):
     nnode = (econn > 0).sum(1)
     if not np.all(nnode == 10):
         print("  skipped: the mesh is not all 10-node tets "
@@ -98,63 +131,75 @@ def check_recompute(econn, lut, xyz, sol, grad, corner):
         return
     n = len(sol)
     idx = lut[econn[:, :10]]                                        # (ne, 10)
-    dn = np.stack([dN_tet10(*p) for p in TET10_NAT])                # (10 points, 3, 10)
-    J = np.einsum('pdk,ekx->epdx', dn, xyz[idx])                    # (ne, 10, 3, 3)
-    dfdxi = np.einsum('pdk,ekm->epdm', dn, sol[idx])                # (ne, 10, 3, 6)
-    g_el = np.linalg.solve(J, dfdxi)                                # element gradient at its nodes
-    acc = np.zeros((n, 3, 6))
-    np.add.at(acc, idx.ravel(), g_el.reshape(-1, 3, 6))
-    cnt = np.bincount(idx.ravel(), minlength=n)
-    ref = acc / np.maximum(cnt, 1)[:, None, None]
+    cidx = idx[:, :4].ravel()
+    cnt = np.maximum(np.bincount(cidx, minlength=n), 1)[:, None, None]
 
-    print("  differences in % of the largest reference gradient of each component")
-    print("  component  max|g| (ref)    max diff [%]   99th pct diff [%]")
-    for c, name in enumerate(COMPONENTS):
-        r, m = ref[corner, :, c], grad[corner, :, c]
-        scale = np.abs(r).max() or 1.0
-        rel = np.linalg.norm(m - r, axis=1) / scale
-        print(f"  {name:9s}  {scale:12.4e}   {100 * rel.max():12.3g}   {100 * np.percentile(rel, 99):12.3g}")
+    def average(g_corners):                                         # (ne, 4, 3, 6) -> (n, 3, 6)
+        acc = np.zeros((n, 3, 6))
+        np.add.at(acc, cidx, g_corners.reshape(-1, 3, 6))
+        return acc / cnt
+
+    def gradient_at(points):                                        # natural coords -> (ne, p, 3, 6)
+        dn = np.stack([dN_tet10(*p) for p in points])
+        J = np.einsum('pdk,ekx->epdx', dn, xyz[idx])
+        return np.linalg.solve(J, np.einsum('pdk,ekm->epdm', dn, sol[idx]))
+
+    # MAPDL with ERESX,YES: 4-point Gauss rule, linear extrapolation to the corners
+    a, b = 0.5854101966249685, 0.1381966011250105
+    P = np.full((4, 4), b) + (a - b) * np.eye(4)                    # P[j, i] = L_i at Gauss point j
+    ref = average(np.einsum('ij,ejdm->eidm', np.linalg.inv(P), gradient_at(P[:, 1:])))
+    at_node = average(gradient_at(TET10_NAT[:4]))
+
+    print("  a) MAPDL gradient vs the same calculation in Python (should be round-off)")
+    print_diff_table(ref, grad, corner)
     worst = np.unravel_index(np.argmax(np.linalg.norm(grad - ref, axis=1)[corner]), (corner.sum(), 6))
     print(f"  largest difference at mesh row {np.flatnonzero(corner)[worst[0]]}, component {COMPONENTS[worst[1]]}")
 
+    on_curved = np.zeros(n, dtype=bool)
+    on_curved[lut[econn[curved, :4]].ravel()] = True
+    print(f"\n  b) for information: extrapolated vs evaluated at the node, on the {(corner & on_curved).sum()} "
+          f"of {corner.sum()} corner nodes touching curved elements")
+    print("     (zero on straight-edged elements; a method difference, not an error)")
+    if (corner & on_curved).any():
+        print_diff_table(at_node, ref, corner & on_curved)
 
-def check_edges(econn, lut, xyz, sol, grad, corner):
-    d_exact, d_mapdl = [], []
+
+def edge_gradient(econn, lut, xyz, sol):
+    """Nodal gradient from the edges at each element corner, averaged over the elements."""
+    n = len(sol)
+    acc, cnt = np.zeros((n, 3, 6)), np.zeros(n)
+    nnode = (econn > 0).sum(1)
     for nn, edges in EDGES.items():
-        rows = econn[(econn > 0).sum(1) == nn]
+        rows = econn[nnode == nn]
         if not len(rows):
             continue
         idx = lut[rows[:, :nn]]
-        for a, b, m in edges:
-            ia, ib, im = idx[:, a], idx[:, b], idx[:, m]
-            for end, sign in ((ia, 1.0), (ib, -1.0)):
-                # derivative w.r.t. the edge parameter s in [0, 1] at this end of the edge,
-                # exact for the quadratic (isoparametric) field even on curved edges
-                if sign > 0:
-                    dxds = -3 * xyz[ia] + 4 * xyz[im] - xyz[ib]
-                    dfds = -3 * sol[ia] + 4 * sol[im] - sol[ib]
-                else:
-                    dxds = xyz[ia] - 4 * xyz[im] + 3 * xyz[ib]
-                    dfds = sol[ia] - 4 * sol[im] + 3 * sol[ib]
-                length = np.linalg.norm(dxds, axis=1)
-                ok = (length > 1e-12 * np.abs(xyz).max()) & corner[end]   # skip collapsed edges
-                t = dxds[ok] / length[ok, None]
-                d_exact.append(dfds[ok] / length[ok, None])                # (k, 6)
-                d_mapdl.append(np.einsum('kd,kdc->kc', t, grad[end[ok]]))
-    if not d_exact:
+        for c in range(N_CORNERS[nn]):
+            # edges at corner c as (this corner, far corner, midside)
+            inc = [(a, b, m) if a == c else (b, a, m) for a, b, m in edges if c in (a, b)]
+            T = np.stack([-3 * xyz[idx[:, a]] + 4 * xyz[idx[:, m]] - xyz[idx[:, b]] for a, b, m in inc], 1)
+            D = np.stack([-3 * sol[idx[:, a]] + 4 * sol[idx[:, m]] - sol[idx[:, b]] for a, b, m in inc], 1)
+            # collapsed corners of degenerate elements have a zero-length edge: skip them
+            lengths = np.linalg.norm(T, axis=2)
+            ok = (lengths.min(1) > 1e-8 * lengths.max(1)) & \
+                 (np.abs(np.linalg.det(T)) > 1e-8 * np.prod(lengths, axis=1))
+            np.add.at(acc, idx[ok, c], np.linalg.solve(T[ok], D[ok]))   # T grad = D
+            np.add.at(cnt, idx[ok, c], 1)
+    return acc / np.maximum(cnt, 1)[:, None, None], cnt > 0
+
+
+def check_edges(econn, lut, xyz, sol, grad, corner, curved):
+    if not np.isin((econn > 0).sum(1), list(EDGES)).any():
         print("  skipped: no quadratic elements (linear elements have no midside nodes)")
         return
-    x, y = np.vstack(d_exact), np.vstack(d_mapdl)
-    print(f"  {len(x)} edge ends;  ideal: slope deviation 0 %, R^2 1 (nodal averaging keeps them slightly off)")
-    print("  differences in % of the largest exact edge derivative of each component")
-    print("  component  slope dev [%]     R^2    median diff [%]  95th pct diff [%]")
-    for c, name in enumerate(COMPONENTS):
-        xc, yc = x[:, c], y[:, c]
-        slope = (xc @ yc) / (xc @ xc) if xc @ xc > 0 else np.nan
-        r2 = 1 - ((yc - xc) ** 2).sum() / max(((xc - xc.mean()) ** 2).sum(), 1e-300)
-        diff = 100 * np.abs(yc - xc) / (np.abs(xc).max() or 1.0)
-        print(f"  {name:9s}  {100 * (slope - 1):12.3g}  {r2:9.5f}  {np.median(diff):14.3g}"
-              f"  {np.percentile(diff, 95):16.3g}")
+    ref, has = edge_gradient(econn, lut, xyz, sol)
+    on_curved = np.zeros(len(sol), dtype=bool)
+    on_curved[lut[econn[curved][econn[curved] > 0]]] = True
+    nodes = corner & has & ~on_curved
+    print(f"  {nodes.sum()} corner nodes touching only straight-edged elements "
+          f"({(corner & on_curved).sum()} on curved elements left out)")
+    if nodes.any():
+        print_diff_table(ref, grad, nodes)
 
 
 def main(folder):
@@ -163,10 +208,11 @@ def main(folder):
     zero = np.all(grad == 0, axis=(1, 2))
     print(f"{len(mesh_nids)} mesh nodes, {corner.sum()} corner nodes, gsc_ = {gsc:.6g}")
     print(f"zero gradient rows: {zero[corner].sum()} corner nodes, {zero[~corner].sum()} midside nodes")
-    print("\n1) recompute from sol_onerun.txt with SOLID187 shape functions (corner nodes)")
-    check_recompute(econn, lut, xyz, sol, grad, corner)
-    print("\n2) exact edge derivatives vs MAPDL gradient projected on the edge")
-    check_edges(econn, lut, xyz, sol, grad, corner)
+    curved = curved_elements(econn, lut, xyz)
+    print("\n1) recompute from sol_onerun.txt with SOLID87 Gauss points + extrapolation (corner nodes)")
+    check_recompute(econn, lut, xyz, sol, grad, corner, curved)
+    print("\n2) gradient from exact edge derivatives at each element corner (no shape functions)")
+    check_edges(econn, lut, xyz, sol, grad, corner, curved)
 
 
 if __name__ == "__main__":
