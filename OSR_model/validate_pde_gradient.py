@@ -8,7 +8,7 @@ pde_onerun_params.txt) and checks the MAPDL gradient against the filtered stress
 
 1. Recompute (10-node tets only): differentiate the filtered field with the SOLID187
    shape functions and average over the elements at each corner node. MAPDL's nodal TG is
-   the same quantity, so the two should agree to round-off; anything above ~1e-6 means
+   the same quantity, so the two should agree to round-off; anything above ~1e-4 % means
    MAPDL averages or extrapolates differently, or the files are mapped wrongly.
 2. Edge derivatives (any quadratic element): along each element edge, the derivative of
    the field at a corner follows exactly from the three edge nodes,
@@ -107,12 +107,13 @@ def check_recompute(econn, lut, xyz, sol, grad, corner):
     cnt = np.bincount(idx.ravel(), minlength=n)
     ref = acc / np.maximum(cnt, 1)[:, None, None]
 
-    print("  component  max|g| (ref)    max rel diff   99th pct rel diff")
+    print("  differences in % of the largest reference gradient of each component")
+    print("  component  max|g| (ref)    max diff [%]   99th pct diff [%]")
     for c, name in enumerate(COMPONENTS):
         r, m = ref[corner, :, c], grad[corner, :, c]
         scale = np.abs(r).max() or 1.0
         rel = np.linalg.norm(m - r, axis=1) / scale
-        print(f"  {name:9s}  {scale:12.4e}   {rel.max():12.3e}   {np.percentile(rel, 99):12.3e}")
+        print(f"  {name:9s}  {scale:12.4e}   {100 * rel.max():12.3g}   {100 * np.percentile(rel, 99):12.3g}")
     worst = np.unravel_index(np.argmax(np.linalg.norm(grad - ref, axis=1)[corner]), (corner.sum(), 6))
     print(f"  largest difference at mesh row {np.flatnonzero(corner)[worst[0]]}, component {COMPONENTS[worst[1]]}")
 
@@ -144,14 +145,16 @@ def check_edges(econn, lut, xyz, sol, grad, corner):
         print("  skipped: no quadratic elements (linear elements have no midside nodes)")
         return
     x, y = np.vstack(d_exact), np.vstack(d_mapdl)
-    print(f"  {len(x)} edge ends;  ideal: slope 1, R^2 1 (nodal averaging keeps them slightly off)")
-    print("  component   slope      R^2     median |diff| / max|df/ds|")
+    print(f"  {len(x)} edge ends;  ideal: slope deviation 0 %, R^2 1 (nodal averaging keeps them slightly off)")
+    print("  differences in % of the largest exact edge derivative of each component")
+    print("  component  slope dev [%]     R^2    median diff [%]  95th pct diff [%]")
     for c, name in enumerate(COMPONENTS):
         xc, yc = x[:, c], y[:, c]
         slope = (xc @ yc) / (xc @ xc) if xc @ xc > 0 else np.nan
         r2 = 1 - ((yc - xc) ** 2).sum() / max(((xc - xc.mean()) ** 2).sum(), 1e-300)
-        med = np.median(np.abs(yc - xc)) / (np.abs(xc).max() or 1.0)
-        print(f"  {name:9s}  {slope:7.4f}  {r2:8.5f}   {med:10.3e}")
+        diff = 100 * np.abs(yc - xc) / (np.abs(xc).max() or 1.0)
+        print(f"  {name:9s}  {100 * (slope - 1):12.3g}  {r2:9.5f}  {np.median(diff):14.3g}"
+              f"  {np.percentile(diff, 95):16.3g}")
 
 
 def main(folder):
