@@ -6,7 +6,6 @@ before MAPDL starts. They are written by node number; pde_filter_onerun_in.txt
 builds the matrices, reorders the stresses into equation order, solves and writes
 the result with node numbers.
 """
-import re
 import numpy as np
 from Run_pipeline import read_stress_file, SHARED_DIR, Path, MAPDL_EXE_DIR, subprocess, fail, log
 
@@ -75,10 +74,29 @@ def read_mmf_vector(path):
     return data if data.ndim == 1 else data[:, -1]
 
 
+def cdb_format_fields(fmt):
+    # Finds every <count><i|e><width> in a format line, e.g. "3i9" -> ("3", "i", "9");
+    # the count may be empty ("i9"), the width may not.
+    fields, pos = [], 0
+    while pos < len(fmt):
+        j = pos
+        while j < len(fmt) and fmt[j].isdecimal():
+            j += 1
+        k = j + 1
+        while j < len(fmt) and fmt[j] in "ie" and k < len(fmt) and fmt[k].isdecimal():
+            k += 1
+        if k > j + 1:
+            fields.append((fmt[pos:j], fmt[j], fmt[j + 1:k]))
+            pos = k
+        else:
+            pos += 1
+    return fields
+
+
 def cdb_field_widths(fmt_line, kind):
     # "(3i9,6e21.13e3)" -> ([9, 9, 9, 21, ...], 3);  "(19i10)" -> ([10]*19, 19)
     widths, nint = [], 0
-    for count, letter, width in re.findall(r"(\d*)([ie])(\d+)", fmt_line.lower()):
+    for count, letter, width in cdb_format_fields(fmt_line.lower()):
         k = int(count) if count else 1
         widths += [int(width)] * k
         nint += k if letter == "i" else 0
