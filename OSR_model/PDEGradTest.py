@@ -52,11 +52,13 @@ def run_mapdl_onerun(rhs, mesh_nids, l_0):
     nrow = int(mesh_nids.max())
     rhs_by_nid = np.zeros((nrow, 6))
     rhs_by_nid[mesh_nids - 1] = rhs
+    gscale = float(np.abs(rhs).max()) or 1.0
     with open(SHARED_DIR / "pde_onerun_params.txt", "w") as f:
-        f.write(f"nrow_={nrow}\nl0sq_={l_0**2:.16e}\n")
+        f.write(f"nrow_={nrow}\nl0sq_={l_0**2:.16e}\ngsc_={1.0/gscale:.16e}\n")
+
     np.savetxt(SHARED_DIR / "rhs_nodes.txt", rhs_by_nid, fmt="%25.15E", delimiter="")
     run_mapdl("pde_filter_onerun_in.txt", "pdeonerun",
-              ("mapb.mtx", "mapb_t.mtx", "sol_onerun.txt"))
+              ("mapb.mtx", "mapb_t.mtx", "sol_onerun.txt", "grad_onerun.txt"))
 
     back = read_mmf_vector(SHARED_DIR / "mapb.mtx").astype(np.int64)
     back_t = read_mmf_vector(SHARED_DIR / "mapb_t.mtx").astype(np.int64)
@@ -71,7 +73,14 @@ def run_mapdl_onerun(rhs, mesh_nids, l_0):
     # Equation order -> mesh_nids order (mesh_nids is sorted, so searchsorted gives the row).
     sol = np.empty_like(rhs)
     sol[np.searchsorted(mesh_nids, back)] = data[:, 1:]
-    return sol
+
+    # Row k of grad_onerun.txt is node number k+1: node, then (dx, dy, dz) for each of the 6 components.
+    g = np.loadtxt(SHARED_DIR / "grad_onerun.txt").reshape(-1, 19)
+    if not np.array_equal(g[:, 0].astype(np.int64), np.arange(1, nrow + 1)):
+        fail("grad_onerun.txt is not one row per node number 1..nrow_")
+    grad_by_nid = g[:, 1:].reshape(-1, 6, 3) * gscale      # [node number - 1, component, x/y/z]
+
+    return sol, grad_by_nid
 
 
 def cdb_format_fields(fmt):
@@ -224,13 +233,13 @@ def PDEFilter_onerun(stress_file_nodal, r):
         fail(f"{(~known).sum()} nodes still without stress after midside fill")
 
     l_0 = r / (2*np.sqrt(2))
-    sol = run_mapdl_onerun(rhs, mesh_nids, l_0)
+    sol, grad_by_nid = run_mapdl_onerun(rhs, mesh_nids, l_0)
     stress_filt_nodal = sol[rows]
 
     out = []
     for row, s in zip(stress_file_nodal, stress_filt_nodal):
         out.append(row[:5] + tuple(s.tolist()))
-    return out
+    return out, grad_by_nid
 
 
 if __name__ == "__main__":
@@ -242,4 +251,8 @@ if __name__ == "__main__":
     stress_file_nodal = sorted(nodal.values(), key=lambda r: r[1])
 
     r = 0.003
-    out = PDEFilter_onerun(stress_file_nodal, r)
+    out, grad_by_nid = PDEFilter_onerun(stress_file_nodal, r)
+
+    #NOTE grad = grad_by_nid[int(row[1]) - 1]      # (6, 3): component SXX..SXZ, then d/dx, d/dy, d/dz
+
+    
