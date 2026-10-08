@@ -90,6 +90,11 @@ DEFAULT_STRESS_UNIT = "MPA"
 USE_CLAMP_FILTER  = True 
 USE_DEDUPLICATION = True
 USE_PDE_FILTER = True
+# Needs USE_PDE_FILTER. Filters with the single MAPDL run of PDEGradTest.py, which also
+# returns the gradient of the filtered stress, and writes <stress file>_gradient.csv
+# to the shared folder for the External Data block (see write_gradient_csv).
+USE_PDE_GRADIENT = True
+GRADIENT_CSV_SUFFIX = "_gradient.csv"
 
 
 # Change this string if the binary-cache format or the deduplication criterion
@@ -320,7 +325,58 @@ def write_deduplicated_file(rows, chosen_eids, dst_path):
 
     return n_in, len(kept_rows)
 
-#  Binary cache helper functions 
+def gradient_csv_path(fname):
+    return SHARED_DIR / (Path(fname).stem + GRADIENT_CSV_SUFFIX)
+
+def von_mises_gradient(stress, grad):
+    """Von Mises stress and its gradient from the stress and the stress gradient.
+
+    stress: (n, 6) SXX SYY SZZ SXY SYZ SXZ;  grad: (n, 6, 3) d(component)/d(x, y, z).
+    d(vm)/dx_k = 3/2 (s : dsigma/dx_k) / vm, with s the deviator (s is traceless, so
+    s : ds = s : dsigma). Returns vm (n,) and grad vm (n, 3); zero where vm = 0.
+    """
+    w = np.array([1.0, 1.0, 1.0, 2.0, 2.0, 2.0])      # shear terms appear twice in a : b
+    dev = stress.copy()
+    dev[:, :3] -= stress[:, :3].mean(axis=1, keepdims=True)
+    vm = np.sqrt(1.5 * np.einsum("nc,nc,c->n", dev, dev, w))
+    ok = vm > 1e-12 * max(vm.max(), 1e-300)
+    gvm = np.zeros((len(vm), 3))
+    gvm[ok] = 1.5 * np.einsum("nc,nck,c->nk", dev[ok], grad[ok], w) / vm[ok, None]
+    return vm, gvm
+
+def write_gradient_csv(rows, grad_by_nid, dst_path, stress_scale=1.0):
+    """Write the stress gradient of the filtered field for the External Data block.
+
+    rows: filtered rows (eid nid X Y Z SXX..SXZ, export unit), one per node;
+    grad_by_nid[nid - 1]: (6, 3) gradient of each component, export unit / length.
+    Columns, stresses in MPa (stress_scale), lengths in the unit of the export:
+      GradVM   |grad sigma_vM|                          MPa / length
+      Chi      |grad sigma_vM| / sigma_vM (relative)    1 / length
+      GradNorm |grad sigma|, norm of the full gradient  MPa / length
+    """
+    if not rows:
+        fail(f"no rows to write to {dst_path.name}")
+    nids = np.array([int(r[1]) for r in rows])
+    xyz = np.array([r[2:5] for r in rows], dtype=float)
+    stress = np.array([r[5:11] for r in rows], dtype=float) * stress_scale
+    grad = grad_by_nid[nids - 1] * stress_scale
+
+    vm, gvm = von_mises_gradient(stress, grad)
+    grad_vm = np.linalg.norm(gvm, axis=1)
+    chi = np.divide(grad_vm, vm, out=np.zeros_like(vm), where=vm > 0)
+    w = np.array([1.0, 1.0, 1.0, 2.0, 2.0, 2.0])
+    grad_norm = np.sqrt(np.einsum("nck,c->n", grad**2, w))
+
+    with open(dst_path, "w") as f:
+        f.write("X,Y,Z,GradVM,Chi,GradNorm\n")
+        for (x, y, z), a, b, c in zip(xyz, grad_vm, chi, grad_norm):
+            f.write(f"{x:15.7E},{y:15.7E},{z:15.7E},{a:15.7E},{b:15.7E},{c:15.7E}\n")
+
+    k = int(grad_vm.argmax())
+    log(f"  {dst_path.name}: {len(rows)} points, max |grad sigma_vM| = {grad_vm[k]:.4g} MPa/length "
+        f"at node {nids[k]} (sigma_vM = {vm[k]:.4g} MPa, chi = {chi[k]:.4g} 1/length)")
+
+#  Binary cache helper functions
 def get_kept_rows(rows, chosen_eids):
     """Return deduplicated rows without writing them to disk."""
     kept, seen = [], set()
@@ -351,6 +407,7 @@ def current_cache_metadata(mode, history_filename, stress_unit=DEFAULT_STRESS_UN
         "USE_CLAMP_FILTER": USE_CLAMP_FILTER,
         "USE_PDE_FILTER": USE_PDE_FILTER,
         "PDE_RADIUS": pde_radius if USE_PDE_FILTER else None,
+        "USE_PDE_GRADIENT": USE_PDE_FILTER and USE_PDE_GRADIENT,
         "CLAMP_RADIUS": CLAMP_RADIUS,
         "CLAMP_CENTERS": [list(c) for c in CLAMP_CENTERS],
         "mode": mode,
@@ -926,6 +983,11 @@ def main():
             )
             for fname in stress_filenames
         )
+        # The gradient files are written in the same pass as the .bin files, so a cache
+        # hit only has to make sure they are still there.
+        if USE_PDE_FILTER and USE_PDE_GRADIENT:
+            all_cache_valid = all_cache_valid and all(
+                gradient_csv_path(fname).exists() for fname in stress_filenames)
 
         if all_cache_valid:
             # Cache hit: skip the full deduplication step.
@@ -956,9 +1018,16 @@ def main():
                     n_raw = len(all_rows_by_case[k])
                     n_out = len(kept_rows)
 
-                    # PDE Filter 
+                    # PDE Filter
 
-                    if USE_PDE_FILTER:
+                    grad_by_nid = None
+                    if USE_PDE_FILTER and USE_PDE_GRADIENT:
+                        # imported here: PDEGradTest imports from this module
+                        from PDEGradTest import PDEFilter_onerun
+                        log(f"  PDE filter + gradient enabled, filtering {n_out} rows from {fname} with pde_radius={pde_radius}")
+                        kept_rows, grad_by_nid = PDEFilter_onerun(kept_rows, pde_radius)
+
+                    elif USE_PDE_FILTER:
                         log(f"  PDE filter enabled, filtering {n_out} rows from {fname} with pde_radius={pde_radius}")
                         kept_rows = PDEFilter_export(kept_rows, pde_radius)
 
@@ -979,6 +1048,10 @@ def main():
                         log(f" {fname}: {len(kept_rows)} rows after clamp filtering ({n_removed} removed)")
                     else : 
                         log(f" {fname}: {len(kept_rows)} rows read (clamp filter disabled)")
+
+                    # Same points as damage.csv, so the clamp singularities stay out of the legend
+                    if grad_by_nid is not None:
+                        write_gradient_csv(kept_rows, grad_by_nid, gradient_csv_path(fname), stress_scale)
 
 
                     # Text file written for human inspection.

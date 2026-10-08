@@ -7,7 +7,8 @@ builds the matrices, reorders the stresses into equation order, solves and write
 the result with node numbers.
 """
 import numpy as np
-from Run_pipeline import read_stress_file, SHARED_DIR, Path, MAPDL_EXE_DIR, subprocess, fail, log
+from Run_pipeline import read_stress_file, SHARED_DIR, Path, MAPDL_EXE_DIR, subprocess, fail, log, \
+    parse_loadcases, write_gradient_csv, gradient_csv_path
 
 # Element types the decks delete before building the PDE matrices (ESEL,S,ENAME,,169,177).
 EXCLUDED_ENAMES = range(169, 178)
@@ -253,6 +254,6 @@ if __name__ == "__main__":
     r = 0.003
     out, grad_by_nid = PDEFilter_onerun(stress_file_nodal, r)
 
-    #NOTE grad = grad_by_nid[int(row[1]) - 1]      # (6, 3): component SXX..SXZ, then d/dx, d/dy, d/dz
-
-    
+    # grad_by_nid[int(row[1]) - 1] is (6, 3): component SXX..SXZ, then d/dx, d/dy, d/dz
+    stress_scale = parse_loadcases(SHARED_DIR / "loadcases.txt")[9]
+    write_gradient_csv(out, grad_by_nid, gradient_csv_path("sigma_export_nodes_testBracket.txt"), stress_scale)
