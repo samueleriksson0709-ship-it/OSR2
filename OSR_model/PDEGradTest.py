@@ -253,6 +253,6 @@ if __name__ == "__main__":
     r = 0.003
     out, grad_by_nid = PDEFilter_onerun(stress_file_nodal, r)
 
-    #NOTE grad = grad_by_nid[int(row[1]) - 1]      # (6, 3): component SXX..SXZ, then d/dx, d/dy, d/dz
-
+    stress_scale = parse_loadcases(SHARED_DIR / "loadcases.txt")[9]
+    write_gradient_csv(out, grad_by_nid, gradient_csv_path("sigma_export_nodes_testBracket.txt"), stress_scale)
     

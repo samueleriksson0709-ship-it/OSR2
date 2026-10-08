@@ -53,6 +53,11 @@ OUTPUT_CSV      = "damage.csv"
 OUTPUT_FIELD    = "damage_field.txt"
 LOG_FILE        = SHARED_DIR / "pipeline_log.txt"
 OUTPUT_CRITICAL = "critical_points.txt"
+PDE_DECK = "pde_filter_onerun_in.txt"
+PDE_JOB = "pdeonerun"
+PDE_EXPORT_FILES = ("mapb.mtx", "mapb_t.mtx", "sol_onerun.txt", "grad_onerun.txt")
+GRADIENT_CSV_SUFFIX = "_gradient.csv"
+
 
 # Coordinates of the fixed supports, in the length unit of the export (these ones
 # come from a model meshed in mm). Update them for a model solved in MKS, where
@@ -90,7 +95,6 @@ DEFAULT_STRESS_UNIT = "MPA"
 USE_CLAMP_FILTER  = True 
 USE_DEDUPLICATION = True
 USE_PDE_FILTER = True
-
 
 # Change this string if the binary-cache format or the deduplication criterion
 # changes. This prevents silently reusing old .bin files after code changes.
@@ -320,6 +324,59 @@ def write_deduplicated_file(rows, chosen_eids, dst_path):
 
     return n_in, len(kept_rows)
 
+def gradient_csv_path(fname):
+    return SHARED_DIR / (Path(fname).stem + GRADIENT_CSV_SUFFIX)
+
+def von_mises_gradient(stress, grad):
+    """Von Mises stress and its gradient from the stress and the stress gradient.
+
+    stress: (n, 6) SXX SYY SZZ SXY SYZ SXZ;  grad: (n, 6, 3) d(component)/d(x, y, z).
+    d(vm)/dx_k = 3/2 (s : dsigma/dx_k) / vm, with s the deviator (s is traceless, so
+    s : ds = s : dsigma). Returns vm (n,) and grad vm (n, 3); zero where vm = 0.
+    """
+    w = np.array([1.0, 1.0, 1.0, 2.0, 2.0, 2.0])      # shear terms appear twice in a : b
+    dev = stress.copy()
+    dev[:, :3] -= stress[:, :3].mean(axis=1, keepdims=True)
+    vm = np.sqrt(1.5 * np.einsum("nc,nc,c->n", dev, dev, w))
+    ok = vm > 1e-12 * max(vm.max(), 1e-300)
+    gvm = np.zeros((len(vm), 3))
+    gvm[ok] = 1.5 * np.einsum("nc,nck,c->nk", dev[ok], grad[ok], w) / vm[ok, None]
+    return vm, gvm
+
+def write_gradient_csv(rows, grad_by_nid, dst_path, stress_scale=1.0):
+    """Write the stress gradient of the filtered field for the External Data block.
+
+    rows: filtered rows (eid nid X Y Z SXX..SXZ, export unit), one per node;
+    grad_by_nid[nid - 1]: (6, 3) gradient of each component, export unit / length.
+    Columns, stresses in MPa (stress_scale), lengths in the unit of the export:
+      GradVM   |grad sigma_vM|                          MPa / length
+      Chi      |grad sigma_vM| / sigma_vM (relative)    1 / length
+      GradNorm |grad sigma|, norm of the full gradient  MPa / length
+    """
+    if not rows:
+        fail(f"no rows to write to {dst_path.name}")
+    nids = np.array([int(r[1]) for r in rows])
+    xyz = np.array([r[2:5] for r in rows], dtype=float)
+    stress = np.array([r[5:11] for r in rows], dtype=float) * stress_scale
+    grad = grad_by_nid[nids - 1] * stress_scale
+
+    vm, gvm = von_mises_gradient(stress, grad)
+    grad_vm = np.linalg.norm(gvm, axis=1)
+    chi = np.divide(grad_vm, vm, out=np.zeros_like(vm), where=vm > 0)
+    w = np.array([1.0, 1.0, 1.0, 2.0, 2.0, 2.0])
+    grad_norm = np.sqrt(np.einsum("nck,c->n", grad**2, w))
+
+    with open(dst_path, "w") as f:
+        f.write("X,Y,Z,GradVM,Chi,GradNorm\n")
+        for (x, y, z), a, b, c in zip(xyz, grad_vm, chi, grad_norm):
+            f.write(f"{x:15.7E},{y:15.7E},{z:15.7E},{a:15.7E},{b:15.7E},{c:15.7E}\n")
+
+    k = int(grad_vm.argmax())
+    log(f"  {dst_path.name}: {len(rows)} points, max |grad sigma_vM| = {grad_vm[k]:.4g} MPa/length "
+        f"at node {nids[k]} (sigma_vM = {vm[k]:.4g} MPa, chi = {chi[k]:.4g} 1/length)")
+
+
+
 #  Binary cache helper functions 
 def get_kept_rows(rows, chosen_eids):
     """Return deduplicated rows without writing them to disk."""
@@ -417,6 +474,36 @@ def parse_loadcases_for_filenames(loadcases_path):
         if parts:
             filenames.append(parts[0])
     return filenames
+
+
+def read_history_file(history_path,n_cases):
+
+    # expected format : 
+    # time  lambda_1  lambda_2 ... lambda_n_cases 
+
+    history = []
+
+    with open(history_path, "r") as f : 
+        for line in f:
+            line=line.strip()
+
+            if not line or line.startswith("#"):
+                continue 
+
+            parts = line.split()
+            if len(parts) < n_cases + 1 : 
+                continue 
+
+            t = float(parts[0])
+            lambdas = [float(x) for x in parts[1:1+n_cases]]
+
+            history.append((t, lambdas))
+    
+    if not history : 
+        raise RuntimeError("Empty or invalid history file : " + str(history_path))
+    
+    return history 
+
 
 def parse_loadcases(loadcases_path): # read the different values needed for the construction of the stress path
 
@@ -587,180 +674,6 @@ def select_reference_eids_by_max_beta(all_rows_by_case, loadcases, mode = "SINUS
 
     return chosen
 
-def read_history_file(history_path,n_cases):
-
-    # expected format : 
-    # time  lambda_1  lambda_2 ... lambda_n_cases 
-
-    history = []
-
-    with open(history_path, "r") as f : 
-        for line in f:
-            line=line.strip()
-
-            if not line or line.startswith("#"):
-                continue 
-
-            parts = line.split()
-            if len(parts) < n_cases + 1 : 
-                continue 
-
-            t = float(parts[0])
-            lambdas = [float(x) for x in parts[1:1+n_cases]]
-
-            history.append((t, lambdas))
-    
-    if not history : 
-        raise RuntimeError("Empty or invalid history file : " + str(history_path))
-    
-    return history 
-
-def cont3D4kmt(ex,ey,ez):
-    C = np.array([
-        [1 , ex[0], ey[0], ez[0]],
-        [1 , ex[1], ey[1], ez[1]],
-        [1 , ex[2], ey[2], ez[2]],
-        [1 , ex[3], ey[3], ez[3]]
-    ])
-    Cinv = np.linalg.inv(C)
-    V = np.abs(np.linalg.det(C)/6)
-
-    B = Cinv[1:4,:]
-
-    Ke = B.T @ B * V
-    Me = V / 20 * (np.ones((4, 4)) + np.eye(4))
-
-    return Ke,Me, V
-
-def constructPDEMatrix(stress_file,r,nnod,nelm,npe):
-
-    rows, cols, dataK, dataM = [], [], [], []
-
-    #Construct matrices
-    vols = []
-
-    for element in range(nelm):
-        index = element*npe
-
-        nodes = [int(row[1])-1 for row in stress_file[index:index+npe]]
-
-        ex = [row[2] for row in stress_file[index:index+npe]]
-        ey = [row[3] for row in stress_file[index:index+npe]]
-        ez = [row[4] for row in stress_file[index:index+npe]]
-        
-        Ke,Me,Ve = cont3D4kmt(ex,ey,ez)
-
-        vols.append(Ve)
-
-        for a in range(npe):
-            for b in range(npe):
-                rows.append(nodes[a]); cols.append(nodes[b])
-                dataK.append(Ke[a, b]); dataM.append(Me[a, b])
-
-    K = sparse.coo_matrix((dataK, (rows, cols)), shape=(nnod, nnod)).tocsr()
-    M = sparse.coo_matrix((dataM, (rows, cols)), shape=(nnod, nnod)).tocsr()
-
-    #Determine l_0
-    l_0 = r / (2*np.sqrt(2))
-
-    h = np.cbrt(6*np.sqrt(2) * np.array(vols))
-    h10, h50, h90 = np.percentile(h, [10, 50, 90])
-    kept = lambda he: 1 / (1 + (np.pi * l_0 / he)**2)
-    log(f"  PDE filter: l_0={l_0:.4g}, edge p10/p50/p90 = {h10:.4g}/{h50:.4g}/{h90:.4g}, "
-        f"node-to-node noise kept {kept(h10):.0%}/{kept(h50):.0%}/{kept(h90):.0%}")
-    if kept(h10) > 0.9:
-        log(f"  Warning: filter has almost no effect even in the finest 10% of elements; refine the mesh or raise r")
-    # kept() only catches "the filter does nothing"; it says nothing about whether the
-    # mesh resolves l_0. Below l_0 ~ h the solve is dominated by the discretisation, so
-    # the P1 assembly here and the P2 matrices from MAPDL answer different questions.
-    if l_0 < h50:
-        log(f"  Warning: l_0={l_0:.4g} is below the median edge h={h50:.4g} (l_0/h={l_0/h50:.2f}); "
-            f"the filtered field is mesh-dependent and the two implementations will not agree. "
-            f"Raise r to >= {2*np.sqrt(2)*h50:.4g} or refine the mesh")
-
-    return K,M,l_0
-
-def PDEFilter_construct(stress_file_nodal,stress_file_elemental,r):
-    #Find geometry variables
-    npe = int(sum(1 for row in stress_file_elemental if row[0] == stress_file_elemental[0][0]))
-    assert npe == 4, f"expected linear tets (4 rows per element), got {npe}"
-    nelm = len(stress_file_elemental) // npe
-    assert nelm * npe == len(stress_file_elemental), f"row count {len(stress_file_elemental)} not divisible into {nelm}×{npe}"
-    eids = np.array([row[0] for row in stress_file_elemental]).reshape(nelm, npe)
-    assert np.all(eids == eids[:, :1]), "element rows are not grouped in contiguous blocks"
-    nnod = int(max(row[1] for row in stress_file_elemental))
-
-    nids = np.array([row[1] for row in stress_file_nodal])
-    assert np.array_equal(nids, np.arange(1, nnod + 1)), "nodal file is not one row per node, 1..nnod in order"
-    assert len({row[1] for row in stress_file_elemental}) == nnod, "some node ids are unused by elements (A would be singular)"
-
-    K,M,l_0 = constructPDEMatrix(stress_file_elemental,r,nnod,nelm,npe)
-
-    stress_nodal = np.array([r[5:11] for r in stress_file_nodal])
-
-    # solve once (nodal)
-    A_pde = (l_0**2 * K + M).tocsc()
-    stress_filt_nodal = spsolve(A_pde, M @ stress_nodal)
-
-    out = []
-    for row, s in zip(stress_file_nodal, stress_filt_nodal):
-        out.append(row[:5] + tuple(s.tolist()))
-
-    xyz = np.array([row[2:5] for row in stress_file_nodal])
-
-    return out, K, M, xyz
-
-
-def run_mapdl_extract():
-    export_files = ("K_pde.mtx", "M_pde.mtx", "mapb.mtx", "mapb_t.mtx",
-             "pde_dims.txt", "econn.txt", "nxyz.txt")
-    pde_deck = "pde_matrices_extract_in.txt"
-    for name in export_files:
-        p = SHARED_DIR / name
-        if p.exists():
-            p.unlink()
-
-    if not (SHARED_DIR / pde_deck).exists():
-        fail(f"{pde_deck} not found in {SHARED_DIR}")
-    if not (SHARED_DIR / "model.cdb").exists():
-        fail("model.cdb not found; add CDWRITE to the Mechanical Commands object")
-    if not Path(MAPDL_EXE_DIR).exists():
-        fail(f"MAPDL executable not found: {MAPDL_EXE_DIR}")
-
-    res = subprocess.run(
-        [MAPDL_EXE_DIR, "-b", "-np", "1", "-i", pde_deck, "-o", "pde_filter.out"],
-        cwd=str(SHARED_DIR), timeout=7200,
-    )
-    for name in export_files:
-        if not (SHARED_DIR / name).exists():
-            fail(f"{name} not written (code {res.returncode}), see pde_filter.out")
-
-    return int(float(np.loadtxt(SHARED_DIR / "pde_dims.txt")))
-
-
-def read_mmf_triplets(path):
-    with open(path) as f:
-        header = f.readline()
-        symmetric = "symmetric" in header.lower()
-        line = f.readline()
-        while line.startswith("%"):
-            line = f.readline()
-        nrow, ncol, nnz = (int(v) for v in line.split())
-        data = np.loadtxt(f, max_rows=nnz)
-    i = data[:, 0].astype(np.int64) - 1
-    j = data[:, 1].astype(np.int64) - 1
-    v = data[:, 2]
-    if symmetric:
-        off = i != j
-        i, j, v = (np.concatenate([i, j[off]]),
-                   np.concatenate([j, i[off]]),
-                   np.concatenate([v, v[off]]))
-    return i, j, v, nrow
-
-
-def build_csc(i, j, v, n):
-    return coo_matrix((v, (i, j)), shape=(n, n)).tocsc()
-
 
 def read_mmf_vector(path):
     with open(path) as f:
@@ -793,24 +706,176 @@ def fill_midside(rhs, known, econn, lut, xyz, tol=0.25):
     out[filled] = acc[filled] / cnt[filled, None]
     return out, known | filled
 
-def PDEFilter_export(stress_file_nodal,r):
-    nn = run_mapdl_extract()
-    ki, kj, kv, n = read_mmf_triplets(SHARED_DIR / "K_pde.mtx")
-    mi, mj, mv, nm = read_mmf_triplets(SHARED_DIR / "M_pde.mtx")
-    if n != nn or nm != nn:
-        fail(f"matrix size mismatch: K={n} M={nm} mesh nodes={nn}")
-    log(f"K: {n} rows, {len(kv)} nonzeros")
-    log(f"M: {n} rows, {len(mv)} nonzeros")
+
+def run_mapdl(rhs, mesh_nids, l_0):
+
+    # Builds K and M and solves (l_0^2 K + M) sol = M rhs in one MAPDL run;
+    # rhs is n x 6 with row k belonging to node mesh_nids[k], sol is returned the same way.
+    n = rhs.shape[0]
+
+    # Row k of rhs_nodes.txt holds node number k (zeros for numbers not in the mesh).
+    nrow = int(mesh_nids.max())
+    rhs_by_nid = np.zeros((nrow, 6))
+    rhs_by_nid[mesh_nids - 1] = rhs
+    gscale = float(np.abs(rhs).max()) or 1.0
+    with open(SHARED_DIR / "pde_onerun_params.txt", "w") as f:
+        f.write(f"nrow_={nrow}\nl0sq_={l_0**2:.16e}\ngsc_={1.0/gscale:.16e}\n")
+
+    np.savetxt(SHARED_DIR / "rhs_nodes.txt", rhs_by_nid, fmt="%25.15E", delimiter="")
+
+    for name in PDE_EXPORT_FILES + (f"{PDE_JOB}.lock",):
+        p = SHARED_DIR / name
+        if p.exists():
+            p.unlink()
+
+    if not (SHARED_DIR / PDE_DECK).exists():
+        fail(f"{PDE_DECK} not found in {SHARED_DIR}")
+    if not (SHARED_DIR / "model.cdb").exists():
+        fail("model.cdb not found; add CDWRITE to the Mechanical Commands object")
+    if not Path(MAPDL_EXE_DIR).exists():
+        fail(f"MAPDL executable not found: {MAPDL_EXE_DIR}")
+
+    res = subprocess.run(
+        [MAPDL_EXE_DIR, "-b", "-np", "1", "-j", PDE_JOB,
+         "-i", PDE_DECK, "-o", f"{PDE_JOB}.out"],
+        cwd=str(SHARED_DIR), timeout=7200,
+    )
+    for name in PDE_EXPORT_FILES:
+        if not (SHARED_DIR / name).exists():
+            fail(f"{name} not written (code {res.returncode}), see {PDE_JOB}.out")
+
 
     back = read_mmf_vector(SHARED_DIR / "mapb.mtx").astype(np.int64)
     back_t = read_mmf_vector(SHARED_DIR / "mapb_t.mtx").astype(np.int64)
     if not np.array_equal(back, back_t):
         fail("equation ordering differs between pdesteady.full and pdetrans.full")
-    if len(back) != nn:
-        fail(f"mapping length {len(back)} != node count {nn}")
+    data = np.loadtxt(SHARED_DIR / "sol_onerun.txt").reshape(-1, 7)
+    if not np.array_equal(data[:, 0].astype(np.int64), back):
+        fail("node numbers in sol_onerun.txt differ from mapb.mtx (mapping read wrongly by *VREAD)")
+    if len(back) != n or not np.array_equal(np.sort(back), mesh_nids):
+        fail(f"MAPDL mesh ({len(back)} nodes) differs from model.cdb mesh ({n} nodes)")
 
-    lut = np.full(back.max() + 1, -1, dtype=np.int64)
-    lut[back] = np.arange(n)
+    # Equation order -> mesh_nids order (mesh_nids is sorted, so searchsorted gives the row).
+    sol = np.empty_like(rhs)
+    sol[np.searchsorted(mesh_nids, back)] = data[:, 1:]
+
+    # Row k of grad_onerun.txt is node number k+1: node, then (dx, dy, dz) for each of the 6 components.
+    g = np.loadtxt(SHARED_DIR / "grad_onerun.txt").reshape(-1, 19)
+    if not np.array_equal(g[:, 0].astype(np.int64), np.arange(1, nrow + 1)):
+        fail("grad_onerun.txt is not one row per node number 1..nrow_")
+    grad_by_nid = g[:, 1:].reshape(-1, 6, 3) * gscale      # [node number - 1, component, x/y/z]
+
+    return sol, grad_by_nid
+
+
+def cdb_format_fields(fmt):
+    # Finds every <count><i|e><width> in a format line, e.g. "3i9" -> ("3", "i", "9");
+    # the count may be empty ("i9"), the width may not.
+    fields, pos = [], 0
+    while pos < len(fmt):
+        j = pos
+        while j < len(fmt) and fmt[j].isdecimal():
+            j += 1
+        k = j + 1
+        while j < len(fmt) and fmt[j] in "ie" and k < len(fmt) and fmt[k].isdecimal():
+            k += 1
+        if k > j + 1:
+            fields.append((fmt[pos:j], fmt[j], fmt[j + 1:k]))
+            pos = k
+        else:
+            pos += 1
+    return fields
+
+
+
+def cdb_field_widths(fmt_line, kind):
+    # "(3i9,6e21.13e3)" -> ([9, 9, 9, 21, ...], 3);  "(19i10)" -> ([10]*19, 19)
+    widths, nint = [], 0
+    for count, letter, width in cdb_format_fields(fmt_line.lower()):
+        k = int(count) if count else 1
+        widths += [int(width)] * k
+        nint += k if letter == "i" else 0
+    if not widths:
+        fail(f"cannot parse {kind} format line: {fmt_line.strip()}")
+    return widths, nint
+
+
+def split_fixed(line, widths):
+    out, pos = [], 0
+    for w in widths:
+        s = line[pos:pos + w].strip()
+        if not s:
+            break
+        out.append(s)
+        pos += w
+    return out
+
+
+def read_cdb_mesh(path):
+    # Returns (node ids, xyz per node id row, connectivity (ne, 20) as node ids) for
+    # the elements the PDE decks keep, i.e. everything except contact/target (169-177).
+    excluded_enames = range(169, 178)
+    ename = {}
+    coords = {}
+    elems = []
+    with open(path) as f:
+        lines = iter(f)
+        for line in lines:
+            key = line[:8].upper()
+            if key.startswith("ET,"):
+                p = line.split(",")
+                ename[int(p[1])] = int(float(p[2]))
+            elif key.startswith("ETBLOCK"):
+                next(lines)                                  # format line
+                for ln in lines:
+                    p = ln.split()
+                    if p[0] == "-1":
+                        break
+                    ename[int(p[0])] = int(p[1])
+            elif key.startswith("NBLOCK"):
+                widths, nint = cdb_field_widths(next(lines), "NBLOCK")
+                for ln in lines:
+                    s = ln.strip()
+                    if s == "-1" or s.upper().startswith("N,"):
+                        break
+                    p = split_fixed(ln, widths)
+                    xyz = [float(v) for v in p[nint:nint + 3]]
+                    coords[int(p[0])] = xyz + [0.0] * (3 - len(xyz))  # trailing zeros are omitted
+            elif key.startswith("EBLOCK"):
+                if "SOLID" not in line.upper():
+                    fail(f"only the SOLID EBLOCK format is supported: {line.strip()}")
+                widths, _ = cdb_field_widths(next(lines), "EBLOCK")
+                for ln in lines:
+                    p = split_fixed(ln, widths)
+                    if p[0] == "-1":
+                        break
+                    etype, nnode = int(p[1]), int(p[8])
+                    nodes = [int(v) for v in p[11:]]
+                    while len(nodes) < nnode:
+                        nodes += [int(v) for v in split_fixed(next(lines), widths)]
+                    if ename.get(etype) not in excluded_enames:
+                        elems.append((int(p[10]), nodes[:nnode]))
+
+    if not elems:
+        fail(f"no elements found in {path}")
+    elems.sort()
+    econn = np.zeros((len(elems), 20), dtype=np.int64)
+    for k, (_, nodes) in enumerate(elems):
+        econn[k, :len(nodes)] = nodes
+    nids = np.unique(econn[econn > 0])
+    missing = [n for n in nids if n not in coords]
+    if missing:
+        fail(f"{len(missing)} element nodes missing from NBLOCK, e.g. {missing[:5]}")
+    xyz = np.array([coords[n] for n in nids])
+    return nids, xyz, econn
+
+
+def PDEFilter_export(stress_file_nodal,r):
+    mesh_nids, xyz, econn = read_cdb_mesh(SHARED_DIR / "model.cdb")
+    n = len(mesh_nids)
+
+    lut = np.full(mesh_nids.max() + 1, -1, dtype=np.int64)
+    lut[mesh_nids] = np.arange(n)
 
     nids = np.array([int(r[1]) for r in stress_file_nodal])
     if nids.max() >= len(lut) or (lut[nids] < 0).any():
@@ -823,47 +888,19 @@ def PDEFilter_export(stress_file_nodal,r):
     known = np.zeros(n, dtype=bool)
     known[rows] = True
 
-    econn = np.loadtxt(SHARED_DIR / "econn.txt").astype(np.int64).reshape(-1, 20)
-    nxyz = np.loadtxt(SHARED_DIR / "nxyz.txt").reshape(-1, 3)
-    xyz = nxyz[back - 1]
-
     rhs, known = fill_midside(rhs, known, econn, lut, xyz)
     if not known.all():
         fail(f"{(~known).sum()} nodes still without stress after midside fill")
 
     l_0 = r / (2*np.sqrt(2))
-    K = build_csc(ki, kj, kv, n)
-    M = build_csc(mi, mj, mv, n)
-    lu = splu((l_0**2 * K + M).tocsc())
-    sol = lu.solve(M @ rhs)
+    sol, grad_by_nid = run_mapdl(rhs, mesh_nids, l_0)
     stress_filt_nodal = sol[rows]
 
     out = []
     for row, s in zip(stress_file_nodal, stress_filt_nodal):
         out.append(row[:5] + tuple(s.tolist()))
+    return out, grad_by_nid
 
-    #return out, K, M, xyz
-    return out
-
-
-def matrix_checks(K, M, xyz):
-    ones = np.ones(K.shape[0])
-    Mx = M @ ones
-    vol = ones @ Mx
-    out = {"n_nodes": K.shape[0], "volume": vol,
-           "max|K 1| / max|K|": np.abs(K @ ones).max() / abs(K).max()}
-    for d, name in enumerate("xyz"):
-        u = xyz[:, d] - (Mx @ xyz[:, d]) / vol
-        out[f"u'Ku/V ({name})"] = u @ (K @ u) / vol
-        out[f"u'Mu ({name})"] = u @ (M @ u)
-    return out
-
-def filter_comp(kept_rows_const, kept_rows_ext, K_const, M_const, xyz_const, K_ext, M_ext, xyz_ext, rel_tol=1e-3):    
-    a = matrix_checks(K_const, M_const, xyz_const)
-    b = matrix_checks(K_ext, M_ext, xyz_ext)
-    for k in a:
-        rel = abs(a[k] - b[k]) / max(abs(a[k]), abs(b[k]), 1e-300)
-        log(f"  {k}: P1 {a[k]:.6g}  P2 {b[k]:.6g}  rel diff {rel:.2e}")
 
 def main():
 
@@ -927,6 +964,11 @@ def main():
             for fname in stress_filenames
         )
 
+        if USE_PDE_FILTER:
+            all_cache_valid = all_cache_valid and all(
+                gradient_csv_path(fname).exists() for fname in stress_filenames)
+
+
         if all_cache_valid:
             # Cache hit: skip the full deduplication step.
             log("Binary cache valid: skipping deduplication (cache hit)")
@@ -958,15 +1000,11 @@ def main():
 
                     # PDE Filter 
 
+                    grad_by_nid = None
                     if USE_PDE_FILTER:
-                        log(f"  PDE filter enabled, filtering {n_out} rows from {fname} with pde_radius={pde_radius}")
-                        kept_rows = PDEFilter_export(kept_rows, pde_radius)
-
-                        #kept_rows_const, K_const, M_const, xyz_const = PDEFilter_construct(kept_rows, read_stress_file(SHARED_DIR / fname), pde_radius)
-                        #kept_rows_ext, K_ext, M_ext, xyz_ext = PDEFilter_export(kept_rows, pde_radius)
-                        #filter_comp(kept_rows_const, kept_rows_ext, K_const, M_const, xyz_const, K_ext, M_ext, xyz_ext)
-                        #TODO clean and remove comp
-
+                        log(f"  PDE filter + gradient enabled, filtering {n_out} rows from {fname} with pde_radius={pde_radius}")
+                        kept_rows, grad_by_nid = PDEFilter_export(kept_rows, pde_radius)
+                        write_gradient_csv(kept_rows, grad_by_nid, gradient_csv_path(fname), stress_scale)
                     else:
                         log("PDE filter disabled, writing deduplicated rows without filtering")
 
