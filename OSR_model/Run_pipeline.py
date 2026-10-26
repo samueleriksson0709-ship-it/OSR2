@@ -324,59 +324,6 @@ def write_deduplicated_file(rows, chosen_eids, dst_path):
 
     return n_in, len(kept_rows)
 
-def gradient_csv_path(fname):
-    return SHARED_DIR / (Path(fname).stem + GRADIENT_CSV_SUFFIX)
-
-def von_mises_gradient(stress, grad):
-    """Von Mises stress and its gradient from the stress and the stress gradient.
-
-    stress: (n, 6) SXX SYY SZZ SXY SYZ SXZ;  grad: (n, 6, 3) d(component)/d(x, y, z).
-    d(vm)/dx_k = 3/2 (s : dsigma/dx_k) / vm, with s the deviator (s is traceless, so
-    s : ds = s : dsigma). Returns vm (n,) and grad vm (n, 3); zero where vm = 0.
-    """
-    w = np.array([1.0, 1.0, 1.0, 2.0, 2.0, 2.0])      # shear terms appear twice in a : b
-    dev = stress.copy()
-    dev[:, :3] -= stress[:, :3].mean(axis=1, keepdims=True)
-    vm = np.sqrt(1.5 * np.einsum("nc,nc,c->n", dev, dev, w))
-    ok = vm > 1e-12 * max(vm.max(), 1e-300)
-    gvm = np.zeros((len(vm), 3))
-    gvm[ok] = 1.5 * np.einsum("nc,nck,c->nk", dev[ok], grad[ok], w) / vm[ok, None]
-    return vm, gvm
-
-def write_gradient_csv(rows, grad_by_nid, dst_path, stress_scale=1.0):
-    """Write the stress gradient of the filtered field for the External Data block.
-
-    rows: filtered rows (eid nid X Y Z SXX..SXZ, export unit), one per node;
-    grad_by_nid[nid - 1]: (6, 3) gradient of each component, export unit / length.
-    Columns, stresses in MPa (stress_scale), lengths in the unit of the export:
-      GradVM   |grad sigma_vM|                          MPa / length
-      Chi      |grad sigma_vM| / sigma_vM (relative)    1 / length
-      GradNorm |grad sigma|, norm of the full gradient  MPa / length
-    """
-    if not rows:
-        fail(f"no rows to write to {dst_path.name}")
-    nids = np.array([int(r[1]) for r in rows])
-    xyz = np.array([r[2:5] for r in rows], dtype=float)
-    stress = np.array([r[5:11] for r in rows], dtype=float) * stress_scale
-    grad = grad_by_nid[nids - 1] * stress_scale
-
-    vm, gvm = von_mises_gradient(stress, grad)
-    grad_vm = np.linalg.norm(gvm, axis=1)
-    chi = np.divide(grad_vm, vm, out=np.zeros_like(vm), where=vm > 0)
-    w = np.array([1.0, 1.0, 1.0, 2.0, 2.0, 2.0])
-    grad_norm = np.sqrt(np.einsum("nck,c->n", grad**2, w))
-
-    with open(dst_path, "w") as f:
-        f.write("X,Y,Z,GradVM,Chi,GradNorm\n")
-        for (x, y, z), a, b, c in zip(xyz, grad_vm, chi, grad_norm):
-            f.write(f"{x:15.7E},{y:15.7E},{z:15.7E},{a:15.7E},{b:15.7E},{c:15.7E}\n")
-
-    k = int(grad_vm.argmax())
-    log(f"  {dst_path.name}: {len(rows)} points, max |grad sigma_vM| = {grad_vm[k]:.4g} MPa/length "
-        f"at node {nids[k]} (sigma_vM = {vm[k]:.4g} MPa, chi = {chi[k]:.4g} 1/length)")
-
-
-
 #  Binary cache helper functions 
 def get_kept_rows(rows, chosen_eids):
     """Return deduplicated rows without writing them to disk."""
@@ -680,32 +627,6 @@ def read_mmf_vector(path):
         lines = [ln for ln in f if not ln.startswith("%")]
     data = np.loadtxt(lines[1:])
     return data if data.ndim == 1 else data[:, -1]
-    
-def fill_midside(rhs, known, econn, lut, xyz, tol=0.25):
-    # Fill midside nodes by averaging the values of the two end nodes of each edge.
-    acc = np.zeros_like(rhs)
-    cnt = np.zeros(len(rhs))
-    for conn in econn:
-        nodes = np.unique(lut[conn[conn > 0]])
-        kn = nodes[known[nodes]]
-        un = nodes[~known[nodes]]
-        if len(un) == 0 or len(kn) < 2:
-            continue
-        ia, ib = np.triu_indices(len(kn), 1)
-        a, b = kn[ia], kn[ib]
-        mid = 0.5 * (xyz[a] + xyz[b])
-        L = np.linalg.norm(xyz[a] - xyz[b], axis=1)
-        d = np.linalg.norm(xyz[un, None, :] - mid[None], axis=2) / L
-        k = d.argmin(axis=1)
-        ok = d[np.arange(len(un)), k] < tol
-        for m, p in zip(un[ok], k[ok]):
-            acc[m] += 0.5 * (rhs[a[p]] + rhs[b[p]])
-            cnt[m] += 1
-    filled = cnt > 0
-    out = rhs.copy()
-    out[filled] = acc[filled] / cnt[filled, None]
-    return out, known | filled
-
 
 def run_mapdl(rhs, mesh_nids, l_0):
 
@@ -766,6 +687,31 @@ def run_mapdl(rhs, mesh_nids, l_0):
     grad_by_nid = g[:, 1:].reshape(-1, 6, 3) * gscale      # [node number - 1, component, x/y/z]
 
     return sol, grad_by_nid
+
+def fill_midside(rhs, known, econn, lut, xyz, tol=0.25):
+    # Fill midside nodes by averaging the values of the two end nodes of each edge.
+    acc = np.zeros_like(rhs)
+    cnt = np.zeros(len(rhs))
+    for conn in econn:
+        nodes = np.unique(lut[conn[conn > 0]])
+        kn = nodes[known[nodes]]
+        un = nodes[~known[nodes]]
+        if len(un) == 0 or len(kn) < 2:
+            continue
+        ia, ib = np.triu_indices(len(kn), 1)
+        a, b = kn[ia], kn[ib]
+        mid = 0.5 * (xyz[a] + xyz[b])
+        L = np.linalg.norm(xyz[a] - xyz[b], axis=1)
+        d = np.linalg.norm(xyz[un, None, :] - mid[None], axis=2) / L
+        k = d.argmin(axis=1)
+        ok = d[np.arange(len(un)), k] < tol
+        for m, p in zip(un[ok], k[ok]):
+            acc[m] += 0.5 * (rhs[a[p]] + rhs[b[p]])
+            cnt[m] += 1
+    filled = cnt > 0
+    out = rhs.copy()
+    out[filled] = acc[filled] / cnt[filled, None]
+    return out, known | filled
 
 
 def cdb_format_fields(fmt):
@@ -870,7 +816,7 @@ def read_cdb_mesh(path):
     return nids, xyz, econn
 
 
-def PDEFilter_export(stress_file_nodal,r):
+def PDEFilterAndGradient(stress_file_nodal,r):
     mesh_nids, xyz, econn = read_cdb_mesh(SHARED_DIR / "model.cdb")
     n = len(mesh_nids)
 
@@ -900,6 +846,60 @@ def PDEFilter_export(stress_file_nodal,r):
     for row, s in zip(stress_file_nodal, stress_filt_nodal):
         out.append(row[:5] + tuple(s.tolist()))
     return out, grad_by_nid
+
+
+def gradient_csv_path(fname):
+    return SHARED_DIR / (Path(fname).stem + GRADIENT_CSV_SUFFIX)
+
+def von_mises_gradient(stress, grad):
+    """Von Mises stress and its gradient from the stress and the stress gradient.
+
+    stress: (n, 6) SXX SYY SZZ SXY SYZ SXZ;  grad: (n, 6, 3) d(component)/d(x, y, z).
+    d(vm)/dx_k = 3/2 (s : dsigma/dx_k) / vm, with s the deviator (s is traceless, so
+    s : ds = s : dsigma). Returns vm (n,) and grad vm (n, 3); zero where vm = 0.
+    """
+    w = np.array([1.0, 1.0, 1.0, 2.0, 2.0, 2.0])      # shear terms appear twice in a : b
+    dev = stress.copy()
+    dev[:, :3] -= stress[:, :3].mean(axis=1, keepdims=True)
+    vm = np.sqrt(1.5 * np.einsum("nc,nc,c->n", dev, dev, w))
+    ok = vm > 1e-12 * max(vm.max(), 1e-300)
+    gvm = np.zeros((len(vm), 3))
+    gvm[ok] = 1.5 * np.einsum("nc,nck,c->nk", dev[ok], grad[ok], w) / vm[ok, None]
+    return vm, gvm
+
+def write_gradient_csv(rows, grad_by_nid, dst_path, stress_scale=1.0):
+    """Write the stress gradient of the filtered field for the External Data block.
+
+    rows: filtered rows (eid nid X Y Z SXX..SXZ, export unit), one per node;
+    grad_by_nid[nid - 1]: (6, 3) gradient of each component, export unit / length.
+    Columns, stresses in MPa (stress_scale), lengths in the unit of the export:
+      GradVM   |grad sigma_vM|                          MPa / length
+      Chi      |grad sigma_vM| / sigma_vM (relative)    1 / length
+      GradNorm |grad sigma|, norm of the full gradient  MPa / length
+    """
+    if not rows:
+        fail(f"no rows to write to {dst_path.name}")
+    nids = np.array([int(r[1]) for r in rows])
+    xyz = np.array([r[2:5] for r in rows], dtype=float)
+    stress = np.array([r[5:11] for r in rows], dtype=float) * stress_scale
+    grad = grad_by_nid[nids - 1] * stress_scale
+
+    vm, gvm = von_mises_gradient(stress, grad)
+    grad_vm = np.linalg.norm(gvm, axis=1)
+    chi = np.divide(grad_vm, vm, out=np.zeros_like(vm), where=vm > 0)
+    w = np.array([1.0, 1.0, 1.0, 2.0, 2.0, 2.0])
+    grad_norm = np.sqrt(np.einsum("nck,c->n", grad**2, w))
+
+    with open(dst_path, "w") as f:
+        f.write("X,Y,Z,GradVM,Chi,GradNorm\n")
+        for (x, y, z), a, b, c in zip(xyz, grad_vm, chi, grad_norm):
+            f.write(f"{x:15.7E},{y:15.7E},{z:15.7E},{a:15.7E},{b:15.7E},{c:15.7E}\n")
+
+    k = int(grad_vm.argmax())
+    log(f"  {dst_path.name}: {len(rows)} points, max |grad sigma_vM| = {grad_vm[k]:.4g} MPa/length "
+        f"at node {nids[k]} (sigma_vM = {vm[k]:.4g} MPa, chi = {chi[k]:.4g} 1/length)")
+
+
 
 
 def main():
@@ -1003,7 +1003,7 @@ def main():
                     grad_by_nid = None
                     if USE_PDE_FILTER:
                         log(f"  PDE filter + gradient enabled, filtering {n_out} rows from {fname} with pde_radius={pde_radius}")
-                        kept_rows, grad_by_nid = PDEFilter_export(kept_rows, pde_radius)
+                        kept_rows, grad_by_nid = PDEFilterAndGradient(kept_rows, pde_radius)
                         write_gradient_csv(kept_rows, grad_by_nid, gradient_csv_path(fname), stress_scale)
                     else:
                         log("PDE filter disabled, writing deduplicated rows without filtering")

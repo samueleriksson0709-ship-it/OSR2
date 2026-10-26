@@ -12,6 +12,12 @@
 !   1 6.283185307 SINUS PA
 ! otherwise the solver reads Pa as MPa and every point fails at zero cycle.
 ! ---------------------------------------------------------------------------
+! mesh/model dump for the PDE filter (read by pde_filter_in.txt and Run_pipeline.py)
+FINISH
+/PREP7
+CDWRITE,DB,'C:\Users\samue\OSR\shared\model','cdb'
+FINISH
+
 /POST1
 SET,LAST
 RSYS,0
