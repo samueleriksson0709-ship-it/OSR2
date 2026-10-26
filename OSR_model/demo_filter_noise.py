@@ -32,8 +32,20 @@ import argparse
 import numpy as np
 
 from Run_pipeline import SHARED_DIR, PDEFilterAndGradient, read_cdb_mesh, fail, log
+from validate_pde_gradient import EDGES
 
 OUTPUT_CSV = "demo_noise.csv"
+
+
+def fill_midside_gradient(grad, econn, lut):
+    # MAPDL writes nodal TG at corner nodes only (zero at midside nodes); give each
+    # midside node the mean of the two corner nodes at the ends of its edge.
+    nnode = (econn > 0).sum(1)
+    for nn, edges in EDGES.items():
+        rows = lut[econn[nnode == nn][:, :nn]]
+        for a, b, m in edges:
+            grad[rows[:, m]] = 0.5 * (grad[rows[:, a]] + grad[rows[:, b]])
+    return grad
 
 
 def local_element_size(xyz, econn, lut, centre, radius):
@@ -99,7 +111,8 @@ def main():
             for i, nid in enumerate(mesh_nids)]
     out, grad_by_nid = PDEFilterAndGradient(rows, args.r * mm)
     filt, filt_bump, filt_noise = np.array([row[5:8] for row in out]).T
-    grad_filt = np.linalg.norm(grad_by_nid[mesh_nids - 1, 0, :], axis=1)        # component SXX
+    grad = fill_midside_gradient(grad_by_nid[mesh_nids - 1], econn, lut)        # (n, 6, 3)
+    grad_filt = np.linalg.norm(grad[:, 0, :], axis=1)                            # component SXX
     grad_bump = np.linalg.norm((xyz - centre) / w**2 * bump[:, None], axis=1)
 
     with open(SHARED_DIR / OUTPUT_CSV, "w") as f:
@@ -111,7 +124,7 @@ def main():
     inner = d < 0.7 * patch
     left = np.abs(filt_noise[inner]).max() / np.abs(noise[inner]).max()
     ring = d < 3 * w
-    grad_filt_bump = np.linalg.norm(grad_by_nid[mesh_nids - 1, 1, :], axis=1)  # SYY = bump alone
+    grad_filt_bump = np.linalg.norm(grad[:, 1, :], axis=1)                     # SYY = bump alone
     k_max = int(np.argmax(np.where(ring, grad_filt_bump, 0.0)))
     k_tot = int(np.argmax(np.where(inner, grad_filt, 0.0)))
     k_noise = int(np.argmax(np.where(inner, np.abs(grad_filt - grad_filt_bump), 0.0)))
