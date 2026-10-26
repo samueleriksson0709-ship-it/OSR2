@@ -53,8 +53,8 @@ OUTPUT_CSV      = "damage.csv"
 OUTPUT_FIELD    = "damage_field.txt"
 LOG_FILE        = SHARED_DIR / "pipeline_log.txt"
 OUTPUT_CRITICAL = "critical_points.txt"
-PDE_DECK = "pde_filter_onerun_in.txt"
-PDE_JOB = "pdeonerun"
+PDE_DECK = "pde_filter_in.txt"
+PDE_JOB = "pdeFilterJob"
 PDE_EXPORT_FILES = ("mapb.mtx", "mapb_t.mtx", "sol_onerun.txt", "grad_onerun.txt")
 GRADIENT_CSV_SUFFIX = "_gradient.csv"
 
