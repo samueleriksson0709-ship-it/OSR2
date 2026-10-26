@@ -14,7 +14,7 @@ and the gradient of the bump is zero at the centre and peaks on a ring at d = w 
 |grad SXX| = A / (w sqrt e).
 
 Run from the OSR_model folder after model.cdb has been written by the APDL block:
-    python demo_filter_noise.py --center X Y Z [--w 15 --lam 5 --amp 30 --r 5]
+    python demo_filter_noise.py --center X Y Z [--w 15 --lam 5 --amp 20 --r 7]
 X Y Z is a point on the face where the bump goes, in the length unit of the model
 (Mechanical: Hit Point Coordinate). w, lam, r and the patch radius are in mm.
 The mesh must be several times finer than lam and r around the centre (see the warnings).
@@ -52,10 +52,10 @@ def main():
                    help="centre of the bump, model length unit")
     p.add_argument("--amp-bump", type=float, default=100.0, help="bump height A")
     p.add_argument("--w", type=float, default=15.0, help="bump width (Gaussian sigma), mm")
-    p.add_argument("--amp", type=float, default=30.0, help="checkerboard amplitude a")
+    p.add_argument("--amp", type=float, default=20.0, help="checkerboard amplitude a")
     p.add_argument("--lam", type=float, default=5.0, help="checkerboard wavelength, mm")
     p.add_argument("--patch", type=float, default=None, help="checkerboard patch radius, mm (default 2 w)")
-    p.add_argument("--r", type=float, default=5.0, help="filter radius, mm")
+    p.add_argument("--r", type=float, default=7.0, help="filter radius, mm")
     args = p.parse_args()
 
     mesh_nids, xyz, econn = read_cdb_mesh(SHARED_DIR / "model.cdb")
