@@ -19,33 +19,132 @@ X Y Z is a point on the face where the bump goes, in the length unit of the mode
 (Mechanical: Hit Point Coordinate). w, lam, r and the patch radius are in mm.
 The mesh must be several times finer than lam and r around the centre (see the warnings).
 
-Writes SHARED_DIR/demo_noise.csv for an External Data block:
+With --stress the bump is replaced by a real load case: the von Mises stress of an Ansys
+export (element contributions averaged per node, converted to MPa with the unit declared
+in loadcases.txt), e.g. the bracket solved with a downward force on its two top lugs.
+The checkerboard is added on top exactly as above, centred on --center, which then does
+not have to be a node; --amp is in MPa:
+    python demo_filter_noise.py --stress [FILE] --center X Y Z [--patch 40 ...]
+FILE is in SHARED_DIR, by default the first stress file of loadcases.txt. It must come
+from the same solve as model.cdb.
+
+Nodes near the bottom clamps are left out as in Run_pipeline.py (USE_CLAMP_FILTER,
+CLAMP_CENTERS, CLAMP_RADIUS there): the whole field is filtered, then those nodes are
+dropped from the CSV and from the checks printed in the log, so the support singularities
+do not show up as the peak. The script stops if CLAMP_CENTERS do not sit on the fixed
+supports of model.cdb, and prints the centres to use instead.
+
+Writes SHARED_DIR/demo_noise_<source>_x<X>_y<Y>_z<Z>_r<r>.csv for an External Data block,
+<source> being "bump" or the stress file, X Y Z the centre in mm and r the filter radius
+in mm, e.g. demo_noise_testBracket_x2.8_y-41.1_z26.2_r7.csv. Columns:
   X,Y,Z        node coordinates, model unit
   Raw          bump + checkerboard (what goes into the filter)
   Filtered     output of the PDE filter
-  Bump         the bump alone (the ideal result)
+  Bump         the bump alone (the ideal result)                 Clean with --stress
   GradFilt     |grad Filtered| from MAPDL, stress / model length unit
-  GradBump     |grad Bump|, exact
+  GradBump     |grad Bump|, exact                                GradClean with --stress:
+               there is no exact gradient, so it is |grad| of the filtered clean field
 """
 import argparse
 
 import numpy as np
 
-from Run_pipeline import SHARED_DIR, PDEFilterAndGradient, read_cdb_mesh, fail, log
+from Run_pipeline import (SHARED_DIR, INPUT_LOADCASES, PDEFilterAndGradient, read_cdb_mesh,
+                          read_stress_file, parse_loadcases, von_mises_gradient, fail, log,
+                          USE_CLAMP_FILTER, CLAMP_CENTERS, CLAMP_RADIUS)
 from validate_pde_gradient import EDGES
 
-OUTPUT_CSV = "demo_noise.csv"
+
+def output_csv_name(source, centre, r_mm, mm):
+    # e.g. demo_noise_testBracket_x2.8_y-41.1_z26.2_r7.csv; centre and radius in mm
+    x, y, z = (f"{c / mm:.1f}" for c in centre)
+    return f"demo_noise_{source.removeprefix('sigma_export_nodes_')}_x{x}_y{y}_z{z}_r{r_mm:g}.csv"
 
 
-def fill_midside_gradient(grad, econn, lut):
-    # MAPDL writes nodal TG at corner nodes only (zero at midside nodes); give each
-    # midside node the mean of the two corner nodes at the ends of its edge.
+def constrained_centres(path, xyz, lut, radius):
+    # One centre per group of constrained nodes (the DBLOCK of model.cdb, i.e. the fixed
+    # supports): nodes within `radius` of the first remaining node form a group.
+    nodes = []
+    with open(path) as f:
+        for line in f:
+            if line.startswith("DBLOCK"):
+                next(f)                                      # format line
+                for ln in f:
+                    p = ln.split()
+                    if p[0] == "-1":
+                        break
+                    nodes.append(int(p[0]))
+                break
+    nodes = np.unique(nodes)
+    nodes = nodes[nodes < len(lut)]
+    pts = xyz[lut[nodes][lut[nodes] >= 0]]
+    centres = []
+    while len(pts):
+        near = np.linalg.norm(pts - pts[0], axis=1) < radius
+        centres.append(pts[near].mean(axis=0))
+        pts = pts[~near]
+    return np.array(centres).reshape(-1, 3)
+
+
+def clamp_mask(xyz, lut):
+    # True for the nodes kept, i.e. farther than CLAMP_RADIUS from every clamp centre.
+    if not USE_CLAMP_FILTER:
+        log("  clamp filter disabled (USE_CLAMP_FILTER in Run_pipeline.py)")
+        return np.ones(len(xyz), dtype=bool)
+    clamps = np.array(CLAMP_CENTERS)
+    fixed = constrained_centres(SHARED_DIR / "model.cdb", xyz, lut, CLAMP_RADIUS)
+    if len(fixed) and np.linalg.norm(fixed[:, None] - clamps[None], axis=2).min(axis=1).max() > 0.5 * CLAMP_RADIUS:
+        listed = ",\n".join(f"    ({x:.6g}, {y:.6g}, {z:.6g})" for x, y, z in fixed)
+        fail("CLAMP_CENTERS in Run_pipeline.py are not on the fixed supports of model.cdb "
+             "(another model or coordinate frame?). The supports are centred at\n"
+             f"CLAMP_CENTERS = [\n{listed}\n]\n"
+             "Paste this into Run_pipeline.py (the pipeline uses the same list), "
+             "or set USE_CLAMP_FILTER = False.")
+    keep = np.linalg.norm(xyz[:, None] - clamps[None], axis=2).min(axis=1) >= CLAMP_RADIUS
+    log(f"  clamp filter: {(~keep).sum()} nodes within {CLAMP_RADIUS:g} of the {len(clamps)} clamps "
+        f"left out of the CSV and the checks")
+    return keep
+
+
+def fill_midside_mean(values, econn, lut):
+    # MAPDL writes nodal TG, and the APDL block the stresses, at corner nodes only; give
+    # each midside node the mean of the two corner nodes at the ends of its edge.
     nnode = (econn > 0).sum(1)
     for nn, edges in EDGES.items():
         rows = lut[econn[nnode == nn][:, :nn]]
         for a, b, m in edges:
-            grad[rows[:, m]] = 0.5 * (grad[rows[:, a]] + grad[rows[:, b]])
-    return grad
+            values[rows[:, m]] = 0.5 * (values[rows[:, a]] + values[rows[:, b]])
+    return values
+
+
+def clean_von_mises(fname, xyz, econn, lut, extent):
+    # Von Mises stress in MPa of an Ansys export, one value per node of model.cdb.
+    loadcases, *_, stress_unit, stress_scale, _ = parse_loadcases(SHARED_DIR / INPUT_LOADCASES)
+    path = SHARED_DIR / (fname or loadcases[0][0])
+    if not path.exists():
+        fail(f"stress file not found: {path}")
+    rows = read_stress_file(path)
+    if not rows:
+        fail(f"no stress rows in {path}")
+    nid = np.array([r[1] for r in rows])
+    if nid.max() >= len(lut) or (lut[nid] < 0).any() or \
+            np.abs(np.array([r[2:5] for r in rows]) - xyz[lut[nid]]).max() > 1e-4 * extent:
+        fail(f"{path.name} was not exported from the mesh in model.cdb; solve again so the "
+             f"APDL block writes both")
+
+    # NaN marks nodes without a value, so a node the export misses cannot pass unnoticed.
+    k = lut[nid]
+    acc = np.zeros((len(xyz), 6))
+    np.add.at(acc, k, np.array([r[5:11] for r in rows]) * stress_scale)
+    cnt = np.bincount(k, minlength=len(xyz))
+    stress = np.full((len(xyz), 6), np.nan)
+    stress[cnt > 0] = acc[cnt > 0] / cnt[cnt > 0, None]
+    stress = fill_midside_mean(stress, econn, lut)
+    if np.isnan(stress).any():
+        fail(f"{np.isnan(stress[:, 0]).sum()} nodes of model.cdb have no stress in {path.name}")
+    vm, _ = von_mises_gradient(stress, np.zeros(stress.shape + (3,)))
+    log(f"  clean field: von Mises of {path.name} ({stress_unit} -> MPa)")
+    return vm, path.stem
 
 
 def local_element_size(xyz, econn, lut, centre, radius):
@@ -61,13 +160,16 @@ def local_element_size(xyz, econn, lut, centre, radius):
 def main():
     p = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     p.add_argument("--center", nargs=3, type=float, required=True, metavar=("X", "Y", "Z"),
-                   help="centre of the bump, model length unit")
+                   help="centre of the bump (of the checkerboard with --stress), model length unit")
     p.add_argument("--amp-bump", type=float, default=100.0, help="bump height A")
     p.add_argument("--w", type=float, default=15.0, help="bump width (Gaussian sigma), mm")
-    p.add_argument("--amp", type=float, default=20.0, help="checkerboard amplitude a")
+    p.add_argument("--amp", type=float, default=20.0, help="checkerboard amplitude a (MPa with --stress)")
     p.add_argument("--lam", type=float, default=5.0, help="checkerboard wavelength, mm")
     p.add_argument("--patch", type=float, default=None, help="checkerboard patch radius, mm (default 2 w)")
     p.add_argument("--r", type=float, default=7.0, help="filter radius, mm")
+    p.add_argument("--stress", nargs="?", const="", default=None, metavar="FILE",
+                   help="von Mises stress of this Ansys export instead of the bump "
+                        "(default FILE: first stress file of loadcases.txt)")
     args = p.parse_args()
 
     mesh_nids, xyz, econn = read_cdb_mesh(SHARED_DIR / "model.cdb")
@@ -82,14 +184,21 @@ def main():
     patch = (args.patch if args.patch is not None else 2 * args.w) * mm
 
     centre = np.array(args.center)
-    k_near = int(np.argmin(np.linalg.norm(xyz - centre, axis=1)))
-    if np.linalg.norm(xyz[k_near] - centre) > 0.05 * extent:
-        fail(f"--center is {np.linalg.norm(xyz[k_near] - centre):.4g} {unit} from the nearest node; "
-             f"is it in the model unit ({unit})?")
-    centre = xyz[k_near]
+    if args.stress is None:
+        k_near = int(np.argmin(np.linalg.norm(xyz - centre, axis=1)))
+        if np.linalg.norm(xyz[k_near] - centre) > 0.05 * extent:
+            fail(f"--center is {np.linalg.norm(xyz[k_near] - centre):.4g} {unit} from the nearest node; "
+                 f"is it in the model unit ({unit})?")
+        centre = xyz[k_near]
+        log(f"Demo: model unit {unit}, bump centre at node {mesh_nids[k_near]} {np.round(centre, 6)}")
+    else:
+        # only the checkerboard is centred here, so a point in the air (e.g. on a pin axis) is fine
+        if ((centre < xyz.min(axis=0) - 0.05 * extent) | (centre > xyz.max(axis=0) + 0.05 * extent)).any():
+            fail(f"--center is outside the model; is it in the model unit ({unit})?")
+        log(f"Demo: model unit {unit}, checkerboard centred at {np.round(centre, 6)}")
 
+    keep = clamp_mask(xyz, lut)
     h = local_element_size(xyz, econn, lut, centre, patch)
-    log(f"Demo: model unit {unit}, bump centre at node {mesh_nids[k_near]} {np.round(centre, 6)}")
     log(f"  element size within {patch / mm:g} mm of the centre: {h / mm:.2f} mm (median edge)")
     if not h <= lam / 4:
         log(f"  WARNING: checkerboard wavelength {args.lam:g} mm < 4 elements; refine the mesh "
@@ -100,42 +209,61 @@ def main():
 
     d = np.linalg.norm(xyz - centre, axis=1)
     k = 2 * np.pi / lam
-    bump = args.amp_bump * np.exp(-d**2 / (2 * w**2))
+    if args.stress is None:
+        clean = args.amp_bump * np.exp(-d**2 / (2 * w**2))
+        source = "bump"
+    else:
+        clean, source = clean_von_mises(args.stress, xyz, econn, lut, extent)
+        log(f"  clean field max:    {clean[keep].max():.4g} MPa away from the clamps "
+            f"({clean.max():.4g} MPa with them)")
     window = 0.5 * (1 - np.tanh((d - patch) / (0.15 * patch)))      # soft edge, no jump
     noise = args.amp * np.sin(k * xyz[:, 0]) * np.sin(k * xyz[:, 1]) * np.sin(k * xyz[:, 2]) * window
-    raw = bump + noise
+    raw = clean + noise
 
     # Every mesh node gets its exact value, so fill_midside has nothing to fill.
-    # SXX = bump + checkerboard, SYY = bump, SZZ = checkerboard, shear components unused.
-    rows = [(0, int(nid), *xyz[i], raw[i], bump[i], noise[i], 0.0, 0.0, 0.0)
+    # SXX = clean + checkerboard, SYY = clean, SZZ = checkerboard, shear components unused.
+    rows = [(0, int(nid), *xyz[i], raw[i], clean[i], noise[i], 0.0, 0.0, 0.0)
             for i, nid in enumerate(mesh_nids)]
     out, grad_by_nid = PDEFilterAndGradient(rows, args.r * mm)
-    filt, filt_bump, filt_noise = np.array([row[5:8] for row in out]).T
-    grad = fill_midside_gradient(grad_by_nid[mesh_nids - 1], econn, lut)        # (n, 6, 3)
+    filt, filt_clean, filt_noise = np.array([row[5:8] for row in out]).T
+    grad = fill_midside_mean(grad_by_nid[mesh_nids - 1], econn, lut)            # (n, 6, 3)
     grad_filt = np.linalg.norm(grad[:, 0, :], axis=1)                            # component SXX
-    grad_bump = np.linalg.norm((xyz - centre) / w**2 * bump[:, None], axis=1)
+    grad_filt_clean = np.linalg.norm(grad[:, 1, :], axis=1)                      # SYY = clean alone
+    if args.stress is None:
+        ref = "Bump"
+        grad_ref = np.linalg.norm((xyz - centre) / w**2 * clean[:, None], axis=1)
+    else:
+        ref = "Clean"
+        grad_ref = grad_filt_clean
 
-    with open(SHARED_DIR / OUTPUT_CSV, "w") as f:
-        f.write("X,Y,Z,Raw,Filtered,Bump,GradFilt,GradBump\n")
-        for (x, y, z), *v in zip(xyz, raw, filt, bump, grad_filt, grad_bump):
+    csv_path = SHARED_DIR / output_csv_name(source, centre, args.r, mm)
+    with open(csv_path, "w") as f:
+        f.write(f"X,Y,Z,Raw,Filtered,{ref},GradFilt,Grad{ref}\n")
+        for (x, y, z), *v in zip(xyz[keep], raw[keep], filt[keep], clean[keep],
+                                 grad_filt[keep], grad_ref[keep]):
             f.write(f"{x:15.7E},{y:15.7E},{z:15.7E}," + ",".join(f"{a:15.7E}" for a in v) + "\n")
 
     l0 = r / (2 * np.sqrt(2))
-    inner = d < 0.7 * patch
+    inner = (d < 0.7 * patch) & keep
     left = np.abs(filt_noise[inner]).max() / np.abs(noise[inner]).max()
-    ring = d < 3 * w
-    grad_filt_bump = np.linalg.norm(grad[:, 1, :], axis=1)                     # SYY = bump alone
-    k_max = int(np.argmax(np.where(ring, grad_filt_bump, 0.0)))
     k_tot = int(np.argmax(np.where(inner, grad_filt, 0.0)))
-    k_noise = int(np.argmax(np.where(inner, np.abs(grad_filt - grad_filt_bump), 0.0)))
-    log(f"  bump peak:          {args.amp_bump:g} -> {filt_bump.max():.4g} after filtering")
+    k_noise = int(np.argmax(np.where(inner, np.abs(grad_filt - grad_filt_clean), 0.0)))
+    if args.stress is None:
+        log(f"  bump peak:          {args.amp_bump:g} -> {filt_clean[keep].max():.4g} after filtering")
+    else:
+        peak = clean[inner].max()
+        log(f"  clean peak:         {peak:.4g} MPa -> {filt_clean[inner].max():.4g} MPa after filtering, "
+            f"within {0.7 * patch / mm:g} mm of the centre (checkerboard amplitude = {100 * args.amp / peak:.3g} % of it)")
     log(f"  checkerboard left:  {100 * left:.3g} % of its amplitude "
         f"(interior theory {100 / (1 + 3 * (l0 * k)**2):.3g} %)")
-    log(f"  gradient ring:      max {grad_filt_bump[k_max] * mm:.4g} per mm at {d[k_max] / mm:.3g} mm from the centre "
-        f"(exact for the raw bump: {args.amp_bump / (args.w * np.sqrt(np.e)):.4g} per mm at {args.w:g} mm)")
+    if args.stress is None:
+        ring = (d < 3 * w) & keep
+        k_max = int(np.argmax(np.where(ring, grad_filt_clean, 0.0)))
+        log(f"  gradient ring:      max {grad_filt_clean[k_max] * mm:.4g} per mm at {d[k_max] / mm:.3g} mm from the centre "
+            f"(exact for the raw bump: {args.amp_bump / (args.w * np.sqrt(np.e)):.4g} per mm at {args.w:g} mm)")
     log(f"  GradFilt column:    max {grad_filt[k_tot] * mm:.4g} per mm; leftover checkerboard adds up to "
-        f"{abs(grad_filt[k_noise] - grad_filt_bump[k_noise]) * mm:.3g} per mm")
-    log(f"  written {SHARED_DIR / OUTPUT_CSV}")
+        f"{abs(grad_filt[k_noise] - grad_filt_clean[k_noise]) * mm:.3g} per mm")
+    log(f"  written {csv_path}")
 
 
 if __name__ == "__main__":

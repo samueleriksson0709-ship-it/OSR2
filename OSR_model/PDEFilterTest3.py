@@ -55,7 +55,7 @@ def run_mapdl_onerun(rhs, mesh_nids, l_0):
     with open(SHARED_DIR / "pde_onerun_params.txt", "w") as f:
         f.write(f"nrow_={nrow}\nl0sq_={l_0**2:.16e}\n")
     np.savetxt(SHARED_DIR / "rhs_nodes.txt", rhs_by_nid, fmt="%25.15E", delimiter="")
-    run_mapdl("pde_filter_onerun_in.txt", "pdeonerun",
+    run_mapdl("pde_filter_in.txt", "pdeonerun",
               ("mapb.mtx", "mapb_t.mtx", "sol_onerun.txt"))
 
     back = read_mmf_vector(SHARED_DIR / "mapb.mtx").astype(np.int64)
