@@ -2,7 +2,7 @@
 
   construct (Run_pipelineWithOldFunc.PDEFilter_construct): P1 K, M assembled in Python from
             the element rows of the stress export, on the corner nodes 1..nnod
-  export2   (Run_pipelineWithOldFunc.PDEFilter_export2):   K, M exported by the MAPDL run of
+  export2   (Run_pipelineWithOldFunc.PDEFilter_export2):   K, M exported by the same MAPDL run as
             Run_pipeline.PDEFilterAndGradient, P2 (10-node tets of model.cdb), all nodes
 
 The P2 matrices are restricted to the P1 space with the prolongation P (corner node -> itself,
@@ -22,7 +22,6 @@ import numpy as np
 from scipy import sparse
 from scipy.sparse.linalg import norm as sparse_norm
 
-import Run_pipeline as rp
 import Run_pipelineWithOldFunc as old
 from Run_pipeline import SHARED_DIR, read_cdb_mesh, read_stress_file
 from filtExtractComp import compare, load_nodal, pct, print_timing, run_timed
@@ -122,7 +121,7 @@ def main():
     methods = (
         ("construct", "P1, Python assembly", old, ("constructPDEMatrix", "spsolve"),
          lambda: old.PDEFilter_construct(stress_file_nodal, stress_file_elemental, args.r)),
-        ("export2", "P2, MAPDL", rp, ("read_cdb_mesh", "run_mapdl"),
+        ("export2", "P2, MAPDL", old, ("read_cdb_mesh", "run_mapdl_onerun"),
          lambda: old.PDEFilter_export2(stress_file_nodal, args.r)),
     )
     results = []
