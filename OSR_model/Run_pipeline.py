@@ -628,7 +628,7 @@ def read_mmf_vector(path):
     data = np.loadtxt(lines[1:])
     return data if data.ndim == 1 else data[:, -1]
 
-def run_mapdl(rhs, mesh_nids, l_0):
+def run_mapdl(rhs, mesh_nids, l_0, deck=PDE_DECK):
 
     # Builds K and M and solves (l_0^2 K + M) sol = M rhs in one MAPDL run;
     # rhs is n x 6 with row k belonging to node mesh_nids[k], sol is returned the same way.
@@ -649,8 +649,8 @@ def run_mapdl(rhs, mesh_nids, l_0):
         if p.exists():
             p.unlink()
 
-    if not (SHARED_DIR / PDE_DECK).exists():
-        fail(f"{PDE_DECK} not found in {SHARED_DIR}")
+    if not (SHARED_DIR / deck).exists():
+        fail(f"{deck} not found in {SHARED_DIR}")
     if not (SHARED_DIR / "model.cdb").exists():
         fail("model.cdb not found; add CDWRITE to the Mechanical Commands object")
     if not Path(MAPDL_EXE_DIR).exists():
@@ -658,7 +658,7 @@ def run_mapdl(rhs, mesh_nids, l_0):
 
     res = subprocess.run(
         [MAPDL_EXE_DIR, "-b", "-np", "1", "-j", PDE_JOB,
-         "-i", PDE_DECK, "-o", f"{PDE_JOB}.out"],
+         "-i", deck, "-o", f"{PDE_JOB}.out"],
         cwd=str(SHARED_DIR), timeout=7200,
     )
     for name in PDE_EXPORT_FILES:
@@ -816,7 +816,7 @@ def read_cdb_mesh(path):
     return nids, xyz, econn
 
 
-def PDEFilterAndGradient(stress_file_nodal,r):
+def PDEFilterAndGradient(stress_file_nodal,r,deck=PDE_DECK):
     mesh_nids, xyz, econn = read_cdb_mesh(SHARED_DIR / "model.cdb")
     n = len(mesh_nids)
 
@@ -839,7 +839,7 @@ def PDEFilterAndGradient(stress_file_nodal,r):
         fail(f"{(~known).sum()} nodes still without stress after midside fill")
 
     l_0 = r / (2*np.sqrt(2))
-    sol, grad_by_nid = run_mapdl(rhs, mesh_nids, l_0)
+    sol, grad_by_nid = run_mapdl(rhs, mesh_nids, l_0, deck)
     stress_filt_nodal = sol[rows]
 
     out = []

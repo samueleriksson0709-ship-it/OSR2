@@ -19,3 +19,6 @@ shared/apdl_marker.txt
 *.dat
 *.err
 *.mechdb
+
+# Deck written by Run_pipelineWithOldFunc.PDEFilter_export2 (pde_filter_in.txt + K/M export)
+shared/pde_filter_km_in.txt
