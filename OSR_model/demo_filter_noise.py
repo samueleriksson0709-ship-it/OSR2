@@ -28,7 +28,15 @@ not have to be a node; --amp is in MPa:
 FILE is in SHARED_DIR, by default the first stress file of loadcases.txt. It must come
 from the same solve as model.cdb.
 
-Writes SHARED_DIR/demo_noise.csv for an External Data block:
+Nodes near the bottom clamps are left out as in Run_pipeline.py (USE_CLAMP_FILTER,
+CLAMP_CENTERS, CLAMP_RADIUS there): the whole field is filtered, then those nodes are
+dropped from the CSV and from the checks printed in the log, so the support singularities
+do not show up as the peak. The script stops if CLAMP_CENTERS do not sit on the fixed
+supports of model.cdb, and prints the centres to use instead.
+
+Writes SHARED_DIR/demo_noise_<source>_x<X>_y<Y>_z<Z>_r<r>.csv for an External Data block,
+<source> being "bump" or the stress file, X Y Z the centre in mm and r the filter radius
+in mm, e.g. demo_noise_testBracket_x2.8_y-41.1_z26.2_r7.csv. Columns:
   X,Y,Z        node coordinates, model unit
   Raw          bump + checkerboard (what goes into the filter)
   Filtered     output of the PDE filter
@@ -42,10 +50,60 @@ import argparse
 import numpy as np
 
 from Run_pipeline import (SHARED_DIR, INPUT_LOADCASES, PDEFilterAndGradient, read_cdb_mesh,
-                          read_stress_file, parse_loadcases, von_mises_gradient, fail, log)
+                          read_stress_file, parse_loadcases, von_mises_gradient, fail, log,
+                          USE_CLAMP_FILTER, CLAMP_CENTERS, CLAMP_RADIUS)
 from validate_pde_gradient import EDGES
 
-OUTPUT_CSV = "demo_noise.csv"
+
+def output_csv_name(source, centre, r_mm, mm):
+    # e.g. demo_noise_testBracket_x2.8_y-41.1_z26.2_r7.csv; centre and radius in mm
+    x, y, z = (f"{c / mm:.1f}" for c in centre)
+    return f"demo_noise_{source.removeprefix('sigma_export_nodes_')}_x{x}_y{y}_z{z}_r{r_mm:g}.csv"
+
+
+def constrained_centres(path, xyz, lut, radius):
+    # One centre per group of constrained nodes (the DBLOCK of model.cdb, i.e. the fixed
+    # supports): nodes within `radius` of the first remaining node form a group.
+    nodes = []
+    with open(path) as f:
+        for line in f:
+            if line.startswith("DBLOCK"):
+                next(f)                                      # format line
+                for ln in f:
+                    p = ln.split()
+                    if p[0] == "-1":
+                        break
+                    nodes.append(int(p[0]))
+                break
+    nodes = np.unique(nodes)
+    nodes = nodes[nodes < len(lut)]
+    pts = xyz[lut[nodes][lut[nodes] >= 0]]
+    centres = []
+    while len(pts):
+        near = np.linalg.norm(pts - pts[0], axis=1) < radius
+        centres.append(pts[near].mean(axis=0))
+        pts = pts[~near]
+    return np.array(centres).reshape(-1, 3)
+
+
+def clamp_mask(xyz, lut):
+    # True for the nodes kept, i.e. farther than CLAMP_RADIUS from every clamp centre.
+    if not USE_CLAMP_FILTER:
+        log("  clamp filter disabled (USE_CLAMP_FILTER in Run_pipeline.py)")
+        return np.ones(len(xyz), dtype=bool)
+    clamps = np.array(CLAMP_CENTERS)
+    fixed = constrained_centres(SHARED_DIR / "model.cdb", xyz, lut, CLAMP_RADIUS)
+    if len(fixed) and np.linalg.norm(fixed[:, None] - clamps[None], axis=2).min(axis=1).max() > 0.5 * CLAMP_RADIUS:
+        listed = ",\n".join(f"    ({x:.6g}, {y:.6g}, {z:.6g})" for x, y, z in fixed)
+        fail("CLAMP_CENTERS in Run_pipeline.py are not on the fixed supports of model.cdb "
+             "(another model or coordinate frame?). The supports are centred at\n"
+             f"CLAMP_CENTERS = [\n{listed}\n]\n"
+             "Paste this into Run_pipeline.py (the pipeline uses the same list), "
+             "or set USE_CLAMP_FILTER = False.")
+    keep = np.linalg.norm(xyz[:, None] - clamps[None], axis=2).min(axis=1) >= CLAMP_RADIUS
+    log(f"  clamp filter: {(~keep).sum()} nodes within {CLAMP_RADIUS:g} of the {len(clamps)} clamps "
+        f"left out of the CSV and the checks")
+    return keep
 
 
 def fill_midside_mean(values, econn, lut):
@@ -85,8 +143,8 @@ def clean_von_mises(fname, xyz, econn, lut, extent):
     if np.isnan(stress).any():
         fail(f"{np.isnan(stress[:, 0]).sum()} nodes of model.cdb have no stress in {path.name}")
     vm, _ = von_mises_gradient(stress, np.zeros(stress.shape + (3,)))
-    log(f"  clean field: von Mises of {path.name} ({stress_unit} -> MPa), max {vm.max():.4g} MPa")
-    return vm
+    log(f"  clean field: von Mises of {path.name} ({stress_unit} -> MPa)")
+    return vm, path.stem
 
 
 def local_element_size(xyz, econn, lut, centre, radius):
@@ -139,6 +197,7 @@ def main():
             fail(f"--center is outside the model; is it in the model unit ({unit})?")
         log(f"Demo: model unit {unit}, checkerboard centred at {np.round(centre, 6)}")
 
+    keep = clamp_mask(xyz, lut)
     h = local_element_size(xyz, econn, lut, centre, patch)
     log(f"  element size within {patch / mm:g} mm of the centre: {h / mm:.2f} mm (median edge)")
     if not h <= lam / 4:
@@ -152,8 +211,11 @@ def main():
     k = 2 * np.pi / lam
     if args.stress is None:
         clean = args.amp_bump * np.exp(-d**2 / (2 * w**2))
+        source = "bump"
     else:
-        clean = clean_von_mises(args.stress, xyz, econn, lut, extent)
+        clean, source = clean_von_mises(args.stress, xyz, econn, lut, extent)
+        log(f"  clean field max:    {clean[keep].max():.4g} MPa away from the clamps "
+            f"({clean.max():.4g} MPa with them)")
     window = 0.5 * (1 - np.tanh((d - patch) / (0.15 * patch)))      # soft edge, no jump
     noise = args.amp * np.sin(k * xyz[:, 0]) * np.sin(k * xyz[:, 1]) * np.sin(k * xyz[:, 2]) * window
     raw = clean + noise
@@ -174,18 +236,20 @@ def main():
         ref = "Clean"
         grad_ref = grad_filt_clean
 
-    with open(SHARED_DIR / OUTPUT_CSV, "w") as f:
+    csv_path = SHARED_DIR / output_csv_name(source, centre, args.r, mm)
+    with open(csv_path, "w") as f:
         f.write(f"X,Y,Z,Raw,Filtered,{ref},GradFilt,Grad{ref}\n")
-        for (x, y, z), *v in zip(xyz, raw, filt, clean, grad_filt, grad_ref):
+        for (x, y, z), *v in zip(xyz[keep], raw[keep], filt[keep], clean[keep],
+                                 grad_filt[keep], grad_ref[keep]):
             f.write(f"{x:15.7E},{y:15.7E},{z:15.7E}," + ",".join(f"{a:15.7E}" for a in v) + "\n")
 
     l0 = r / (2 * np.sqrt(2))
-    inner = d < 0.7 * patch
+    inner = (d < 0.7 * patch) & keep
     left = np.abs(filt_noise[inner]).max() / np.abs(noise[inner]).max()
     k_tot = int(np.argmax(np.where(inner, grad_filt, 0.0)))
     k_noise = int(np.argmax(np.where(inner, np.abs(grad_filt - grad_filt_clean), 0.0)))
     if args.stress is None:
-        log(f"  bump peak:          {args.amp_bump:g} -> {filt_clean.max():.4g} after filtering")
+        log(f"  bump peak:          {args.amp_bump:g} -> {filt_clean[keep].max():.4g} after filtering")
     else:
         peak = clean[inner].max()
         log(f"  clean peak:         {peak:.4g} MPa -> {filt_clean[inner].max():.4g} MPa after filtering, "
@@ -193,13 +257,13 @@ def main():
     log(f"  checkerboard left:  {100 * left:.3g} % of its amplitude "
         f"(interior theory {100 / (1 + 3 * (l0 * k)**2):.3g} %)")
     if args.stress is None:
-        ring = d < 3 * w
+        ring = (d < 3 * w) & keep
         k_max = int(np.argmax(np.where(ring, grad_filt_clean, 0.0)))
         log(f"  gradient ring:      max {grad_filt_clean[k_max] * mm:.4g} per mm at {d[k_max] / mm:.3g} mm from the centre "
             f"(exact for the raw bump: {args.amp_bump / (args.w * np.sqrt(np.e)):.4g} per mm at {args.w:g} mm)")
     log(f"  GradFilt column:    max {grad_filt[k_tot] * mm:.4g} per mm; leftover checkerboard adds up to "
         f"{abs(grad_filt[k_noise] - grad_filt_clean[k_noise]) * mm:.3g} per mm")
-    log(f"  written {SHARED_DIR / OUTPUT_CSV}")
+    log(f"  written {csv_path}")
 
 
 if __name__ == "__main__":
