@@ -475,9 +475,6 @@ def parse_loadcases(loadcases_path): # read the different values needed for the 
     stress_unit = header[3] if len(header) >= 4 else DEFAULT_STRESS_UNIT
     stress_scale = stress_scale_to_mpa(stress_unit)
 
-    if USE_PDE_FILTER and pde_radius is None:
-      fail("USE_PDE_FILTER is on but no PDE filter radius is given in loadcases.txt (5th header token)")
-
     # PDE filter radius, in the length unit of the exported coordinates (m for MKS, mm for NMM)
     pde_radius = None
     if len(header) >= 5:
@@ -487,6 +484,8 @@ def parse_loadcases(loadcases_path): # read the different values needed for the 
             fail(f"invalid PDE filter radius '{header[4]}' in loadcases.txt")
         if pde_radius <= 0.0:
             fail(f"PDE filter radius must be positive, got {pde_radius}")
+    if USE_PDE_FILTER and pde_radius is None:
+        fail("USE_PDE_FILTER is on but no PDE filter radius is given in loadcases.txt (5th header token)")
 
 
     if mode not in ("SINUS", "HISTORY"):
@@ -1135,7 +1134,7 @@ def main():
         try:
             n_failed, n_written = write_critical_points_file(damage_field, critical_path, n_top=20)
 
-            ylog(f"[OK] {OUTPUT_CRITICAL} written to shared ({n_written} of {n_failed} failing points)")   
+            log(f"[OK] {OUTPUT_CRITICAL} written to shared ({n_written} of {n_failed} failing points)")   
 
         except Exception as e : 
             log (f"[WARNING] could not write {OUTPUT_CRITICAL} : {e}")
