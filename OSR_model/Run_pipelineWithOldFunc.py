@@ -870,6 +870,20 @@ def run_mapdl(pde_deck, job, export_files):
 
 
 
+def write_km_deck(src="pde_filter_in.txt", dst="pde_filter_km_in.txt"):
+    # The pipeline deck plus two *EXPORTs, placed after M = Keff - Kt and before Kt is
+    # overwritten by l_0^2 K + M, so K and M are exactly the matrices the pipeline solves with.
+    if not (SHARED_DIR / src).exists():
+        fail(f"{src} not found in {SHARED_DIR}")
+    deck = (SHARED_DIR / src).read_text()
+    anchor = "*AXPY,-1.0,,Kt,1.0,,Keff\n"
+    if deck.count(anchor) != 1:
+        fail(f"'{anchor.strip()}' not found exactly once in {src}")
+    deck = deck.replace(anchor, anchor + "*EXPORT,Kt,MMF,K_pde.mtx\n*EXPORT,Keff,MMF,M_pde.mtx\n")
+    (SHARED_DIR / dst).write_text(deck)
+    return dst
+
+
 def run_mapdl_onerun(rhs, mesh_nids, l_0):
     # Builds K and M and solves (l_0^2 K + M) sol = M rhs in one MAPDL run;
     # rhs is n x 6 with row k belonging to node mesh_nids[k], sol is returned the same way.
@@ -884,8 +898,8 @@ def run_mapdl_onerun(rhs, mesh_nids, l_0):
         f.write(f"nrow_={nrow}\nl0sq_={l_0**2:.16e}\ngsc_={1.0/gscale:.16e}\n")
 
     np.savetxt(SHARED_DIR / "rhs_nodes.txt", rhs_by_nid, fmt="%25.15E", delimiter="")
-    run_mapdl("pde_filter_onerun_in.txt", "pdeonerun",
-              ("mapb.mtx", "mapb_t.mtx", "sol_onerun.txt", "grad_onerun.txt"))
+    run_mapdl(write_km_deck(), "pdeonerun",
+              ("mapb.mtx", "mapb_t.mtx", "sol_onerun.txt", "grad_onerun.txt", "K_pde.mtx", "M_pde.mtx"))
 
     back = read_mmf_vector(SHARED_DIR / "mapb.mtx").astype(np.int64)
     back_t = read_mmf_vector(SHARED_DIR / "mapb_t.mtx").astype(np.int64)
@@ -1041,7 +1055,19 @@ def PDEFilter_export2(stress_file_nodal,r):
     out = []
     for row, s in zip(stress_file_nodal, stress_filt_nodal):
         out.append(row[:5] + tuple(s.tolist()))
-    return out, grad_by_nid
+
+    # K and M come out in equation order; run_mapdl_onerun has checked that mapb.mtx is a
+    # permutation of the mesh nodes, so this moves them to mesh_nids (node-number) order.
+    pos = np.searchsorted(mesh_nids, read_mmf_vector(SHARED_DIR / "mapb.mtx").astype(np.int64))
+    mats = []
+    for name in ("K_pde.mtx", "M_pde.mtx"):
+        i, j, v, nrow = read_mmf_triplets(SHARED_DIR / name)
+        if nrow != n:
+            fail(f"{name}: {nrow} rows, mesh has {n} nodes")
+        mats.append(sparse.coo_matrix((v, (pos[i], pos[j])), shape=(n, n)).tocsr())
+    K, M = mats
+
+    return out, K, M, xyz
 
 def matrix_checks(K, M, xyz):
     ones = np.ones(K.shape[0])
@@ -1157,7 +1183,7 @@ def main():
 
                     if USE_PDE_FILTER:
                         log(f"  PDE filter enabled, filtering {n_out} rows from {fname} with pde_radius={pde_radius}")
-                        kept_rows, grad = PDEFilter_export2(kept_rows, pde_radius)
+                        kept_rows, _, _, _ = PDEFilter_export2(kept_rows, pde_radius)
 
                         #kept_rows_const, K_const, M_const, xyz_const = PDEFilter_construct(kept_rows, read_stress_file(SHARED_DIR / fname), pde_radius)
                         #kept_rows_ext, K_ext, M_ext, xyz_ext = PDEFilter_export(kept_rows, pde_radius)

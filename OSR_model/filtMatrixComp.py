@@ -2,7 +2,7 @@
 
   construct (Run_pipelineWithOldFunc.PDEFilter_construct): P1 K, M assembled in Python from
             the element rows of the stress export, on the corner nodes 1..nnod
-  export2   (Run_pipelineWithOldFunc.PDEFilter_export2):   K, M exported by the MAPDL run of
+  export2   (Run_pipelineWithOldFunc.PDEFilter_export2):   K, M exported by the same MAPDL run as
             Run_pipeline.PDEFilterAndGradient, P2 (10-node tets of model.cdb), all nodes
 
 The P2 matrices are restricted to the P1 space with the prolongation P (corner node -> itself,
@@ -14,18 +14,20 @@ entries that only straight elements contribute to and entries a curved element c
 
 K and M do not depend on r; r only enters the filtered stresses compared at the end.
 
+Each matrix entry gets its own difference, |d_ij| / sqrt(|A_ii A_jj|) (the plain relative
+difference on the diagonal), and each node |d vM| / peak vM for the filtered stress. The tables
+show how these are spread: median, 95th percentile, max, and the share within 0.1 % and 1 %.
+
 Usage:  python filtMatrixComp.py [--stress-file FILE] [--r 0.003]
 """
 import argparse
 
 import numpy as np
 from scipy import sparse
-from scipy.sparse.linalg import norm as sparse_norm
 
-import Run_pipeline as rp
 import Run_pipelineWithOldFunc as old
 from Run_pipeline import SHARED_DIR, read_cdb_mesh, read_stress_file
-from filtExtractComp import compare, load_nodal, pct, print_timing, run_timed
+from filtExtractComp import load_nodal, pct, print_timing, run_timed, von_mises
 
 # SOLID187 / SOLID87 node order: corners I J K L, then the midside nodes of these edges.
 TET10_EDGES = ((0, 1), (1, 2), (2, 0), (0, 3), (1, 3), (2, 3))
@@ -91,20 +93,36 @@ def pattern_diff(A, B):
     return int((d.data > 0).sum()), int((d.data < 0).sum())
 
 
+def print_spread(what, rows):
+    # rows: (label, relative differences in %). One line per group: how the differences
+    # are spread, and the share of entries/nodes that agree within 0.1 % and 1 %.
+    print(f"  {what:<26s} {'count':>7s} {'median':>9s} {'p95':>9s} {'max':>9s} {'<= 0.1%':>8s} {'<= 1%':>8s}")
+    for label, e in rows:
+        if len(e) == 0:
+            continue
+        print(f"  {label:<26s} {len(e):7d} {np.median(e):8.4f}% {np.percentile(e, 95):8.4f}% {e.max():8.4f}% "
+              f"{pct((e <= 0.1).sum(), len(e)):7.1f}% {pct((e <= 1.0).sum(), len(e)):7.1f}%")
+
+
 def compare_matrix(name, A, B, C):
     # A: construct (P1), B: export2 restricted to P1, C: entries a curved element touches.
     extra, missing = pattern_diff(A, B)
     print(f"\n{name}: P^T {name}_P2 P (export2) vs {name}_P1 (construct)")
-    print(f"  nonzeros {A.nnz} vs {B.nnz}, {extra} only in export2, {missing} only in construct")
-    curved = (C != 0).astype(float)
-    D = (B - A).tocsr()
-    parts = (("all", A, D),
-             ("straight elements only", A - A.multiply(curved), D - D.multiply(curved)),
-             ("with a curved element", A.multiply(curved), D.multiply(curved)))
-    print(f"  {'entries':<24s} {'count':>8s} {'rel L2 %':>10s} {'max|d| % of max|A|':>20s}")
-    for label, a, d in parts:
-        print(f"  {label:<24s} {np.count_nonzero(a.data):8d} {pct(sparse_norm(d), sparse_norm(a)):10.4f} "
-              f"{pct(abs(d).max(), abs(a).max()):20.4f}")
+    if extra or missing:
+        print(f"  sparsity differs: {extra} entries only in export2, {missing} only in construct")
+    else:
+        print(f"  same sparsity pattern, {A.nnz} nonzeros")
+    # Each entry against the size of its row and column, |d_ij| / sqrt(|A_ii A_jj|): a diagonal
+    # entry gets its plain relative difference, and small off-diagonal entries do not blow up.
+    Q = (abs(A) + abs(B)).tocoo()
+    i, j = Q.row, Q.col
+    d = np.asarray(B[i, j] - A[i, j]).ravel()
+    diag = np.abs(A.diagonal())
+    e = 100.0 * np.abs(d) / np.sqrt(diag[i] * diag[j])
+    curved = np.asarray(C[i, j]).ravel() != 0
+    print_spread(f"|d_ij| / sqrt({name}_ii {name}_jj)",
+                 (("all entries", e), ("straight elements only", e[~curved]),
+                  ("with a curved element", e[curved])))
 
 
 def main():
@@ -122,7 +140,7 @@ def main():
     methods = (
         ("construct", "P1, Python assembly", old, ("constructPDEMatrix", "spsolve"),
          lambda: old.PDEFilter_construct(stress_file_nodal, stress_file_elemental, args.r)),
-        ("export2", "P2, MAPDL", rp, ("read_cdb_mesh", "run_mapdl"),
+        ("export2", "P2, MAPDL", old, ("read_cdb_mesh", "run_mapdl_onerun"),
          lambda: old.PDEFilter_export2(stress_file_nodal, args.r)),
     )
     results = []
@@ -144,19 +162,22 @@ def main():
 
     compare_matrix("K", K1, (P.T @ K2 @ P).tocsr(), C)
     compare_matrix("M", M1, (P.T @ M2 @ P).tocsr(), C)
-
-    a, b = matrix_checks(K1, M1, xyz1), matrix_checks(K2, M2, xyz2)
-    print("\nFull matrices, no restriction (old filter_comp checks)")
-    print(f"  {'':<20s} {'construct (P1)':>16s} {'export2 (P2)':>16s} {'rel diff %':>11s}")
-    for k in a:
-        # Node counts differ by design and K 1 is ~0 for both, so no % for those two.
-        rel = "" if k in ("n_nodes", "max|K 1| / max|K|") else f"{pct(abs(b[k] - a[k]), abs(a[k])):11.4f}"
-        print(f"  {k:<20s} {a[k]:16.6g} {b[k]:16.6g} {rel:>11s}")
+    v1, v2 = M1.sum(), M2.sum()
+    print(f"  volume (sum of M): construct {v1:.6g}, export2 {v2:.6g}, difference {pct(v2 - v1, v1):+.4f} %")
 
     s1 = np.array([row[5:11] for row in out1], dtype=float)
     s2 = np.array([row[5:11] for row in out2], dtype=float)
-    compare(s1, s2, nids, "construct", "export2")
-
+    vm1, vm2 = von_mises(s1), von_mises(s2)
+    i1, i2 = vm1.argmax(), vm2.argmax()
+    print("\nVon Mises of the filtered stress: export2 vs construct")
+    print(f"  peak construct {vm1[i1]:.6e} (node {nids[i1]}), export2 {vm2[i2]:.6e} (node {nids[i2]}), "
+          f"difference {pct(vm2[i2] - vm1[i1], vm1[i1]):+.4f} %")
+    # Row k of the stresses is P1 node k, as in C; a node is "curved" if a curved element has it.
+    e = 100.0 * np.abs(vm2 - vm1) / vm1[i1]
+    on_curved = np.asarray(abs(C).sum(axis=1)).ravel() > 0
+    print_spread("|d vM| / peak vM",
+                 (("all nodes", e), ("in no curved element", e[~on_curved]),
+                  ("in a curved element", e[on_curved])))
 
 if __name__ == "__main__":
     main()

@@ -1,8 +1,10 @@
 import numpy as np
 from scipy import sparse
-from scipy.sparse.linalg import spsolve
 import os
-from Run_pipeline import read_stress_file, SHARED_DIR, Path, MAPDL_EXE_DIR, subprocess, fail, log, coo_matrix
+from Run_pipeline import read_stress_file, SHARED_DIR, Path, MAPDL_EXE_DIR, subprocess, fail, log
+from scipy import sparse
+from scipy.sparse import coo_matrix
+from scipy.sparse.linalg import spsolve, splu
 
 def run_mapdl(pde_deck, job, export_files):
     for name in export_files + (f"{job}.lock",):

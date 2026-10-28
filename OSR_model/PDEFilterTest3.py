@@ -8,6 +8,9 @@ the result with node numbers.
 """
 import numpy as np
 from Run_pipeline import read_stress_file, SHARED_DIR, Path, MAPDL_EXE_DIR, subprocess, fail, log
+from scipy import sparse
+from scipy.sparse import coo_matrix
+from scipy.sparse.linalg import spsolve, splu
 
 # Element types the decks delete before building the PDE matrices (ESEL,S,ENAME,,169,177).
 EXCLUDED_ENAMES = range(169, 178)
