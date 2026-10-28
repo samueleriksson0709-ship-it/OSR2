@@ -51,7 +51,8 @@ what it would do without touching any file.
 `configure_osr.py` fixes the file, but Mechanical holds its own copy: open the
 **Commands (APDL)** object under *Solution* and paste in the contents of
 `shared/APDL.txt` again. Both `*CFOPEN` lines must end with this machine's
-`shared` folder.
+`shared` folder, and the `CDWRITE` line must point at `model` in that folder
+(it writes `model.cdb`, which the PDE filter reads).
 
 The exported file names must match the names declared in
 `shared/loadcases.txt`; `configure_osr.py` checks this and reports a mismatch.

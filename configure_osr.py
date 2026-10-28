@@ -10,7 +10,7 @@ are machine specific, so run this script once after cloning the repository:
 It:
   * writes shared/act_config.json with paths valid on this machine,
   * picks a Python 3 interpreter that really runs and has numpy,
-  * rewrites the *CFOPEN export paths in shared/APDL.txt,
+  * rewrites the *CFOPEN export paths and the CDWRITE path in shared/APDL.txt,
   * reports anything still missing (Fortran build, file name mismatches).
 
 Use --check to inspect without writing anything.
@@ -241,6 +241,14 @@ def step_apdl(check_only):
     patched = re.sub(
         r"(^\s*\*CFOPEN\s*,[^,\n]+,[^,\n]+,\s*)([^\r\n]+)",
         lambda m: m.group(1) + target,
+        patched,
+        flags=re.MULTILINE | re.IGNORECASE,
+    )
+    # CDWRITE,DB,'<folder>\model','cdb' writes model.cdb for the PDE filter: keep the
+    # file name, replace the folder.
+    patched = re.sub(
+        r"(^\s*CDWRITE\s*,\s*DB\s*,\s*')(?:[^'\r\n]*[\\/])?([^'\\/\r\n]+)'",
+        lambda m: m.group(1) + str(SHARED_DIR / m.group(2)) + "'",
         patched,
         flags=re.MULTILINE | re.IGNORECASE,
     )

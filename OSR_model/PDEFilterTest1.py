@@ -2,9 +2,9 @@ from Run_pipeline import SHARED_DIR, log, fail, read_stress_file
 from pathlib import Path
 import subprocess
 import numpy as np
+from scipy import sparse
 from scipy.sparse import coo_matrix
-from scipy.sparse.linalg import splu
-
+from scipy.sparse.linalg import spsolve, splu
 
 MAPDL_EXE_DIR = r"C:\Program Files\ANSYS Inc\v261\ansys\bin\winx64\ANSYS261.exe"
 

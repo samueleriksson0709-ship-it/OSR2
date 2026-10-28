@@ -484,9 +484,9 @@ def parse_loadcases(loadcases_path): # read the different values needed for the 
             fail(f"invalid PDE filter radius '{header[4]}' in loadcases.txt")
         if pde_radius <= 0.0:
             fail(f"PDE filter radius must be positive, got {pde_radius}")
+
     if USE_PDE_FILTER and pde_radius is None:
         fail("USE_PDE_FILTER is on but no PDE filter radius is given in loadcases.txt (5th header token)")
-
 
     if mode not in ("SINUS", "HISTORY"):
         fail(f"invalid loading mode '{mode}' in loadcases.txt"
