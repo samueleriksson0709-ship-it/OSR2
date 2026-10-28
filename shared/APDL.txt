@@ -5,7 +5,7 @@
 ! The export folder below MUST be the 'shared' folder of THIS machine's OSR
 ! checkout. APDL has no way of discovering it, so it is written out in full.
 ! Running  python configure_osr.py  from the OSR root rewrites both *CFOPEN
-! lines with the correct local path.
+! lines and the CDWRITE line with the correct local path.
 !
 ! The stresses are written in the unit system the model was SOLVED in (Pa for
 ! /units,MKS). Declare that unit on the first data line of loadcases.txt, e.g.

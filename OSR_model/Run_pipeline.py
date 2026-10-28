@@ -1134,7 +1134,7 @@ def main():
         try:
             n_failed, n_written = write_critical_points_file(damage_field, critical_path, n_top=20)
 
-            ylog(f"[OK] {OUTPUT_CRITICAL} written to shared ({n_written} of {n_failed} failing points)")   
+            log(f"[OK] {OUTPUT_CRITICAL} written to shared ({n_written} of {n_failed} failing points)")   
 
         except Exception as e : 
             log (f"[WARNING] could not write {OUTPUT_CRITICAL} : {e}")
