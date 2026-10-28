@@ -23,9 +23,6 @@ from collections import defaultdict
 from datetime import datetime
 from pathlib import Path
 import numpy as np 
-from scipy import sparse
-from scipy.sparse import coo_matrix
-from scipy.sparse.linalg import spsolve, splu
 
 # PATH CONFIGURATION
 # Nothing here is tied to a particular machine or user account. The folders are
@@ -478,6 +475,9 @@ def parse_loadcases(loadcases_path): # read the different values needed for the 
     stress_unit = header[3] if len(header) >= 4 else DEFAULT_STRESS_UNIT
     stress_scale = stress_scale_to_mpa(stress_unit)
 
+    if USE_PDE_FILTER and pde_radius is None:
+      fail("USE_PDE_FILTER is on but no PDE filter radius is given in loadcases.txt (5th header token)")
+
     # PDE filter radius, in the length unit of the exported coordinates (m for MKS, mm for NMM)
     pde_radius = None
     if len(header) >= 5:
@@ -623,6 +623,7 @@ def select_reference_eids_by_max_beta(all_rows_by_case, loadcases, mode = "SINUS
 
 
 def read_mmf_vector(path):
+    # Read a Matrix Market vector file, ignoring comment lines. Return a 1D array if the file is a vector, or the last column if it is a matrix.
     with open(path) as f:
         lines = [ln for ln in f if not ln.startswith("%")]
     data = np.loadtxt(lines[1:])
@@ -656,6 +657,7 @@ def run_mapdl(rhs, mesh_nids, l_0):
     if not Path(MAPDL_EXE_DIR).exists():
         fail(f"MAPDL executable not found: {MAPDL_EXE_DIR}")
 
+    # Run APDL code in pde_filter_in.txt, which reads rhs_nodes.txt and writes mapb.mtx, mapb_t.mtx, sol_onerun.txt, grad_onerun.txt.
     res = subprocess.run(
         [MAPDL_EXE_DIR, "-b", "-np", "1", "-j", PDE_JOB,
          "-i", PDE_DECK, "-o", f"{PDE_JOB}.out"],
@@ -665,7 +667,7 @@ def run_mapdl(rhs, mesh_nids, l_0):
         if not (SHARED_DIR / name).exists():
             fail(f"{name} not written (code {res.returncode}), see {PDE_JOB}.out")
 
-
+    # Check that the equation ordering is consistent between the two MAPDL runs, and that the node numbers in sol_onerun.txt match the mesh.
     back = read_mmf_vector(SHARED_DIR / "mapb.mtx").astype(np.int64)
     back_t = read_mmf_vector(SHARED_DIR / "mapb_t.mtx").astype(np.int64)
     if not np.array_equal(back, back_t):
@@ -817,6 +819,9 @@ def read_cdb_mesh(path):
 
 
 def PDEFilterAndGradient(stress_file_nodal,r):
+    # Use PDE Filter on stress and calculate the filtered stress gradient
+
+    # Read mesh from model.cdb, build a lookup table from node id to row in the mesh arrays.
     mesh_nids, xyz, econn = read_cdb_mesh(SHARED_DIR / "model.cdb")
     n = len(mesh_nids)
 
@@ -828,20 +833,24 @@ def PDEFilterAndGradient(stress_file_nodal,r):
         fail("stress-file nodes not in PDE mesh")
     rows = lut[nids]
 
+    # Build the right-hand side for the PDE solve, with zeros for nodes not in the stress file.
     stress_nodal = np.array([r[5:11] for r in stress_file_nodal], dtype=float)
     rhs = np.zeros((n, 6))
     rhs[rows] = stress_nodal
     known = np.zeros(n, dtype=bool)
     known[rows] = True
 
+    # Fill midside nodes by averaging the values of the two end nodes of each edge.
     rhs, known = fill_midside(rhs, known, econn, lut, xyz)
     if not known.all():
         fail(f"{(~known).sum()} nodes still without stress after midside fill")
 
+    # Solve the PDE (l_0^2 K + M) sol = M rhs, with l_0 = r / (2 sqrt(2)) for a Gaussian filter of radius r.
     l_0 = r / (2*np.sqrt(2))
     sol, grad_by_nid = run_mapdl(rhs, mesh_nids, l_0)
     stress_filt_nodal = sol[rows]
 
+    # Return the filtered stress values in the same format as the input stress file, with the gradient by node id.
     out = []
     for row, s in zip(stress_file_nodal, stress_filt_nodal):
         out.append(row[:5] + tuple(s.tolist()))
@@ -998,12 +1007,14 @@ def main():
                     n_raw = len(all_rows_by_case[k])
                     n_out = len(kept_rows)
 
-                    # PDE Filter 
-
                     grad_by_nid = None
                     if USE_PDE_FILTER:
                         log(f"  PDE filter + gradient enabled, filtering {n_out} rows from {fname} with pde_radius={pde_radius}")
+                        
+                        # Use PDE Filter on stress and calculate the filtered stress gradient
                         kept_rows, grad_by_nid = PDEFilterAndGradient(kept_rows, pde_radius)
+
+                        # Write the gradient CSV for the External Data block, in MPa / length unit of the export
                         write_gradient_csv(kept_rows, grad_by_nid, gradient_csv_path(fname), stress_scale)
                     else:
                         log("PDE filter disabled, writing deduplicated rows without filtering")
@@ -1011,7 +1022,7 @@ def main():
 
                     # Clamp filter
 
-                    n_raw_before_filter = len(kept_rows)
+                    #n_raw_before_filter = len(kept_rows)
                     kept_rows, n_removed = filter_clamps(kept_rows)
                     if USE_CLAMP_FILTER : 
                         log(f" {fname}: {len(kept_rows)} rows after clamp filtering ({n_removed} removed)")
@@ -1024,7 +1035,6 @@ def main():
 
                     # Binary cache read by Fortran through read_stress_field_auto
                     bp = bin_path_for(fname, FORTRAN_DIR)
-                    log(bp)
                     log(f"Binary path = {bp}")
                     write_binary_cache(kept_rows, bp)
                     write_cache_metadata(bp, cache_metadata)
@@ -1085,7 +1095,7 @@ def main():
     env = os.environ.copy()
     env["OMP_NUM_THREADS"] = get_omp_threads(default=8)
     log(f"  OMP_NUM_THREADS = {env['OMP_NUM_THREADS']}")
-
+    
     try:
         with open(LOG_FILE, "a", encoding="utf-8") as log_f:
             log_f.write(" Fortran output \n")
@@ -1125,8 +1135,8 @@ def main():
         try:
             n_failed, n_written = write_critical_points_file(damage_field, critical_path, n_top=20)
 
-            log (f"[OK] {OUTPUT_CRITICAL} written to shared")
-        
+            ylog(f"[OK] {OUTPUT_CRITICAL} written to shared ({n_written} of {n_failed} failing points)")   
+
         except Exception as e : 
             log (f"[WARNING] could not write {OUTPUT_CRITICAL} : {e}")
 
